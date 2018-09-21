@@ -1,4 +1,4 @@
-package com.journaldev;
+package com.rewa;
 
 import java.util.Date;
 
@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import com.journaldev.hibernate.data.Employee;
+import com.rewa.hibernate.data.Employee;
 
 public class Main {
 	public static void main(String [] args){

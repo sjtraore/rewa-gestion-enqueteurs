@@ -1,4 +1,4 @@
-package com.journaldev.hibernate.data;
+package com.rewa.hibernate.data;
 
 import java.util.Date;
 

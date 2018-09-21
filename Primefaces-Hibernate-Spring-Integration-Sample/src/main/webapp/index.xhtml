@@ -11,12 +11,27 @@
 	<p:growl id="messages"></p:growl>
 	<p:panelGrid columns="2">
 		<p:outputLabel value="Enter Employee Name:"></p:outputLabel>
-		<p:inputText value="#{registerEmployee.employee.employeeName}"></p:inputText>
+		<p:inputText value="#{employeeManage.employee.employeeName}"></p:inputText>
 		<p:outputLabel value="Enter Employee Hire Date:"></p:outputLabel>
-		<p:calendar value="#{registerEmployee.employee.employeeHireDate}"></p:calendar>
+		<p:calendar value="#{employeeManage.employee.employeeHireDate}"></p:calendar>
 		<p:outputLabel value="Enter Employee Salary:"></p:outputLabel>
-		<p:inputText value="#{registerEmployee.employee.employeeSalary}"></p:inputText>						
+		<p:inputText value="#{employeeManage.employee.employeeSalary}"></p:inputText>
 	</p:panelGrid>
-	<p:commandButton value="Register" action="#{registerEmployee.register}" update="messages"></p:commandButton>
+	<p:commandButton value="Register" action="#{employeeManage.register}"
+		update="messages"></p:commandButton>
 </h:form>
+
+<p:dataTable var="employee" value="#{employeeManage.employees}" paginator="true"
+	rows="10"
+	paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+	rowsPerPageTemplate="5,10,15" selectionMode="single"
+	selection="#{employeeManage.employees}" id="employeesTable" lazy="true">
+
+	<p:column headerText="Id" sortBy="#{employee.employeeId}" filterBy="#{employee.employeeId}">
+		<h:outputText value="#{employee.employeeId}" />
+	</p:column>
+	<p:column headerText="Name" sortBy="#{employee.employeeName}" filterBy="#{employee.employeeName}">
+		<h:outputText value="#{car.year}" />
+	</p:column>
+</p:dataTable>
 </html>

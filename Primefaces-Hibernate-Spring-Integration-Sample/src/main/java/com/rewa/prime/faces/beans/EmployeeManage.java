@@ -1,4 +1,6 @@
-package com.journaldev.prime.faces.beans;
+package com.rewa.prime.faces.beans;
+
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -6,12 +8,12 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-import com.journaldev.hibernate.data.Employee;
-import com.journaldev.spring.service.EmployeeService;
+import com.rewa.hibernate.data.Employee;
+import com.rewa.spring.service.EmployeeService;
 
 @ManagedBean
 @SessionScoped
-public class RegisterEmployee {
+public class EmployeeManage {
 
 	@ManagedProperty("#{employeeService}")
 	private EmployeeService employeeService;
@@ -32,6 +34,10 @@ public class RegisterEmployee {
 
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
+	}
+	
+	public List<Employee> getEmployees(){
+		return employeeService.getEmployees();
 	}
 
 	public String register() {
