@@ -4,10 +4,10 @@ PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
 <hibernate-mapping>
 	<class name="com.journaldev.hibernate.data.Person" table="person">
-		<id name="personId" column="Person_ID" type="long">
+		<id name="idPerson" column="IDPERSON" type="long">
 			<generator class="native" />
 		</id>
-		<property name="personName" column="FIRSTNAME" type="string"/>
+		<property name="firstname" column="FIRSTNAME" type="string"/>
 <!-- 		<property name="employeeHireDate" column="EMP_HIRE_DATE" type="date"/> -->
 <!-- 		<property name="employeeSalary" column="EMP_SALARY" type="double"/> -->
 	</class>
