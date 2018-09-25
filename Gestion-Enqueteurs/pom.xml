@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.journaldev</groupId>
-	<artifactId>Primefaces-Hibernate-Spring-Integration-Sample</artifactId>
+	<groupId>com.rewa</groupId>
+	<artifactId>GestionEnqueteurs</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Primefaces-Hibernate-Spring-Integration-Sample Maven Webapp</name>
+	<name>Application Web Gestion Enqueteur</name>
 	<build>
 		<plugins>
 			<plugin>

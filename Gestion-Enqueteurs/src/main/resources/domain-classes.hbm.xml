@@ -3,7 +3,7 @@
 PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
 <hibernate-mapping>
-	<class name="com.journaldev.hibernate.data.Employee" table="employee">
+	<class name="com.rewa.hibernate.data.Employee" table="employee">
 		<id name="employeeId" column="EMP_ID" type="long">
 			<generator class="native" />
 		</id>

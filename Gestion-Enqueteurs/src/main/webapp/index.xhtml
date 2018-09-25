@@ -21,16 +21,14 @@
 		update="messages"></p:commandButton>
 </h:form>
 
-<p:dataTable var="employee" value="#{employeeManage.employees}" paginator="true"
-	rows="10"
-	paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-	rowsPerPageTemplate="5,10,15" selectionMode="single"
-	selection="#{employeeManage.employees}" id="employeesTable" lazy="true">
+<p:dataTable var="employee" value="#{employeeManage.employees}">
 
-	<p:column headerText="Id" sortBy="#{employee.employeeId}" filterBy="#{employee.employeeId}">
+	<p:column headerText="Id" sortBy="#{employee.employeeId}"
+		filterBy="#{employee.employeeId}">
 		<h:outputText value="#{employee.employeeId}" />
 	</p:column>
-	<p:column headerText="Name" sortBy="#{employee.employeeName}" filterBy="#{employee.employeeName}">
+	<p:column headerText="Name" sortBy="#{employee.employeeName}"
+		filterBy="#{employee.employeeName}">
 		<h:outputText value="#{car.year}" />
 	</p:column>
 </p:dataTable>

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rewa.hibernate.data.Employee;
 
 @Component
+@Transactional
 public class EmployeeService {
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -22,22 +23,24 @@ public class EmployeeService {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	@Transactional
-	public void register(Employee emp){
+	public void register(Employee emp) {
 		// Acquire session
 		Session session = sessionFactory.getCurrentSession();
 		// Save employee, saving behavior get done in a transactional manner
-		session.save(emp);		
+		session.save(emp);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<Employee> getEmployees(){
-		try{
-		// Acquire session
-		Session session = sessionFactory.getCurrentSession();
-		return session.createCriteria(Employee.class).list();
-		} catch(Exception e){
+	public List<Employee> getEmployees() {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			List<Employee> result = session.createCriteria(Employee.class).list();
+			System.out.println("getEmployees: " + ((result != null) ? result.size() : 0));
+			return result;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
