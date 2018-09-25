@@ -45,7 +45,7 @@ public class EmployeeManage {
 		employeeService.register(employee);
 		// Add message
 		FacesContext.getCurrentInstance().addMessage(null, 
-				new FacesMessage("The Employee "+this.employee.getEmployeeName()+" Is Registered Successfully"));
+				new FacesMessage("The Employee "+this.employee.getEmpName()+" Is Registered Successfully"));
 		return "";
 	}
 }

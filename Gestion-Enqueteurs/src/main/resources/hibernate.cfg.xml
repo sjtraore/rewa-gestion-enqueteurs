@@ -9,6 +9,7 @@
         <!-- SQL dialect, only thing required for Spring. 
         For stanalone application, other DB configs are required -->
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <mapping class="com.rewa.hibernate.data.Employee"/>
     </session-factory>
 
 </hibernate-configuration>

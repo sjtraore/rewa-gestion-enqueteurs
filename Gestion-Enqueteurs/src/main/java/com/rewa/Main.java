@@ -1,5 +1,6 @@
 package com.rewa;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.hibernate.Session;
@@ -22,9 +23,9 @@ public class Main {
 		session.getTransaction().begin();
 		// Create employee
 		Employee emp = new Employee();
-		emp.setEmployeeName("Peter Jousha");
-		emp.setEmployeeSalary(2000);
-		emp.setEmployeeHireDate(new Date());
+		emp.setEmpName("Peter Jousha");
+		emp.setEmpSalary(2000);
+		emp.setEmpHireDate(new Date());
 		// Save
 		session.save(emp);
 		// Commit, calling of commit will cause save an instance of employee

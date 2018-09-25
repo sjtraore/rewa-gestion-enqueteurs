@@ -11,11 +11,11 @@
 	<p:growl id="messages"></p:growl>
 	<p:panelGrid columns="2">
 		<p:outputLabel value="Enter Employee Name:"></p:outputLabel>
-		<p:inputText value="#{employeeManage.employee.employeeName}"></p:inputText>
+		<p:inputText value="#{employeeManage.employee.empName}"></p:inputText>
 		<p:outputLabel value="Enter Employee Hire Date:"></p:outputLabel>
-		<p:calendar value="#{employeeManage.employee.employeeHireDate}"></p:calendar>
+		<p:calendar value="#{employeeManage.employee.empHireDate}"></p:calendar>
 		<p:outputLabel value="Enter Employee Salary:"></p:outputLabel>
-		<p:inputText value="#{employeeManage.employee.employeeSalary}"></p:inputText>
+		<p:inputText value="#{employeeManage.employee.empSalary}"></p:inputText>
 	</p:panelGrid>
 	<p:commandButton value="Register" action="#{employeeManage.register}"
 		update="messages"></p:commandButton>
@@ -23,13 +23,12 @@
 
 <p:dataTable var="employee" value="#{employeeManage.employees}">
 
-	<p:column headerText="Id" sortBy="#{employee.employeeId}"
-		filterBy="#{employee.employeeId}">
-		<h:outputText value="#{employee.employeeId}" />
+	<p:column headerText="Id" sortBy="#{employee.empId}" filterBy="#{employee.empId}">
+		<h:outputText value="#{employee.empId}" />
 	</p:column>
-	<p:column headerText="Name" sortBy="#{employee.employeeName}"
-		filterBy="#{employee.employeeName}">
-		<h:outputText value="#{car.year}" />
+	<p:column headerText="Name" sortBy="#{employee.empName}"
+		filterBy="#{employee.empName}">
+		<h:outputText value="#{employee.empName}" />
 	</p:column>
 </p:dataTable>
 </html>
