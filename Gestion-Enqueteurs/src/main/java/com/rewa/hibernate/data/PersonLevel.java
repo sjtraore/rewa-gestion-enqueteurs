@@ -10,12 +10,12 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rewa_person_level")
-@NamedQuery(name="RewaPersonLevel.findAll", query="SELECT r FROM RewaPersonLevel r")
-public class RewaPersonLevel implements Serializable {
+@NamedQuery(name="PersonLevel.findAll", query="SELECT r FROM PersonLevel r")
+public class PersonLevel implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
-	private RewaPersonLevelPK id;
+	private PersonLevelPK id;
 
 	private int baseNotation;
 
@@ -26,26 +26,26 @@ public class RewaPersonLevel implements Serializable {
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
 	@JoinColumn(name="evaluatedBy")
-	private Person rewaPerson1;
+	private Person evaluator;
 
 	//bi-directional many-to-one association to RewaField
 	@ManyToOne
-	@JoinColumn(name="idField")
-	private RewaField rewaField;
+	@JoinColumn(name="idField", insertable = false, updatable = false)
+	private Field rewaField;
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
-	@JoinColumn(name="idPerson")
-	private Person rewaPerson2;
+	@JoinColumn(name="idPerson", insertable = false, updatable = false)
+	private Person person;
 
-	public RewaPersonLevel() {
+	public PersonLevel() {
 	}
 
-	public RewaPersonLevelPK getId() {
+	public PersonLevelPK getId() {
 		return this.id;
 	}
 
-	public void setId(RewaPersonLevelPK id) {
+	public void setId(PersonLevelPK id) {
 		this.id = id;
 	}
 
@@ -74,27 +74,27 @@ public class RewaPersonLevel implements Serializable {
 	}
 
 	public Person getRewaPerson1() {
-		return this.rewaPerson1;
+		return this.evaluator;
 	}
 
 	public void setRewaPerson1(Person rewaPerson1) {
-		this.rewaPerson1 = rewaPerson1;
+		this.evaluator = rewaPerson1;
 	}
 
-	public RewaField getRewaField() {
+	public Field getRewaField() {
 		return this.rewaField;
 	}
 
-	public void setRewaField(RewaField rewaField) {
+	public void setRewaField(Field rewaField) {
 		this.rewaField = rewaField;
 	}
 
 	public Person getRewaPerson2() {
-		return this.rewaPerson2;
+		return this.person;
 	}
 
 	public void setRewaPerson2(Person rewaPerson2) {
-		this.rewaPerson2 = rewaPerson2;
+		this.person = rewaPerson2;
 	}
 
 }

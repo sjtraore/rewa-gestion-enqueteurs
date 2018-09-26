@@ -8,7 +8,7 @@ import javax.persistence.*;
  * 
  */
 @Embeddable
-public class RewaCoordinateTypePK implements Serializable {
+public class CoordinateTypePK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
@@ -16,7 +16,7 @@ public class RewaCoordinateTypePK implements Serializable {
 
 	private String type;
 
-	public RewaCoordinateTypePK() {
+	public CoordinateTypePK() {
 	}
 	public int getIdCoordinateType() {
 		return this.idCoordinateType;
@@ -35,10 +35,10 @@ public class RewaCoordinateTypePK implements Serializable {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof RewaCoordinateTypePK)) {
+		if (!(other instanceof CoordinateTypePK)) {
 			return false;
 		}
-		RewaCoordinateTypePK castOther = (RewaCoordinateTypePK)other;
+		CoordinateTypePK castOther = (CoordinateTypePK)other;
 		return 
 			(this.idCoordinateType == castOther.idCoordinateType)
 			&& this.type.equals(castOther.type);

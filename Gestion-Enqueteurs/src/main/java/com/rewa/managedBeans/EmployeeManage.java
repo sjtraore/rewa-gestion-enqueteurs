@@ -1,7 +1,8 @@
-package com.rewa.prime.faces.beans;
+package com.rewa.managedBeans;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -15,10 +16,17 @@ import com.rewa.spring.service.EmployeeService;
 @SessionScoped
 public class EmployeeManage {
 
+	private List<Employee> employees;
+	private List<Employee> filteredEmployees;
+	private Employee employee = new Employee();
+	
 	@ManagedProperty("#{employeeService}")
 	private EmployeeService employeeService;
 
-	private Employee employee = new Employee();
+	@PostConstruct
+	public void init() {
+		employees = employeeService.getEmployees();
+	}
 
 	public EmployeeService getEmployeeService() {
 		return employeeService;
@@ -35,17 +43,25 @@ public class EmployeeManage {
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
 	}
-	
-	public List<Employee> getEmployees(){
-		return employeeService.getEmployees();
+
+	public List<Employee> getEmployeeById(long id) {
+		return employeeService.getEmployeeById(id);
 	}
 
 	public String register() {
 		// Calling Business Service
 		employeeService.register(employee);
 		// Add message
-		FacesContext.getCurrentInstance().addMessage(null, 
-				new FacesMessage("The Employee "+this.employee.getEmpName()+" Is Registered Successfully"));
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage("The Employee " + this.employee.getEmpName() + " Is Registered Successfully"));
 		return "";
+	}
+
+	public List<Employee> getFilteredEmployees() {
+		return filteredEmployees;
+	}
+
+	public void setFilteredEmployees(List<Employee> filteredEmployees) {
+		this.filteredEmployees = filteredEmployees;
 	}
 }

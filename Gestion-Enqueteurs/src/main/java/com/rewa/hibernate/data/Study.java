@@ -11,8 +11,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name="rewa_study")
-@NamedQuery(name="RewaStudy.findAll", query="SELECT r FROM RewaStudy r")
-public class RewaStudy implements Serializable {
+@NamedQuery(name="Study.findAll", query="SELECT r FROM Study r")
+public class Study implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -27,19 +27,19 @@ public class RewaStudy implements Serializable {
 	//bi-directional many-to-one association to RewaCustomer
 	@ManyToOne
 	@JoinColumn(name="idCustomer")
-	private RewaCustomer rewaCustomer;
+	private Customer rewaCustomer;
 
 	//bi-directional many-to-one association to RewaStatus
 	@ManyToOne
 	@JoinColumn(name="idStatus")
-	private RewaStatus rewaStatus;
+	private Status rewaStatus;
 
 	//bi-directional many-to-one association to RewaTeam
 	@ManyToOne
 	@JoinColumn(name="idTeam")
-	private RewaTeam rewaTeam;
+	private Team rewaTeam;
 
-	public RewaStudy() {
+	public Study() {
 	}
 
 	public int getIdStudy() {
@@ -66,27 +66,27 @@ public class RewaStudy implements Serializable {
 		this.startDate = startDate;
 	}
 
-	public RewaCustomer getRewaCustomer() {
+	public Customer getRewaCustomer() {
 		return this.rewaCustomer;
 	}
 
-	public void setRewaCustomer(RewaCustomer rewaCustomer) {
+	public void setRewaCustomer(Customer rewaCustomer) {
 		this.rewaCustomer = rewaCustomer;
 	}
 
-	public RewaStatus getRewaStatus() {
+	public Status getRewaStatus() {
 		return this.rewaStatus;
 	}
 
-	public void setRewaStatus(RewaStatus rewaStatus) {
+	public void setRewaStatus(Status rewaStatus) {
 		this.rewaStatus = rewaStatus;
 	}
 
-	public RewaTeam getRewaTeam() {
+	public Team getRewaTeam() {
 		return this.rewaTeam;
 	}
 
-	public void setRewaTeam(RewaTeam rewaTeam) {
+	public void setRewaTeam(Team rewaTeam) {
 		this.rewaTeam = rewaTeam;
 	}
 

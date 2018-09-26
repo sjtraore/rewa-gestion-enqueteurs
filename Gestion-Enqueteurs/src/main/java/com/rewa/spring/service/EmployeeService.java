@@ -2,8 +2,10 @@ package com.rewa.spring.service;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,27 @@ public class EmployeeService {
 			Session session = sessionFactory.getCurrentSession();
 			List<Employee> result = session.createCriteria(Employee.class).list();
 			System.out.println("getEmployees: " + ((result != null) ? result.size() : 0));
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Get employee by id
+	 * @return
+	 */
+	public List<Employee> getEmployeeById(long id) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			
+			Criteria criteria = session.createCriteria(Employee.class);
+			criteria.add(Restrictions.eq("empId", id));
+			@SuppressWarnings("unchecked")
+			List<Employee> result = criteria.list();
+			System.out.println("getEmployeeById (" + id + ")" + ((result != null) ? result.size() : 0));
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();

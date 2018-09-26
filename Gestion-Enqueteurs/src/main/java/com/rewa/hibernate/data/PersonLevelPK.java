@@ -4,11 +4,11 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 /**
- * The primary key class for the rewa_person_role database table.
+ * The primary key class for the rewa_person_level database table.
  * 
  */
 @Embeddable
-public class RewaPersonRolePK implements Serializable {
+public class PersonLevelPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
@@ -16,9 +16,12 @@ public class RewaPersonRolePK implements Serializable {
 	private int idPerson;
 
 	@Column(insertable=false, updatable=false)
-	private int idRole;
+	private int idField;
 
-	public RewaPersonRolePK() {
+	@Temporal(TemporalType.TIMESTAMP)
+	private java.util.Date dateLevel;
+
+	public PersonLevelPK() {
 	}
 	public int getIdPerson() {
 		return this.idPerson;
@@ -26,31 +29,39 @@ public class RewaPersonRolePK implements Serializable {
 	public void setIdPerson(int idPerson) {
 		this.idPerson = idPerson;
 	}
-	public int getIdRole() {
-		return this.idRole;
+	public int getIdField() {
+		return this.idField;
 	}
-	public void setIdRole(int idRole) {
-		this.idRole = idRole;
+	public void setIdField(int idField) {
+		this.idField = idField;
+	}
+	public java.util.Date getDateLevel() {
+		return this.dateLevel;
+	}
+	public void setDateLevel(java.util.Date dateLevel) {
+		this.dateLevel = dateLevel;
 	}
 
 	public boolean equals(Object other) {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof RewaPersonRolePK)) {
+		if (!(other instanceof PersonLevelPK)) {
 			return false;
 		}
-		RewaPersonRolePK castOther = (RewaPersonRolePK)other;
+		PersonLevelPK castOther = (PersonLevelPK)other;
 		return 
 			(this.idPerson == castOther.idPerson)
-			&& (this.idRole == castOther.idRole);
+			&& (this.idField == castOther.idField)
+			&& this.dateLevel.equals(castOther.dateLevel);
 	}
 
 	public int hashCode() {
 		final int prime = 31;
 		int hash = 17;
 		hash = hash * prime + this.idPerson;
-		hash = hash * prime + this.idRole;
+		hash = hash * prime + this.idField;
+		hash = hash * prime + this.dateLevel.hashCode();
 		
 		return hash;
 	}

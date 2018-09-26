@@ -11,8 +11,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name="rewa_comment")
-@NamedQuery(name="RewaComment.findAll", query="SELECT r FROM RewaComment r")
-public class RewaComment implements Serializable {
+@NamedQuery(name="Comment.findAll", query="SELECT r FROM Comment r")
+public class Comment implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -28,7 +28,7 @@ public class RewaComment implements Serializable {
 	@JoinColumn(name="idAuthor")
 	private Person rewaPerson;
 
-	public RewaComment() {
+	public Comment() {
 	}
 
 	public int getIdComment() {

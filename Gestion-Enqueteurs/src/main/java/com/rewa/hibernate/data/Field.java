@@ -11,8 +11,8 @@ import java.util.List;
  */
 @Entity
 @Table(name="rewa_field")
-@NamedQuery(name="RewaField.findAll", query="SELECT r FROM RewaField r")
-public class RewaField implements Serializable {
+@NamedQuery(name="Field.findAll", query="SELECT r FROM Field r")
+public class Field implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -22,9 +22,9 @@ public class RewaField implements Serializable {
 
 	//bi-directional many-to-one association to RewaPersonLevel
 	@OneToMany(mappedBy="rewaField")
-	private List<RewaPersonLevel> rewaPersonLevels;
+	private List<PersonLevel> rewaPersonLevels;
 
-	public RewaField() {
+	public Field() {
 	}
 
 	public int getIdField() {
@@ -43,22 +43,22 @@ public class RewaField implements Serializable {
 		this.field = field;
 	}
 
-	public List<RewaPersonLevel> getRewaPersonLevels() {
+	public List<PersonLevel> getRewaPersonLevels() {
 		return this.rewaPersonLevels;
 	}
 
-	public void setRewaPersonLevels(List<RewaPersonLevel> rewaPersonLevels) {
+	public void setRewaPersonLevels(List<PersonLevel> rewaPersonLevels) {
 		this.rewaPersonLevels = rewaPersonLevels;
 	}
 
-	public RewaPersonLevel addRewaPersonLevel(RewaPersonLevel rewaPersonLevel) {
+	public PersonLevel addRewaPersonLevel(PersonLevel rewaPersonLevel) {
 		getRewaPersonLevels().add(rewaPersonLevel);
 		rewaPersonLevel.setRewaField(this);
 
 		return rewaPersonLevel;
 	}
 
-	public RewaPersonLevel removeRewaPersonLevel(RewaPersonLevel rewaPersonLevel) {
+	public PersonLevel removeRewaPersonLevel(PersonLevel rewaPersonLevel) {
 		getRewaPersonLevels().remove(rewaPersonLevel);
 		rewaPersonLevel.setRewaField(null);
 

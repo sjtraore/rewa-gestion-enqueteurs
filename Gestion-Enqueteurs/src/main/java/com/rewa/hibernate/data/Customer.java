@@ -12,8 +12,8 @@ import java.util.List;
  */
 @Entity
 @Table(name="rewa_customer")
-@NamedQuery(name="RewaCustomer.findAll", query="SELECT r FROM RewaCustomer r")
-public class RewaCustomer implements Serializable {
+@NamedQuery(name="Customer.findAll", query="SELECT r FROM Customer r")
+public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -30,7 +30,7 @@ public class RewaCustomer implements Serializable {
 	//bi-directional many-to-one association to RewaStatus
 	@ManyToOne
 	@JoinColumn(name="idStatus")
-	private RewaStatus rewaStatus;
+	private Status rewaStatus;
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -44,9 +44,9 @@ public class RewaCustomer implements Serializable {
 
 	//bi-directional many-to-one association to RewaStudy
 	@OneToMany(mappedBy="rewaCustomer")
-	private List<RewaStudy> rewaStudies;
+	private List<Study> rewaStudies;
 
-	public RewaCustomer() {
+	public Customer() {
 	}
 
 	public int getIdCustomer() {
@@ -81,11 +81,11 @@ public class RewaCustomer implements Serializable {
 		this.name = name;
 	}
 
-	public RewaStatus getRewaStatus() {
+	public Status getRewaStatus() {
 		return this.rewaStatus;
 	}
 
-	public void setRewaStatus(RewaStatus rewaStatus) {
+	public void setRewaStatus(Status rewaStatus) {
 		this.rewaStatus = rewaStatus;
 	}
 
@@ -105,22 +105,22 @@ public class RewaCustomer implements Serializable {
 		this.rewaPerson2 = rewaPerson2;
 	}
 
-	public List<RewaStudy> getRewaStudies() {
+	public List<Study> getRewaStudies() {
 		return this.rewaStudies;
 	}
 
-	public void setRewaStudies(List<RewaStudy> rewaStudies) {
+	public void setRewaStudies(List<Study> rewaStudies) {
 		this.rewaStudies = rewaStudies;
 	}
 
-	public RewaStudy addRewaStudy(RewaStudy rewaStudy) {
+	public Study addRewaStudy(Study rewaStudy) {
 		getRewaStudies().add(rewaStudy);
 		rewaStudy.setRewaCustomer(this);
 
 		return rewaStudy;
 	}
 
-	public RewaStudy removeRewaStudy(RewaStudy rewaStudy) {
+	public Study removeRewaStudy(Study rewaStudy) {
 		getRewaStudies().remove(rewaStudy);
 		rewaStudy.setRewaCustomer(null);
 

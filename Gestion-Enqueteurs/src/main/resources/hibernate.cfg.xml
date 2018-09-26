@@ -10,6 +10,18 @@
         For stanalone application, other DB configs are required -->
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <mapping class="com.rewa.hibernate.data.Employee"/>
+        <mapping class="com.rewa.hibernate.data.Person"/>
+        <mapping class="com.rewa.hibernate.data.Customer"/>
+        <mapping class="com.rewa.hibernate.data.Status"/>
+        <mapping class="com.rewa.hibernate.data.Comment"/>
+        <mapping class="com.rewa.hibernate.data.Coordinate"/>
+        <mapping class="com.rewa.hibernate.data.CoordinateType"/>
+        <mapping class="com.rewa.hibernate.data.Field"/>
+        <mapping class="com.rewa.hibernate.data.Role"/>
+        <mapping class="com.rewa.hibernate.data.PersonRole"/>
+        <mapping class="com.rewa.hibernate.data.PersonLevel"/>
+        <mapping class="com.rewa.hibernate.data.Study"/>
+        <mapping class="com.rewa.hibernate.data.Team"/>
     </session-factory>
 
 </hibernate-configuration>

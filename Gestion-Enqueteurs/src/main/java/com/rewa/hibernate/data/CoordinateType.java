@@ -10,21 +10,21 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rewa_coordinate_type")
-@NamedQuery(name="RewaCoordinateType.findAll", query="SELECT r FROM RewaCoordinateType r")
-public class RewaCoordinateType implements Serializable {
+@NamedQuery(name="CoordinateType.findAll", query="SELECT r FROM CoordinateType r")
+public class CoordinateType implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
-	private RewaCoordinateTypePK id;
+	private CoordinateTypePK id;
 
-	public RewaCoordinateType() {
+	public CoordinateType() {
 	}
 
-	public RewaCoordinateTypePK getId() {
+	public CoordinateTypePK getId() {
 		return this.id;
 	}
 
-	public void setId(RewaCoordinateTypePK id) {
+	public void setId(CoordinateTypePK id) {
 		this.id = id;
 	}
 

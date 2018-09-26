@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<div class="ui-g">
+	<!-- Logo -->
+	<div class="ui-g-12 ui-md-6">	
+		<p:graphicImage value="../images/rewa-logo.png" width="30%"/>
+	</div>
+
+	<!-- Menu -->
+	<div class="ui-g-12 ui-md-6">
+		<h:form>
+			<p:growl id="messages" />
+			<p:menubar>
+				<p:menuitem value="Bienvenue User"/>
+				<p:menuitem value="Mon profil" url="http://www.primefaces.org" icon="ui-icon-person" />
+				<p:menuitem value="Deconnexion" url="http://www.primefaces.org" icon="ui-icon-close" />
+			</p:menubar>
+		</h:form>
+	</div>
+</div>
+</ui:composition>
