@@ -22,7 +22,7 @@
 							<p:inputText id="globalFilter" style="width:50%; text-align: center;"
 								onkeyup="PF('agentsTable').filter()" placeholder="Recherchez un agent par son ID ou son nom." />
 							<p:spacer width="100" height="10" />
-							<p:button icon="ui-icon-plus" title="Ajouter un agent">Ajouter un agent</p:button>
+							<p:button icon="ui-icon-plus" title="Ajouter un agent" href="addUser.xhtml">Ajouter un agent</p:button>
 						</p:outputPanel>
 					</f:facet>
 					<p:column headerText="Id" filterBy="#{agent.idPerson}"
