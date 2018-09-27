@@ -1,3 +1,4 @@
+use rewa;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: rewa
@@ -56,7 +57,7 @@ CREATE TABLE `rewa_comment` (
   PRIMARY KEY (`idComment`),
   KEY `FK_Comment_Author_idx` (`idAuthor`),
   CONSTRAINT `FK_Comment_Author` FOREIGN KEY (`idAuthor`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,7 +101,7 @@ CREATE TABLE `rewa_coordinate` (
   CONSTRAINT `FK_Coordinate_Person` FOREIGN KEY (`personId`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Coordinate_Type` FOREIGN KEY (`coordinateTypeId`) REFERENCES `rewa_coordinate_type` (`idCoordinateType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Coordintate_Status` FOREIGN KEY (`statusId`) REFERENCES `rewa_status` (`idStatus`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +159,7 @@ CREATE TABLE `rewa_customer` (
   CONSTRAINT `FK_Coordinate_Status` FOREIGN KEY (`idStatus`) REFERENCES `rewa_status` (`idStatus`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Customer_Createdby` FOREIGN KEY (`createdBy`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Customer_Modifiedby` FOREIGN KEY (`modifiedBy`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,7 +182,7 @@ CREATE TABLE `rewa_field` (
   `idField` int(11) NOT NULL,
   `field` varchar(45) NOT NULL,
   PRIMARY KEY (`idField`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,7 +219,7 @@ CREATE TABLE `rewa_person` (
   CONSTRAINT `FK_Person_Createdby` FOREIGN KEY (`createdBy`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Person_Modifiedby` FOREIGN KEY (`modifiedBy`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Person_Status` FOREIGN KEY (`status`) REFERENCES `rewa_status` (`idStatus`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -251,7 +252,7 @@ CREATE TABLE `rewa_person_level` (
   CONSTRAINT `FK_PersonLevelEvaluatedby` FOREIGN KEY (`evaluatedBy`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_PersonLevelField` FOREIGN KEY (`idField`) REFERENCES `rewa_field` (`idField`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_PersonLevelPerson` FOREIGN KEY (`idPerson`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -280,7 +281,7 @@ CREATE TABLE `rewa_person_role` (
   CONSTRAINT `FK_PersonRole_Person` FOREIGN KEY (`idPerson`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_PersonRole_Role` FOREIGN KEY (`idRole`) REFERENCES `rewa_role` (`idRole`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_PersonRole_Status` FOREIGN KEY (`idStatus`) REFERENCES `rewa_status` (`idStatus`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -361,7 +362,7 @@ CREATE TABLE `rewa_study` (
   CONSTRAINT `FK_Study_Customer` FOREIGN KEY (`idCustomer`) REFERENCES `rewa_customer` (`idCustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Study_Status` FOREIGN KEY (`idStatus`) REFERENCES `rewa_status` (`idStatus`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_Study_Team` FOREIGN KEY (`idTeam`) REFERENCES `rewa_team` (`idTeam`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -387,7 +388,7 @@ CREATE TABLE `rewa_team` (
   PRIMARY KEY (`idTeam`),
   KEY `FK_Team_Supervison_idx` (`idSupervisor`),
   CONSTRAINT `FK_Team_Supervison` FOREIGN KEY (`idSupervisor`) REFERENCES `rewa_person` (`idPerson`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
