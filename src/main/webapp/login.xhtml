@@ -1,25 +1,36 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-	<title>Login</title>
+	<title>#{msg.login}</title>
+	<link rel="stylesheet" href="css/custom.scss" />
 </h:head>
 <h:body>
-	<h:form>
-		<h3>Connexion</h3>
-		<h:outputText value="#{msg.username}" />
-		<h:inputText id="username" value="#{loginManage.user}"></h:inputText>
-		<h:message for="username"></h:message>
-		<br></br><br></br>
-		
-		<h:outputText value="#{msg.password}" />
-		<h:inputSecret id="password" value="#{loginManage.pwd}"></h:inputSecret>
-		<h:message for="password"></h:message>
-		<br></br><br></br>
-		
-		<h:commandButton action="#{loginManage.validateUsernamePassword}"
-			value="Login"></h:commandButton>
-	</h:form>
+	<div class="login-form">
+		<h:form>
+			<h3 style="text-align: center;">#{msg.connect}</h3>
+			<p:growl id="growl" sticky="true" showDetail="true" life="3000" />
+			<h:panelGrid columns="3" 
+				layout="grid" styleClass="panelGridCenter">
+				<h:outputLabel for="username" value="#{msg.username}" />
+				<p:inputText id="username" value="#{loginManage.user}"
+					required="true" label="#{msg.username}" />
+				<h:message for="username"></h:message>
+
+				<h:outputLabel for="password" value="#{msg.password}" />
+				<p:password id="password" value="#{loginManage.pwd}" required="true"
+					label="#{msg.password}" />
+				<h:message for="password"></h:message>
+
+				<f:facet name="footer">
+					<p:commandButton value="Login" update="growl"
+						action="#{loginManage.loginActionEvent()}" />
+				</f:facet>
+			</h:panelGrid>
+		</h:form>
+	</div>
 </h:body>
 </html>

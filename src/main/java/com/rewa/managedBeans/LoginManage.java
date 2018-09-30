@@ -54,7 +54,7 @@ public class LoginManage implements Serializable {
 	}
 
 	// validate login
-	public String validateUsernamePassword() {
+	public String loginActionEvent() {
 		log.debug("validateUsernamePassword: " + user + "/" + pwd);
 		boolean valid = loginService.validate(user, pwd);
 		if (valid) {
@@ -62,8 +62,8 @@ public class LoginManage implements Serializable {
 			session.setAttribute("username", user);
 			return "admin";
 		} else {
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-					"Utilisateur ou mot de passe incorrect", "Veuillez ré-essayer ou contacter un administrateur"));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					"Utilisateur ou mot de passe incorrect", "Veuillez rÃ©-essayer ou contacter un administrateur"));
 			return "login";
 		}
 	}
@@ -71,20 +71,8 @@ public class LoginManage implements Serializable {
 	public String logoutAction() {
 		HttpSession session = SessionUtils.getSession();
 		session.invalidate();
-		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Déconnexion effectuée avec succès !", null);
+		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "DÃ©connexion effectuÃ©e avec succÃ¨s !", null);
 		return "login";
-	}
-
-	public boolean isLoggedIn() {
-		return user != null;
-	}
-
-	public String isLoggedInForwardHome() {
-		if (isLoggedIn()) {
-			return "admin";
-		}
-
-		return null;
 	}
 
 	public LoginService getLoginService() {

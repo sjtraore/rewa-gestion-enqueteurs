@@ -66,7 +66,7 @@ public class PersonManage {
 		
 		// Add message
 		FacesContext.getCurrentInstance().addMessage(null,
-				new FacesMessage("La personne " + this.agentBean.getFullname() + " a été enregistrée avec succès"));
+				new FacesMessage("La personne " + this.agentBean.getFullname() + " a Ã©tÃ© enregistrÃ© avec succÃ¨s"));
 		log.debug("New person registred: " + person.getIdPerson());
 		return Constant.ADMIN_MAIN_PAGE;
 	}

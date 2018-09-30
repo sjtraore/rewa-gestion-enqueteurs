@@ -42,7 +42,6 @@ public class PersonService {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			List<Person> result = session.createCriteria(Person.class).list();
-			System.out.println("getPersons: " + ((result != null) ? result.size() : 0));
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -57,7 +56,7 @@ public class PersonService {
 			Session session = sessionFactory.getCurrentSession();
 			@SuppressWarnings("unchecked")
 			List<Person> persons = session.createCriteria(Person.class).list();
-			System.out.println("getAllAgents: " + ((persons != null) ? persons.size() : 0));
+			//System.out.println("getAllAgents: " + ((persons != null) ? persons.size() : 0));
 			if(persons != null) {
 				result = new ArrayList<PersonBean>();
 				for(Person person : persons) {
