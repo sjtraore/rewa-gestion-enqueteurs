@@ -11,6 +11,17 @@
 		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
+		<from-view-id>/secured/*</from-view-id>
+		<navigation-case>
+			<from-outcome>adduser</from-outcome>
+			<to-view-id>/secured/addUser.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>admin</from-outcome>
+			<to-view-id>/secured/admin-main.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
 		<from-view-id>*</from-view-id>
 		<navigation-case>
 			<from-outcome>login</from-outcome>

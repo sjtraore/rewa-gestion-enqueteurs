@@ -13,27 +13,31 @@
 		<p:growl id="messages"></p:growl>
 		<p:panelGrid columns="2" layout="grid">
 			<p:outputLabel value="Nom de famille:"></p:outputLabel>
-			<p:inputText value="#{personManage.agentBean.lastname}"></p:inputText>
+			<p:inputText value="#{personManage.agentBean.lastname}"
+				required="true" label="#{msg.lastname}" />
 			<p:outputLabel value="#{msg.firstname}"></p:outputLabel>
-			<p:inputText value="#{personManage.agentBean.firstname}"></p:inputText>			
+			<p:inputText value="#{personManage.agentBean.firstname}"
+				required="true" label="#{msg.firstname}" />
 		</p:panelGrid>
-		
+
 		<p:spacer height="30" />
-		
+
 		<p:fieldset legend="#{msg.roles}" style="margin-bottom:20px">
-        <h:panelGrid columns="2" cellpadding="5">
-            <p:selectManyCheckbox id="grid2" value="#{personManage.selectedRoles}" layout="grid"
-				columns="2">
-				<f:selectItems value="#{personManage.rolesList}" var="role" itemLabel="#{role}" itemValue="#{role}" />
-			</p:selectManyCheckbox>
-        </h:panelGrid>
-    </p:fieldset>
-    
+			<h:panelGrid columns="2" cellpadding="5">
+				<p:selectManyCheckbox id="grid2"
+					value="#{personManage.selectedRoles}" layout="grid" columns="2">
+					<f:selectItems value="#{personManage.rolesList}" var="role"
+						itemLabel="#{role}" itemValue="#{role}" />
+				</p:selectManyCheckbox>
+			</h:panelGrid>
+		</p:fieldset>
+
 		<p:spacer height="30" />
 
 		<p:commandButton value="#{msg.register}"
 			action="#{personManage.register}" update="messages"></p:commandButton>
-		<h:button value="#{msg.cancel}" outcome="admin-main.xhtml"></h:button>
+		<p:commandButton value="#{msg.cancel}"
+			action="#{personManage.cancelUerRegistration}" update="messages" immediate="true" />
 	</h:form>
 </h:body>
 </html>

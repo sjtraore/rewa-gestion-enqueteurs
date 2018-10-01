@@ -2,7 +2,6 @@ package com.rewa.utils;
 
 import com.rewa.beans.PersonBean;
 import com.rewa.hibernate.data.Person;
-import com.rewa.hibernate.data.Status;
 
 public class PersonUtils {
 	public static PersonBean getPersonBeanByPerson(Person person){
@@ -33,15 +32,13 @@ public class PersonUtils {
 		return personBean;
 	}
 
-	public static Person getPersonByPersonBean(PersonBean personBean, Status status) {
+	public static Person getPersonByPersonBean(PersonBean personBean) {
 		Person person = null;
 		if(personBean != null) {
 			person = new Person();
 			person.setIdPerson(personBean.getIdPerson());
 			person.setFirstname(personBean.getFirstname());
 			person.setLastname(personBean.getLastname());
-
-			person.setStatus(status);
 			
 			person.setCreatedDate(personBean.getCreatedDate());
 			person.setModifiedDate(personBean.getModifiedDate());

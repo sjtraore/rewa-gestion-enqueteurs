@@ -23,17 +23,13 @@ public class PersonRole implements Serializable {
 	@Column(name="idRole", insertable = false, updatable = false)
 	private Role role;
 
-	@Column(name="idStatus", insertable = false, updatable = false)
-	private Status status;
-
 	public PersonRole() {
 	}
 
-	public PersonRole(Person person, Role role, Status status) {
+	public PersonRole(Person person, Role role) {
 		super();
 		this.person = person;
 		this.role = role;
-		this.status = status;
 	}
 
 	public PersonRolePK getId() {
@@ -58,14 +54,6 @@ public class PersonRole implements Serializable {
 
 	public void setRole(Role rewaRole) {
 		this.role = rewaRole;
-	}
-
-	public Status getStatus() {
-		return this.status;
-	}
-
-	public void setStatus(Status rewaStatus) {
-		this.status = rewaStatus;
 	}
 
 }

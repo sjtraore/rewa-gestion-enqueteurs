@@ -57,6 +57,20 @@ public class CommonService {
 		}
 	}
 	
+	public Role getRoleByRoleName(String role) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Criteria createCriteria = session.createCriteria(Role.class);
+			Role result = (Role) createCriteria.add(Restrictions.eq("role", role)).uniqueResult();
+			log.debug("getRoleByRoleName (" + role + "): " + result);
+			return result;
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Role> getALLRoles() {
 		List<Role> result = null; 

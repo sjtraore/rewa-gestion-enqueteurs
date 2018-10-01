@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import com.rewa.beans.PersonBean;
 import com.rewa.constant.Constant;
 import com.rewa.hibernate.data.Person;
-import com.rewa.hibernate.data.PersonRole;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.spring.service.CommonService;
@@ -51,16 +50,20 @@ public class PersonManage {
 	}
 	
 	public String register() {
+		Person person = PersonUtils.getPersonByPersonBean(agentBean);
 		Status status = commonService.getActiveStatus();
-		Person person = PersonUtils.getPersonByPersonBean(agentBean, status);
+		person.setStatus(status);
 		//Role
-		Role role = commonService.getRoleById(Constant.ROLE_ENQUETEUR);
-		PersonRole personRole = new PersonRole(person, role, status);
-		if(person.getPersonRoles() == null) {
-			person.setPersonRoles(new ArrayList<PersonRole>());
+		List<Role> roles = person.getRoles();
+		if(roles == null) {
+			person.setRoles(new ArrayList<Role>());
 		}
-		person.addPersonRole(personRole);
-				
+		for(String rolename : selectedRoles) {
+			Role role = commonService.getRoleByRoleName(rolename);
+			if(role != null)
+				person.addRole(role);
+		}
+		
 		// Calling Business Service
 		personService.register(person);
 		
@@ -69,6 +72,14 @@ public class PersonManage {
 				new FacesMessage("La personne " + this.agentBean.getFullname() + " a été enregistré avec succès"));
 		log.debug("New person registred: " + person.getIdPerson());
 		return Constant.ADMIN_MAIN_PAGE;
+	}
+	
+	public String forwardToAddUser() {
+		return Constant.ADD_USER_PAGE_OUTCOME;
+	}
+	
+	public String cancelUerRegistration() {
+		return Constant.ADMIN_PAGE_OUTCOME;
 	}
 	
 	public List<Person> getPersons() {
