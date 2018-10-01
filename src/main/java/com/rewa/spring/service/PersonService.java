@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rewa.beans.PersonBean;
 import com.rewa.hibernate.data.Person;
-import com.rewa.hibernate.data.PersonRole;
 import com.rewa.hibernate.data.Status;
 import com.rewa.utils.PersonUtils;;
 
@@ -32,11 +31,15 @@ public class PersonService {
 	}
 
 	@Transactional
-	public void register(Person person) {
+	public void save(Person person) {
 		// Acquire session
 		Session session = sessionFactory.getCurrentSession();
 		// Save employee, saving behavior get done in a transactional manner
-		session.save(person);
+		if(person.getIdPerson() == 0) {
+			session.save(person);
+		} else {
+			session.merge(person);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -72,13 +75,6 @@ public class PersonService {
 		}
 
 		return result;
-	}
-
-	public void savePersonRole(PersonRole pr) {
-		// Acquire session
-		Session session = sessionFactory.getCurrentSession();
-		session.save(pr);
-
 	}
 
 	public List<PersonBean> getAgentsByStatus(Status status) {

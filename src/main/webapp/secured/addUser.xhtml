@@ -33,11 +33,11 @@
 		</p:fieldset>
 
 		<p:fieldset legend="#{msg.status}" style="margin-bottom:20px">
-			<h:panelGrid columns="2" layout="grid">
-				<p:selectOneMenu id="status" value="#{personManage.status}"
-					style="width:150px">
-					<f:selectItems value="#{rewaManage.statusMap}" />
-				</p:selectOneMenu>
+			<h:panelGrid columns="1" layout="grid">
+				<p:selectOneButton value="#{personManage.agentBean.status}" required="true">
+					<f:selectItem itemLabel="#{msg.active}" itemValue="#{msg.active}" />
+					<f:selectItem itemLabel="#{msg.inactive}" itemValue="#{msg.inactive}" />
+				</p:selectOneButton>
 			</h:panelGrid>
 		</p:fieldset>
 

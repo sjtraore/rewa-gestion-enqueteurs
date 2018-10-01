@@ -13,23 +13,34 @@
 		<h:form>
 			<h3 style="text-align: center;">#{msg.connect}</h3>
 			<p:growl id="growl" sticky="true" showDetail="true" life="3000" />
-			<h:panelGrid columns="3" 
-				layout="grid" styleClass="panelGridCenter">
-				<h:outputLabel for="username" value="#{msg.username}" />
-				<p:inputText id="username" value="#{loginManage.user}"
-					required="true" label="#{msg.username}" />
-				<h:message for="username"></h:message>
 
-				<h:outputLabel for="password" value="#{msg.password}" />
-				<p:password id="password" value="#{loginManage.pwd}" required="true"
-					label="#{msg.password}" />
-				<h:message for="password"></h:message>
+			<div class="panelGridCenter">
+				<div>
+					<div class="ui-inputgroup">
+						<span class="ui-inputgroup-addon"><i class="fa fa-user"></i></span>
+						<p:inputText placeholder="#{msg.username}" id="username"
+							value="#{loginManage.user}" required="true"
+							label="#{msg.username}" />
+						<h:message for="username"></h:message>
+					</div>
+				</div>
 
-				<f:facet name="footer">
-					<p:commandButton value="Login" update="growl"
-						action="#{loginManage.loginActionEvent()}" />
-				</f:facet>
-			</h:panelGrid>
+				<div>
+					<div class="ui-inputgroup">
+						<p:password placeholder="#{msg.password}" id="password"
+							value="#{loginManage.pwd}" required="true"
+							label="#{msg.password}" />
+						<h:message for="password"></h:message>
+					</div>
+				</div>
+
+				<div>
+					<div class="ui-inputgroup">
+						<p:commandButton value="Login" update="growl"
+							action="#{loginManage.loginActionEvent()}" />
+					</div>
+				</div>
+			</div>
 		</h:form>
 	</div>
 </h:body>

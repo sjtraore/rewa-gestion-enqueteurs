@@ -8,4 +8,6 @@ public class Constant {
 	public static final int ROLE_ENQUETEUR = 1;
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";
+	public static final String ACTIVE_STATUS = "Actif";
+	public static final String INACTIVE_STATUS = "Inactif";
 }

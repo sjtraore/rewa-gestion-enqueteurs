@@ -16,7 +16,7 @@ public class PersonBean {
 	private long updatorId;
 	private String creatorName;
 	private String updatorName;
-	private String rewaStatus;
+	private String status;
 	
 	/********** Coordinate ***********/
 	private String primaryPhone;
@@ -41,7 +41,7 @@ public class PersonBean {
 	
 	public PersonBean(int idPerson, String firstname, String lastname, String fullname, Date createdDate,
 			Date modifiedDate, String password, long creatorId, long updatorId, String creatorName,
-			String updatorName, String rewaStatus) {
+			String updatorName, String status) {
 		super();
 		this.idPerson = idPerson;
 		this.firstname = firstname;
@@ -54,7 +54,7 @@ public class PersonBean {
 		this.updatorId = updatorId;
 		this.creatorName = creatorName;
 		this.updatorName = updatorName;
-		this.rewaStatus = rewaStatus;
+		this.status = status;
 	}
 	
 	public PersonBean(String firstname, String lastname) {
@@ -119,11 +119,11 @@ public class PersonBean {
 	public void setUpdatorName(String updatorName) {
 		this.updatorName = updatorName;
 	}
-	public String getRewaStatus() {
-		return rewaStatus;
+	public String getStatus() {
+		return status;
 	}
-	public void setStatus(String rewaStatus) {
-		this.rewaStatus = rewaStatus;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	public String getFullname() {
 		return fullname;
@@ -224,7 +224,13 @@ public class PersonBean {
 		this.controlleurAverage = controlleurAverage;
 	}
 
-	public void setRewaStatus(String rewaStatus) {
-		this.rewaStatus = rewaStatus;
+	public void setstatus(String status) {
+		this.status = status;
 	}
+
+	@Override
+	public String toString() {
+		return "PersonBean [idPerson=" + idPerson + ", firstname=" + firstname + ", lastname=" + lastname + "]";
+	}
+	
 }

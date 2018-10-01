@@ -6,4 +6,17 @@
 
 .panelGridCenter {
     margin: 0 auto;
+    text-align: center;
+}
+
+.panelGridCenter div {
+    margin-bottom: 0.2%;
+}
+
+.ui-inputgroup input, button{
+	min-width: 20%;
+}
+
+.ui-inputgroup button{
+	min-width: 21%;
 }

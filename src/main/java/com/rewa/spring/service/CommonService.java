@@ -28,14 +28,14 @@ public class CommonService {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
-	public Status getActiveStatus() {
+	
+	public Status getStatusByStatusName(String status) {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			Criteria createCriteria = session.createCriteria(Status.class);
-			Status result = (Status) createCriteria.add(Restrictions.idEq(1)).uniqueResult();
-			log.debug("getActiveStatus: " + result);
+			Status result = (Status) createCriteria.add(Restrictions.eq("status", status)).uniqueResult();
+			log.debug("getStatusByStatusName (" + status + "): " + result);
 			return result;
 		} catch (Exception e) {
 			log.error(e, e);
