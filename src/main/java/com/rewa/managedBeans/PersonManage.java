@@ -32,6 +32,7 @@ public class PersonManage {
 	private List<Person> filteredPersons;
 	private List<String> rolesList;
 	private String[] selectedRoles;
+	private Status status;
 	
 	private PersonBean agentBean = new PersonBean();
 	
@@ -47,11 +48,11 @@ public class PersonManage {
 		for(Role role: commonService.getALLRoles()) {
 			rolesList.add(role.getRole());
 		}
+		status = commonService.getActiveStatus();
 	}
 	
 	public String register() {
 		Person person = PersonUtils.getPersonByPersonBean(agentBean);
-		Status status = commonService.getActiveStatus();
 		person.setStatus(status);
 		//Role
 		List<Role> roles = person.getRoles();
@@ -99,7 +100,12 @@ public class PersonManage {
 	}
 
 	public List<PersonBean> getAgents() {
-		agents = personService.getAllAgents();
+		agents = personService.getAgentsByStatus(status);
+		return agents;
+	}
+	
+	public List<PersonBean> getActiveAgents() {
+		agents = personService.getAgentsByStatus(status);
 		return agents;
 	}
 
@@ -161,6 +167,14 @@ public class PersonManage {
 
 	public void setSelectedRoles(String[] selectedRoles) {
 		this.selectedRoles = selectedRoles;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 }

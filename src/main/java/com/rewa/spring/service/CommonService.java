@@ -28,7 +28,7 @@ public class CommonService {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	public Status getActiveStatus() {
 		try {
 			// Acquire session
@@ -42,7 +42,7 @@ public class CommonService {
 			return null;
 		}
 	}
-	
+
 	public Role getRoleById(int roleId) {
 		try {
 			// Acquire session
@@ -56,7 +56,7 @@ public class CommonService {
 			return null;
 		}
 	}
-	
+
 	public Role getRoleByRoleName(String role) {
 		try {
 			// Acquire session
@@ -70,16 +70,30 @@ public class CommonService {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Role> getALLRoles() {
-		List<Role> result = null; 
+		List<Role> result = null;
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			result = session.createCriteria(Role.class).list();
 			int nbResult = (result != null) ? result.size() : 0;
 			log.debug("getALLRoles: " + nbResult + " " + result);
+			return result;
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Status> getAllStatus() {
+		List<Status> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			result = session.createCriteria(Status.class).list();
 			return result;
 		} catch (Exception e) {
 			log.error(e, e);

@@ -9,4 +9,5 @@ public class RewaUtils {
 		FacesMessage message = new FacesMessage(severity, summary, detail);
 		FacesContext.getCurrentInstance().addMessage(null, message);
 	}
+
 }
