@@ -1,6 +1,7 @@
 package com.rewa.beans;
 
 import java.util.Date;
+import java.util.List;
 
 public class PersonBean {
 	private int idPerson;
@@ -18,7 +19,7 @@ public class PersonBean {
 	private String updatorName;
 	private String status;
 	
-	/********** Coordinate ***********/
+	/********** Current Coordinates ***********/
 	private String primaryPhone;
 	private String secondaryPhone;
 	private String primaryEmail;
@@ -27,6 +28,9 @@ public class PersonBean {
 	private String facebook;
 	private String region;
 	private String contry;
+	
+	/********** Roles ***********/
+	private List<String> roles;
 	
 	/********** Notation by role ***********/
 	private double enqueteurAverage;
@@ -231,6 +235,14 @@ public class PersonBean {
 	@Override
 	public String toString() {
 		return "PersonBean [idPerson=" + idPerson + ", firstname=" + firstname + ", lastname=" + lastname + "]";
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 	
 }

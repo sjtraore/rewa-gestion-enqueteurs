@@ -19,7 +19,6 @@ import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.spring.service.CommonService;
 import com.rewa.spring.service.PersonService;
-import com.rewa.utils.PersonUtils;
 import com.rewa.utils.RewaUtils;
 
 @ManagedBean
@@ -32,10 +31,10 @@ public class PersonManage {
 	private List<Person> persons;
 	private List<Person> filteredPersons;
 	private List<String> rolesList;
-	private String[] selectedRoles;
+	private String[] selectedRoles = null;
 	private Status status;
 
-	private PersonBean agentBean = new PersonBean();
+	private PersonBean agentBean;
 	private Person person;
 
 	@ManagedProperty("#{personService}")
@@ -46,33 +45,26 @@ public class PersonManage {
 
 	@PostConstruct
 	public void init() {
-		person = PersonUtils.getPersonByPersonBean(agentBean);
+		person = getPersonByPersonBean(agentBean);
 		rolesList = new ArrayList<String>();
 		for (Role role : commonService.getALLRoles()) {
 			rolesList.add(role.getRole());
 		}
 		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
-		if (person != null && person.getRoles() != null && !person.getRoles().isEmpty()) {
-			int personRoleList = person.getRoles().size();
-			selectedRoles = new String[personRoleList];
-			for (int i = 0; i < personRoleList; i++) {
-				selectedRoles[i] = (person.getRoles().get(i)).getRole();
-			}
-		}
 	}
 
 	public String register() {
-		status = commonService.getStatusByStatusName(agentBean.getStatus());
-		person.setStatus(status);
-		// Role
-		List<Role> roles = person.getRoles();
-		if (roles == null) {
-			person.setRoles(new ArrayList<Role>());
-		}
-		for (String rolename : selectedRoles) {
-			Role role = commonService.getRoleByRoleName(rolename);
-			if (role != null)
-				person.addRole(role);
+		person = getPersonByPersonBean(agentBean);
+		// Roles
+		//If no role selected, check if the person already has any role and remove it
+		if(selectedRoles == null || selectedRoles.length == 0) {
+			person.setRoles(null);
+		} else {
+			for (String rolename : selectedRoles) {
+				Role role = commonService.getRoleByRoleName(rolename);
+				if (role != null)
+					person.addRole(role);
+			}
 		}
 
 		// Calling Business Service
@@ -80,9 +72,9 @@ public class PersonManage {
 
 		// Add message
 		FacesContext.getCurrentInstance().addMessage(null,
-				new FacesMessage("La personne " + this.agentBean.getFullname() + " a été enregistré avec succès"));
+				new FacesMessage("La personne " + this.agentBean.getFullname() + " a Ã©tÃ© enregistrÃ© avec succÃ©s"));
 		log.debug("New person registred: " + person.getIdPerson());
-		return Constant.ADMIN_MAIN_PAGE;
+		return Constant.ADMIN_PAGE_OUTCOME;
 	}
 
 	public String forwardToAddUser(PersonBean agentBean) {
@@ -93,20 +85,58 @@ public class PersonManage {
 
 	public String softDeleteAgent(PersonBean agentBean) {
 		System.out.println("Soft deleting: " + agentBean);
-		Person person = PersonUtils.getPersonByPersonBean(agentBean);
+		Person person = getPersonByPersonBean(agentBean);
 		Status inactiveStatus = commonService.getStatusByStatusName(Constant.INACTIVE_STATUS);
 		person.setStatus(inactiveStatus);
 
 		personService.save(person);
 
-		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Agent désactivé", null);
+		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Agent dÃ©sactivÃ©", null);
 		return "";
 	}
 
 	public String deletePerson(PersonBean agentBean) {
 		System.out.println("Deleting: " + agentBean);
-		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Utilisateur suprimé", null);
+		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Utilisateur suprimÃ©", null);
 		return "";
+	}
+
+	private Person getPersonByPersonBean(PersonBean personBean) {
+		Person person = null;
+		if (personBean != null) {
+			person = new Person();
+			int idPerson = personBean.getIdPerson();
+			if(idPerson != 0) {
+				person = personService.getPersonById(idPerson);
+			}
+			person.setFirstname(personBean.getFirstname());
+			person.setLastname(personBean.getLastname());
+
+			person.setCreatedDate(personBean.getCreatedDate());
+			person.setModifiedDate(personBean.getModifiedDate());
+			person.setPassword(personBean.getPassword());
+
+			/************ RÃ´les ***********/
+			List<String> rolenames = personBean.getRoles();
+			if (rolenames != null && !rolenames.isEmpty()) {
+				try {
+					List<Role> roles = new ArrayList<Role>();
+					for (String rolename : rolenames) {
+						Role role = commonService.getRoleByRoleName(rolename);
+						roles.add(role);
+					}
+					person.setRoles(roles);
+				} catch (Exception e) {
+					log.error(e, e);
+				}
+			}
+			
+			/*********** Status ************/
+			status = commonService.getStatusByStatusName(personBean.getStatus());
+			person.setStatus(status);
+
+		}
+		return person;
 	}
 
 	public String cancelUerRegistration() {
@@ -160,6 +190,9 @@ public class PersonManage {
 	}
 
 	public PersonBean getAgentBean() {
+		if (agentBean == null) {
+			agentBean = new PersonBean();
+		}
 		return agentBean;
 	}
 
@@ -192,6 +225,19 @@ public class PersonManage {
 	}
 
 	public String[] getSelectedRoles() {
+		selectedRoles = null;
+		if (person == null || person.getIdPerson() != agentBean.getIdPerson()) {
+			person = getPersonByPersonBean(agentBean);
+		}
+		if (person != null && person.getRoles() != null && !person.getRoles().isEmpty()) {
+			int personRoleList = person.getRoles().size();
+			selectedRoles = new String[personRoleList];
+			for (int i = 0; i < personRoleList; i++) {
+				selectedRoles[i] = (person.getRoles().get(i)).getRole();
+			}
+		}
+		System.out.println("person: " + person);
+		System.out.println("selectedRoles: " + selectedRoles);
 		return selectedRoles;
 	}
 

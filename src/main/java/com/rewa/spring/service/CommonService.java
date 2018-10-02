@@ -30,6 +30,9 @@ public class CommonService {
 	}
 	
 	public Status getStatusByStatusName(String status) {
+		if(status == null) {
+			return null;
+		}
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();

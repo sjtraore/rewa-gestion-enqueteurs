@@ -9,16 +9,16 @@
 </h:head>
 <h:body>
 	<ui:include src="/secured/header.xhtml" />
-	<h:form>
+	<h:form id="userform">
 		<p:growl id="messages"></p:growl>
 		<p:fieldset legend="#{msg.identity}" style="margin-bottom:20px">
-			<p:panelGrid columns="2" layout="grid">
+			<p:panelGrid columns="3" layout="grid" id="identity">
 				<p:outputLabel value="Nom de famille:"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.lastname}"
-					required="true" label="#{msg.lastname}" />
+				<p:inputText value="#{personManage.agentBean.lastname}"	required="true" label="#{msg.lastname}" id="lastname" style="width: 100%;"/>
+				<h:message for="lastname"></h:message>
 				<p:outputLabel value="#{msg.firstname}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.firstname}"
-					required="true" label="#{msg.firstname}" />
+				<p:inputText value="#{personManage.agentBean.firstname}" required="true" label="#{msg.firstname}" id="firstname" style="width: 100%;"/>
+				<h:message for="firstname"></h:message>
 			</p:panelGrid>
 		</p:fieldset>
 
@@ -34,18 +34,19 @@
 
 		<p:fieldset legend="#{msg.status}" style="margin-bottom:20px">
 			<h:panelGrid columns="1" layout="grid">
-				<p:selectOneButton value="#{personManage.agentBean.status}" required="true">
+				<p:selectOneButton value="#{personManage.agentBean.status}"
+					required="true">
 					<f:selectItem itemLabel="#{msg.active}" itemValue="#{msg.active}" />
-					<f:selectItem itemLabel="#{msg.inactive}" itemValue="#{msg.inactive}" />
+					<f:selectItem itemLabel="#{msg.inactive}"
+						itemValue="#{msg.inactive}" />
 				</p:selectOneButton>
 			</h:panelGrid>
 		</p:fieldset>
 
-		<p:commandButton value="#{msg.register}"
-			action="#{personManage.register}" update="messages"></p:commandButton>
+		<p:commandButton value="#{msg.register}" icon="ui-icon-check"
+			action="#{personManage.register}" update="userform"></p:commandButton>
 		<p:commandButton value="#{msg.cancel}"
-			action="#{personManage.cancelUerRegistration}" update="messages"
-			immediate="true" />
+			action="#{personManage.cancelUerRegistration}" immediate="true" />
 	</h:form>
 </h:body>
 </html>
