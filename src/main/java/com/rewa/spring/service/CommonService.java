@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 
@@ -30,6 +31,9 @@ public class CommonService {
 	}
 	
 	public Status getStatusByStatusName(String status) {
+		if(status == null) {
+			return null;
+		}
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
@@ -94,6 +98,20 @@ public class CommonService {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			result = session.createCriteria(Status.class).list();
+			return result;
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+	}
+	
+	public CoordinateType getCoordinateTypeById(int coordinateTypeId) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Criteria createCriteria = session.createCriteria(CoordinateType.class);
+			CoordinateType result = (CoordinateType) createCriteria.add(Restrictions.idEq(coordinateTypeId)).uniqueResult();
+			log.debug("getCoordinateTypeById (" + coordinateTypeId + "): " + result);
 			return result;
 		} catch (Exception e) {
 			log.error(e, e);

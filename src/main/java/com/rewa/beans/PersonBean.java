@@ -1,6 +1,7 @@
 package com.rewa.beans;
 
 import java.util.Date;
+import java.util.List;
 
 public class PersonBean {
 	private int idPerson;
@@ -9,6 +10,7 @@ public class PersonBean {
 	private String fullname;
 	private Date createdDate;
 	private Date modifiedDate;
+	private String username;
 	private String password;
 	private byte[] picture;
 
@@ -18,7 +20,7 @@ public class PersonBean {
 	private String updatorName;
 	private String status;
 	
-	/********** Coordinate ***********/
+	/********** Current Coordinates ***********/
 	private String primaryPhone;
 	private String secondaryPhone;
 	private String primaryEmail;
@@ -27,6 +29,9 @@ public class PersonBean {
 	private String facebook;
 	private String region;
 	private String contry;
+	
+	/********** Roles ***********/
+	private List<String> roles;
 	
 	/********** Notation by role ***********/
 	private double enqueteurAverage;
@@ -39,23 +44,6 @@ public class PersonBean {
 		this.modifiedDate = new Date();
 	}
 	
-	public PersonBean(int idPerson, String firstname, String lastname, String fullname, Date createdDate,
-			Date modifiedDate, String password, long creatorId, long updatorId, String creatorName,
-			String updatorName, String status) {
-		super();
-		this.idPerson = idPerson;
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.fullname = fullname;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
-		this.password = password;
-		this.creatorId = creatorId;
-		this.updatorId = updatorId;
-		this.creatorName = creatorName;
-		this.updatorName = updatorName;
-		this.status = status;
-	}
 	
 	public PersonBean(String firstname, String lastname) {
 		super();
@@ -231,6 +219,22 @@ public class PersonBean {
 	@Override
 	public String toString() {
 		return "PersonBean [idPerson=" + idPerson + ", firstname=" + firstname + ", lastname=" + lastname + "]";
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 }

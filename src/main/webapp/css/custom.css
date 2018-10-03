@@ -20,3 +20,11 @@
 .ui-inputgroup button{
 	min-width: 21%;
 }
+
+.header-right{
+    float: right;
+    margin-left: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 0%;
+}

@@ -32,24 +32,4 @@ public class PersonUtils {
 		return personBean;
 	}
 
-	public static Person getPersonByPersonBean(PersonBean personBean) {
-		Person person = null;
-		if(personBean != null) {
-			person = new Person();
-			person.setIdPerson(personBean.getIdPerson());
-			person.setFirstname(personBean.getFirstname());
-			person.setLastname(personBean.getLastname());
-			
-			person.setCreatedDate(personBean.getCreatedDate());
-			person.setModifiedDate(personBean.getModifiedDate());
-			person.setPassword(personBean.getPassword());
-			
-//			if(personBean.getCreatorId() != 0) {
-//				Person creator = PersonService.
-//			}
-			
-			
-		}
-		return person;
-	}
 }

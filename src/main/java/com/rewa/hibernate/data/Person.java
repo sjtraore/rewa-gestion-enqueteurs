@@ -1,6 +1,7 @@
 package com.rewa.hibernate.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -58,6 +60,9 @@ public class Person implements Serializable {
 			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
 					@JoinColumn(name = "idRole", referencedColumnName = "idRole") })
 	private List<Role> roles;
+	
+	@OneToMany(mappedBy="owner")
+	private List<Coordinate> coordinates;
 
 	// bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -174,6 +179,9 @@ public class Person implements Serializable {
 	}
 
 	public Role addRole(Role role) {
+		if(getRoles() == null) {
+			setRoles(new ArrayList<Role>());
+		}
 		getRoles().add(role);
 
 		return role;
@@ -183,6 +191,54 @@ public class Person implements Serializable {
 		getRoles().remove(role);
 
 		return role;
+	}
+
+	@Override
+	public String toString() {
+		return "Person [idPerson=" + idPerson + ", firstname=" + firstname + ", lastname=" + lastname + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + idPerson;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Person other = (Person) obj;
+		if (idPerson != other.idPerson)
+			return false;
+		return true;
+	}
+
+	public List<Coordinate> getCoordinates() {
+		return coordinates;
+	}
+
+	public void setCoordinates(List<Coordinate> coordinates) {
+		this.coordinates = coordinates;
+	}
+	
+	public Coordinate addCoordinate(Coordinate coordinate) {
+		if(getCoordinates() == null) {
+			setCoordinates(new ArrayList<Coordinate>());
+		}
+		getCoordinates().add(coordinate);
+		return coordinate;
+	}
+
+	public Coordinate removeCoordinate(Coordinate coordinate) {
+		getCoordinates().remove(coordinate);
+		return coordinate;
 	}
 
 }

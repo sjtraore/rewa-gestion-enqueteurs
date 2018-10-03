@@ -6,19 +6,25 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>#{msg.add_user_or_agent}</title>
+	<h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<link href="../css/custom.css" type="text/css" rel="stylesheet" />
 </h:head>
 <h:body>
 	<ui:include src="/secured/header.xhtml" />
-	<h:form>
+	<h:form id="userform">
 		<p:growl id="messages"></p:growl>
 		<p:fieldset legend="#{msg.identity}" style="margin-bottom:20px">
-			<p:panelGrid columns="2" layout="grid">
-				<p:outputLabel value="Nom de famille:"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.lastname}"
-					required="true" label="#{msg.lastname}" />
+			<p:panelGrid columns="3" layout="grid" id="identity">
+				<p:outputLabel value="#{msg.id}" id="idPerson"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.idPerson}"></p:outputLabel>
+				<h:message for="idPerson"></h:message>
+			
+				<p:outputLabel value="#{msg.lastname}"></p:outputLabel>
+				<p:inputText value="#{personManage.agentBean.lastname}"	required="true" label="#{msg.lastname}" id="lastname" style="width: 100%;"/>
+				<h:message for="lastname"></h:message>
 				<p:outputLabel value="#{msg.firstname}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.firstname}"
-					required="true" label="#{msg.firstname}" />
+				<p:inputText value="#{personManage.agentBean.firstname}" required="true" label="#{msg.firstname}" id="firstname" style="width: 100%;"/>
+				<h:message for="firstname"></h:message>
 			</p:panelGrid>
 		</p:fieldset>
 
@@ -31,21 +37,48 @@
 				</p:selectManyCheckbox>
 			</h:panelGrid>
 		</p:fieldset>
+		
+		<!-- Username and Password -->
+		<p:fieldset legend="#{msg.username} et #{msg.password}" style="margin-bottom:20px">
+			<h:panelGrid columns="3" layout="grid">
+				<p:outputLabel value="#{msg.username}"></p:outputLabel>
+				<p:inputText value="#{personManage.agentBean.username}"	required="true" 
+					label="#{msg.username}" id="username" style="width: 100%;"/>
+				<h:message for="username"></h:message>
+				
+				<p:outputLabel value="#{msg.password}"></p:outputLabel>
+				<p:inputText value="#{personManage.agentBean.password}" required="true"
+					label="#{msg.password}" id="password" style="width: 100%;"
+					feedback="false" match="password_confirmation" />
+				<h:message for="password"></h:message>
+				
+				<p:outputLabel value="#{msg.password_confirmation}"></p:outputLabel>
+				<p:inputText value="#{personManage.agentBean.password}" required="true" 
+					label="#{msg.password_confirmation}" id="password_confirmation" style="width: 100%;"
+					feedback="false" />
+				<h:message for="password_confirmation"></h:message>	
+			</h:panelGrid>
+		</p:fieldset>
+		
+		
+		<!-- Coordinates -->
+		
 
 		<p:fieldset legend="#{msg.status}" style="margin-bottom:20px">
 			<h:panelGrid columns="1" layout="grid">
-				<p:selectOneButton value="#{personManage.agentBean.status}" required="true">
+				<p:selectOneButton value="#{personManage.agentBean.status}"
+					required="true">
 					<f:selectItem itemLabel="#{msg.active}" itemValue="#{msg.active}" />
-					<f:selectItem itemLabel="#{msg.inactive}" itemValue="#{msg.inactive}" />
+					<f:selectItem itemLabel="#{msg.inactive}"
+						itemValue="#{msg.inactive}" />
 				</p:selectOneButton>
 			</h:panelGrid>
 		</p:fieldset>
 
-		<p:commandButton value="#{msg.register}"
-			action="#{personManage.register}" update="messages"></p:commandButton>
+		<p:commandButton value="#{msg.register}" icon="ui-icon-check"
+			action="#{personManage.register}" update="userform"></p:commandButton>
 		<p:commandButton value="#{msg.cancel}"
-			action="#{personManage.cancelUerRegistration}" update="messages"
-			immediate="true" />
+			action="#{personManage.cancelUerRegistration}" immediate="true" />
 	</h:form>
 </h:body>
 </html>

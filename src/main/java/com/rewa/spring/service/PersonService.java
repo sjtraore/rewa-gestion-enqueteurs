@@ -1,6 +1,7 @@
 package com.rewa.spring.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -34,8 +35,9 @@ public class PersonService {
 	public void save(Person person) {
 		// Acquire session
 		Session session = sessionFactory.getCurrentSession();
-		// Save employee, saving behavior get done in a transactional manner
-		if(person.getIdPerson() == 0) {
+		person.setModifiedDate(new Date());
+		// Save person, saving behavior get done in a transactional manner
+		if (person.getIdPerson() == 0) {
 			session.save(person);
 		} else {
 			session.merge(person);
@@ -82,8 +84,7 @@ public class PersonService {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(Person.class)
-					.add(Restrictions.eq("status", status));
+			Criteria criteria = session.createCriteria(Person.class).add(Restrictions.eq("status", status));
 			@SuppressWarnings("unchecked")
 			List<Person> persons = criteria.list();
 			if (persons != null) {
@@ -97,5 +98,17 @@ public class PersonService {
 		}
 
 		return result;
+	}
+
+	public Person getPersonById(int idPerson) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Criteria criteria = session.createCriteria(Person.class).add(Restrictions.idEq(idPerson));
+			return (Person) criteria.uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

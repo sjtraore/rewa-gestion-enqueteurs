@@ -6,8 +6,8 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>#{msg.admin_home_page_title}</title>
-	<h:outputStylesheet library="webjars"
-		name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<link href="../css/custom.css" type="text/css" rel="stylesheet" />
 </h:head>
 <h:body>
 	<ui:include src="/secured/header.xhtml" />
@@ -15,9 +15,9 @@
 	<p:tabView>
 		<p:tab title="#{msg.agents}">
 			<h:panelGrid columns="2" cellpadding="10">
-				<p:dataTable var="agent" value="#{personManage.agents}"
+				<p:dataTable var="agent" value="#{personManage.activeAgents}"
 					widgetVar="agentsTable" emptyMessage="#{msg.no_agent_found}"
-					filteredValue="#{personManage.filteredAgents}">
+					filteredValue="#{personManage.filteredAgents}" id="agentTable">
 					<f:facet name="header">
 						<p:outputPanel>
 							<p:inputText id="globalFilter"
@@ -37,19 +37,21 @@
 						filterBy="#{agent.fullname}">
 						<h:outputText value="#{agent.fullname}" />
 					</p:column>
+					<p:column headerText="#{msg.primary_phone}" >
+						<h:outputText value="#{agent.primaryPhone}" />
+					</p:column>
 					<p:column headerText="#{msg.actions}">
 						<p:commandButton icon="fa fa-fw fa-trash-o"
 							actionListener="#{personManage.softDeleteAgent(agent)}"
-							update="growl" title="#{msg.delete}">
+							update="agentTable" title="#{msg.delete}">
 							<p:confirm header="#{msg.confirmation}"
 								message="#{msg.soft_delete_agent_confirmation}"
 								icon="ui-icon-alert" />
 							<f:setPropertyActionListener value="#{agent}"
 								target="#{personManage.agentBean}" />
 						</p:commandButton>
-						<p:commandButton icon="fa fa-edit"
-							action="#{personManage.forwardToAddUser(agent)}"
-							title="#{msg.edit}">
+						<p:commandButton icon="fa fa-edit" 
+							action="#{personManage.forwardToAddUser(agent)}" title="#{msg.edit}">
 						</p:commandButton>
 					</p:column>
 				</p:dataTable>
