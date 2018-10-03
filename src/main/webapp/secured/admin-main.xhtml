@@ -6,8 +6,7 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>#{msg.admin_home_page_title}</title>
-	<h:outputStylesheet library="webjars"
-		name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
 </h:head>
 <h:body>
 	<ui:include src="/secured/header.xhtml" />
@@ -36,6 +35,9 @@
 					<p:column headerText="#{msg.fullname}" sortBy="#{agent.fullname}"
 						filterBy="#{agent.fullname}">
 						<h:outputText value="#{agent.fullname}" />
+					</p:column>
+					<p:column headerText="#{msg.primary_phone}" >
+						<h:outputText value="#{agent.primaryPhone}" />
 					</p:column>
 					<p:column headerText="#{msg.actions}">
 						<p:commandButton icon="fa fa-fw fa-trash-o"

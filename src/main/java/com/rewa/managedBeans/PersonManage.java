@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 
 import com.rewa.beans.PersonBean;
 import com.rewa.constant.Constant;
+import com.rewa.hibernate.data.Coordinate;
+import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
@@ -66,7 +68,27 @@ public class PersonManage {
 					person.addRole(role);
 			}
 		}
-
+		
+		/****************  Coordinates *********************/
+		Coordinate coordinate = new Coordinate();
+		CoordinateType ct = null;
+		String primaryPhone = agentBean.getPrimaryPhone();
+		boolean thereIsACoordinate = false;
+		
+		//phone
+		if (primaryPhone != null) {
+			ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_PHONE);
+			coordinate.setCoordinateTypeId(ct);
+			coordinate.setCoordinate(primaryPhone);
+			thereIsACoordinate = true;
+		}
+		
+		if(thereIsACoordinate) {
+			Status coordinateStatus = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
+			coordinate.setStatus(coordinateStatus);
+			person.addCoordinate(coordinate);
+		}
+		
 		// Calling Business Service
 		personService.save(person);
 

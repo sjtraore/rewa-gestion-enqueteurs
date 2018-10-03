@@ -10,4 +10,5 @@ public class Constant {
 	public static final String PASSWORD = "password";
 	public static final String ACTIVE_STATUS = "Actif";
 	public static final String INACTIVE_STATUS = "Inactif";
+	public static final int COORDINATE_TYPE_PHONE = 1;
 }

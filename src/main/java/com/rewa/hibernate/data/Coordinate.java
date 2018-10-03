@@ -32,7 +32,7 @@ public class Coordinate implements Serializable {
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
 	@JoinColumn(name="idPerson")
-	private Person resident;
+	private Person owner;
 	
 	private int priority;
 	
@@ -78,12 +78,12 @@ public class Coordinate implements Serializable {
 		this.status = status;
 	}
 
-	public Person getResident() {
-		return resident;
+	public Person getOwner() {
+		return owner;
 	}
 
-	public void setResident(Person resident) {
-		this.resident = resident;
+	public void setOwner(Person owner) {
+		this.owner = owner;
 	}
 
 	public int getPriority() {

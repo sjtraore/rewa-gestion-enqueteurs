@@ -17,6 +17,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -59,6 +60,9 @@ public class Person implements Serializable {
 			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
 					@JoinColumn(name = "idRole", referencedColumnName = "idRole") })
 	private List<Role> roles;
+	
+	@OneToMany(mappedBy="owner")
+	private List<Coordinate> coordinates;
 
 	// bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -214,6 +218,27 @@ public class Person implements Serializable {
 		if (idPerson != other.idPerson)
 			return false;
 		return true;
+	}
+
+	public List<Coordinate> getCoordinates() {
+		return coordinates;
+	}
+
+	public void setCoordinates(List<Coordinate> coordinates) {
+		this.coordinates = coordinates;
+	}
+	
+	public Coordinate addCoordinate(Coordinate coordinate) {
+		if(getCoordinates() == null) {
+			setCoordinates(new ArrayList<Coordinate>());
+		}
+		getCoordinates().add(coordinate);
+		return coordinate;
+	}
+
+	public Coordinate removeCoordinate(Coordinate coordinate) {
+		getCoordinates().remove(coordinate);
+		return coordinate;
 	}
 
 }
