@@ -15,7 +15,10 @@ public class PersonUtils {
 			personBean.setStatus(person.getStatus().getStatus());
 			personBean.setCreatedDate(person.getCreatedDate());
 			personBean.setModifiedDate(person.getModifiedDate());
-			personBean.setPassword(person.getPassword());
+			personBean.setUsername(person.getUsername());
+			//We don't want to fill the password for the user. 
+			//He will then see blank in password field
+			//personBean.setPassword(person.getPassword());
 			
 			Person personCreator = person.getCreator();
 			if(personCreator != null) {
