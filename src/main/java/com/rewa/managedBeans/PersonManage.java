@@ -136,6 +136,7 @@ public class PersonManage {
 
 			person.setCreatedDate(personBean.getCreatedDate());
 			person.setModifiedDate(personBean.getModifiedDate());
+			person.setUsername(personBean.getUsername());
 			person.setPassword(personBean.getPassword());
 
 			/************ Rôles ***********/
