@@ -28,7 +28,7 @@ public class LoginService {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public boolean validate(String user, String password) {
+	public Person validate(String user, String password) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			Criteria criteria = session.createCriteria(Person.class);
@@ -38,11 +38,11 @@ public class LoginService {
 			if (result != null) {
 				//result found, means valid inputs
 				log.debug("Credentials found for user: " + user);
-				return true;
+				return result;
 			}
 		} catch (Exception e) {
 			log.error(e, e);
 		}
-		return false;
+		return null;
 	}
 }

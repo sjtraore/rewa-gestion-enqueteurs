@@ -17,7 +17,7 @@
 			<h:panelGrid columns="2" cellpadding="10">
 				<p:dataTable var="agent" value="#{personManage.activeAgents}"
 					widgetVar="agentsTable" emptyMessage="#{msg.no_agent_found}"
-					filteredValue="#{personManage.filteredAgents}" id="agentTable">
+					filteredValue="#{personManage.filteredAgents}" id="agentTable" lazy="true">
 					<f:facet name="header">
 						<p:outputPanel>
 							<p:inputText id="globalFilter"
@@ -31,16 +31,18 @@
 					</f:facet>
 					<p:column headerText="#{msg.id}" filterBy="#{agent.idPerson}"
 						filterMatchMode="contains">
-						<h:outputText value="#{agent.idPerson}" />
+						<h:form>
+							<h:commandLink action="#{personManage.forwardToViewUser(agent)}" value="#{agent.idPerson}" />
+						</h:form>
 					</p:column>
 					<p:column headerText="#{msg.fullname}" sortBy="#{agent.fullname}"
-						filterBy="#{agent.fullname}">
+						filterBy="#{agent.fullname}" priority="3">
 						<h:outputText value="#{agent.fullname}" />
 					</p:column>
-					<p:column headerText="#{msg.primary_phone}" >
+					<p:column headerText="#{msg.primary_phone}" priority="4" >
 						<h:outputText value="#{agent.primaryPhone}" />
 					</p:column>
-					<p:column headerText="#{msg.actions}">
+					<p:column headerText="#{msg.actions}" priority="2">
 						<p:commandButton icon="fa fa-fw fa-trash-o"
 							actionListener="#{personManage.softDeleteAgent(agent)}"
 							update="agentTable" title="#{msg.delete}">
@@ -73,7 +75,7 @@
                 killing the local Black Hand Fanucci after he demands his customary cut of the tyro's business. With Fanucci gone, Vito's communal stature grows." />
 			</h:panelGrid>
 		</p:tab>
-		<p:tab title="#{msg.system_users}">
+		<p:tab title="#{msg.system_users}" rendered="#{loginManage.admin}">
 			<h:panelGrid columns="2" cellpadding="10">
 				<p:graphicImage name="demo/images/godfather/godfather3.jpg" />
 				<h:outputText

@@ -3,6 +3,7 @@ package com.rewa.hibernate.data;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -22,16 +23,18 @@ public class Coordinate implements Serializable {
 	private long idcoordinate;
 	
 	private String coordinate;
-	private CoordinateType coordinateTypeId;
+	@ManyToOne
+	@JoinColumn(name="coordinateTypeId")
+	private CoordinateType type;
 	
 	//bi-directional many-to-one association to RewaStatus
 	@ManyToOne
-	@JoinColumn(name="status")
+	@JoinColumn(name="statusId")
 	private Status status;
 
-	//bi-directional many-to-one association to RewaPerson
-	@ManyToOne
-	@JoinColumn(name="idPerson")
+	//bi-directional many-to-one association to Person
+	@ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name="personId")
 	private Person owner;
 	
 	private int priority;
@@ -41,10 +44,18 @@ public class Coordinate implements Serializable {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDate;
+	
+	@ManyToOne
+	@JoinColumn(name="createdBy")
 	private Person createdBy;
+	
+	@ManyToOne
+	@JoinColumn(name="modifiedBy")
 	private Person modifiedBy;
 	
-	private Customer customers;
+	@ManyToOne
+	@JoinColumn(name="customerId")
+	private Customer customer;
 
 	public long getIdcoordinate() {
 		return idcoordinate;
@@ -62,12 +73,12 @@ public class Coordinate implements Serializable {
 		this.coordinate = coordinate;
 	}
 
-	public CoordinateType getCoordinateTypeId() {
-		return coordinateTypeId;
+	public CoordinateType getType() {
+		return type;
 	}
 
-	public void setCoordinateTypeId(CoordinateType coordinateTypeId) {
-		this.coordinateTypeId = coordinateTypeId;
+	public void setType(CoordinateType type) {
+		this.type = type;
 	}
 
 	public Status getStatus() {
@@ -127,11 +138,33 @@ public class Coordinate implements Serializable {
 	}
 
 	public Customer getCustomer() {
-		return customers;
+		return customer;
 	}
 
 	public void setCustomer(Customer customer) {
-		this.customers = customer;
+		this.customer = customer;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (idcoordinate ^ (idcoordinate >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Coordinate other = (Coordinate) obj;
+		if (idcoordinate != other.idcoordinate)
+			return false;
+		return true;
 	}
 
 }

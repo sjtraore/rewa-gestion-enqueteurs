@@ -6,79 +6,190 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>#{msg.add_user_or_agent}</title>
-	<h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
 	<link href="../css/custom.css" type="text/css" rel="stylesheet" />
 </h:head>
 <h:body>
 	<ui:include src="/secured/header.xhtml" />
+
 	<h:form id="userform">
-		<p:growl id="messages"></p:growl>
-		<p:fieldset legend="#{msg.identity}" style="margin-bottom:20px">
-			<p:panelGrid columns="3" layout="grid" id="identity">
-				<p:outputLabel value="#{msg.id}" id="idPerson"></p:outputLabel>
-				<p:outputLabel value="#{personManage.agentBean.idPerson}"></p:outputLabel>
-				<h:message for="idPerson"></h:message>
-			
-				<p:outputLabel value="#{msg.lastname}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.lastname}"	required="true" label="#{msg.lastname}" id="lastname" style="width: 100%;"/>
-				<h:message for="lastname"></h:message>
-				<p:outputLabel value="#{msg.firstname}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.firstname}" required="true" label="#{msg.firstname}" id="firstname" style="width: 100%;"/>
-				<h:message for="firstname"></h:message>
-			</p:panelGrid>
-		</p:fieldset>
+		<p:tabView>
+			<p:tab title="#{msg.identity}">
+				<p:growl id="messagesidentity" showDetail="true" autoUpdate="true"></p:growl>
+				<p:fieldset legend="#{msg.personal_details}"
+					style="margin-bottom:20px">
+					<p:panelGrid columns="3" layout="grid" id="pgIdentity">
+						<p:outputLabel value="#{msg.id}" id="idPerson"></p:outputLabel>
+						<p:outputLabel value="#{personManage.agentBean.idPerson}"></p:outputLabel>
+						<h:message for="idPerson"></h:message>
 
-		<p:fieldset legend="#{msg.roles}" style="margin-bottom:20px">
-			<h:panelGrid columns="2" cellpadding="5">
-				<p:selectManyCheckbox id="grid2"
-					value="#{personManage.selectedRoles}" layout="grid" columns="2">
-					<f:selectItems value="#{personManage.rolesList}" var="role"
-						itemLabel="#{role}" itemValue="#{role}" />
-				</p:selectManyCheckbox>
-			</h:panelGrid>
-		</p:fieldset>
-		
-		<!-- Username and Password -->
-		<p:fieldset legend="#{msg.username} et #{msg.password}" style="margin-bottom:20px">
-			<h:panelGrid columns="3" layout="grid">
-				<p:outputLabel value="#{msg.username}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.username}"	required="true" 
-					label="#{msg.username}" id="username" style="width: 100%;"/>
-				<h:message for="username"></h:message>
-				
-				<p:outputLabel value="#{msg.password}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.password}" required="true"
-					label="#{msg.password}" id="password" style="width: 100%;"
-					feedback="false" match="password_confirmation" />
-				<h:message for="password"></h:message>
-				
-				<p:outputLabel value="#{msg.password_confirmation}"></p:outputLabel>
-				<p:inputText value="#{personManage.agentBean.password}" required="true" 
-					label="#{msg.password_confirmation}" id="password_confirmation" style="width: 100%;"
-					feedback="false" />
-				<h:message for="password_confirmation"></h:message>	
-			</h:panelGrid>
-		</p:fieldset>
-		
-		
-		<!-- Coordinates -->
-		
+						<p:outputLabel value="#{msg.lastname}"></p:outputLabel>
+						<p:inputText value="#{personManage.agentBean.lastname}"
+							required="true" label="#{msg.lastname}" id="lastname"
+							style="width: 100%;" />
+						<h:message for="lastname"></h:message>
 
-		<p:fieldset legend="#{msg.status}" style="margin-bottom:20px">
-			<h:panelGrid columns="1" layout="grid">
-				<p:selectOneButton value="#{personManage.agentBean.status}"
-					required="true">
-					<f:selectItem itemLabel="#{msg.active}" itemValue="#{msg.active}" />
-					<f:selectItem itemLabel="#{msg.inactive}"
-						itemValue="#{msg.inactive}" />
-				</p:selectOneButton>
-			</h:panelGrid>
-		</p:fieldset>
+						<p:outputLabel value="#{msg.firstname}"></p:outputLabel>
+						<p:inputText value="#{personManage.agentBean.firstname}"
+							required="true" label="#{msg.firstname}" id="firstname"
+							style="width: 100%;" />
+						<h:message for="firstname"></h:message>
+					</p:panelGrid>
+				</p:fieldset>
 
-		<p:commandButton value="#{msg.register}" icon="ui-icon-check"
-			action="#{personManage.register}" update="userform"></p:commandButton>
-		<p:commandButton value="#{msg.cancel}"
-			action="#{personManage.cancelUerRegistration}" immediate="true" />
+				<!-- Username and Password -->
+				<p:fieldset legend="#{msg.username} et #{msg.password}"
+					style="margin-bottom:20px">
+					<p:panelGrid columns="3" layout="grid" id="pgUsernamePass">
+						<p:outputLabel value="#{msg.username}"></p:outputLabel>
+						<p:inputText value="#{personManage.agentBean.username}"
+							label="#{msg.username}" id="username" style="width: 100%;">
+						</p:inputText>
+						<h:message for="username"></h:message>
+
+						<p:outputLabel value="#{msg.password}"></p:outputLabel>
+						<p:password value="#{personManage.agentBean.password}"
+							label="#{msg.password}" id="password" style="width: 100%;"
+							feedback="false" match="password_confirmation">
+						</p:password>
+						<h:message for="password"></h:message>
+
+
+						<p:outputLabel value="#{msg.password_confirmation}"></p:outputLabel>
+						<p:password value="#{personManage.agentBean.password}"
+							label="#{msg.password_confirmation}" id="password_confirmation"
+							style="width: 100%;" feedback="false">
+						</p:password>
+						<h:message for="password_confirmation"></h:message>
+					</p:panelGrid>
+				</p:fieldset>
+
+				<!-- Roles -->
+				<p:fieldset legend="#{msg.roles}" style="margin-bottom:20px">
+					<h:panelGrid columns="2" cellpadding="5" id="pgRoles">
+						<p:selectManyCheckbox id="grid2"
+							value="#{personManage.selectedRoles}" layout="grid" columns="2">
+							<f:selectItems value="#{personManage.rolesList}" var="role"
+								itemLabel="#{role}" itemValue="#{role}" />
+						</p:selectManyCheckbox>
+					</h:panelGrid>
+				</p:fieldset>
+
+				<!-- Status -->
+				<p:fieldset legend="#{msg.status}" style="margin-bottom:20px">
+					<h:panelGrid columns="1" layout="grid" id="pgStatus">
+						<p:selectOneButton value="#{personManage.agentBean.status}"
+							required="true">
+							<f:selectItem itemLabel="#{msg.active}" itemValue="#{msg.active}" />
+							<f:selectItem itemLabel="#{msg.inactive}"
+								itemValue="#{msg.inactive}" />
+						</p:selectOneButton>
+					</h:panelGrid>
+				</p:fieldset>
+			</p:tab>
+
+			<p:tab title="#{msg.coordinates}">
+				<p:growl id="messagescoordinates" showDetail="true"
+					autoUpdate="true"></p:growl>
+
+				<p:panelGrid columns="3" layout="grid" id="pgCoordinates">
+
+					<p:outputLabel value="#{msg.address}"></p:outputLabel>
+					<p:inputTextarea value="#{personManage.agentBean.address}"
+						label="#{msg.address}" id="address" style="width: 100%;">
+					</p:inputTextarea>
+					<h:message for="address"></h:message>
+
+					<p:outputLabel value="#{msg.primary_email}"></p:outputLabel>
+					<p:inputText value="#{personManage.agentBean.primaryEmail}"
+						label="#{msg.primary_email}" id="primary_email"
+						style="width: 100%;" validatorMessage="Email invalide">
+						<f:validateRegex
+							pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+					</p:inputText>
+					<h:message for="primary_email"></h:message>
+
+					<p:outputLabel value="#{msg.primary_phone}"></p:outputLabel>
+					<p:inputText value="#{personManage.agentBean.primaryPhone}"
+						label="#{msg.primary_phone}" id="primary_phone"
+						style="width: 100%;">
+					</p:inputText>
+					<h:message for="primary_phone"></h:message>
+
+					<p:outputLabel value="#{msg.secondary_phone}"></p:outputLabel>
+					<p:inputText value="#{personManage.agentBean.secondaryPhone}"
+						label="#{msg.secondary_phone}" id="seconday_phone"
+						style="width: 100%;">
+					</p:inputText>
+					<h:message for="seconday_phone"></h:message>
+
+					<p:outputLabel value="#{msg.facebook_id}"></p:outputLabel>
+					<p:inputText value="#{personManage.agentBean.facebook}"
+						label="#{msg.facebook_id}" id="facebook_id" style="width: 100%;">
+					</p:inputText>
+					<h:message for="facebook_id"></h:message>
+				</p:panelGrid>
+			</p:tab>
+			<p:tab title="#{msg.level}">
+				<div class="ui-grid">
+					<div class="ui-grid-col-4">
+						<h3>#{msg.shool_level}</h3>
+						<p:selectManyCheckbox id="menu" layout="pageDirection" columns="1"
+							value="#{personManage.selectedDiplomas}" label="Diplomes"
+							filter="true" filterMatchMode="startsWith"
+							panelStyle="width:250px">
+							<f:selectItems value="#{personManage.schoolLevelList}" />
+						</p:selectManyCheckbox>
+					</div>
+					<div class="ui-grid-col-4">
+						<h3>#{msg.languages}</h3>
+						<h:panelGrid columns="2" cellpadding="5">
+
+							<h:outputText value="#{msg.french_oral}" />
+							<p:rating value="#{personManage.agentBean.ratingFrenchOral}"
+								stars="#{personManage.ratingBase}" />
+
+							<h:outputText value="#{msg.french_writing}" />
+							<p:rating value="#{personManage.agentBean.ratingFrenchWriting}"
+								stars="#{personManage.ratingBase}" />
+
+							<h:outputText value="#{msg.local_languages}" />
+							<p:rating value="#{personManage.agentBean.ratingLocalLanguage}"
+								stars="#{personManage.ratingBase}" />
+
+
+							<p:inputTextarea label="#{msg.local_languages_list}"
+								value="#{personManage.agentBean.localLanguages}" />
+						</h:panelGrid>
+					</div>
+					<div class="ui-grid-col-4">
+						<h3>#{msg.computer_science}</h3>
+						<h:panelGrid columns="2" cellpadding="5">
+							<h:outputText value="#{msg.level_microsoft_word}" />
+							<p:rating value="#{personManage.agentBean.ratingMSWord}"
+								stars="#{personManage.ratingBase}" />
+							<h:outputText value="#{msg.level_microsoft_excel}" />
+							<p:rating value="#{personManage.agentBean.ratingMSExcel}"
+								stars="#{personManage.ratingBase}" />
+							<h:outputText value="#{msg.level_microsoft_powerpoint}" />
+							<p:rating value="#{personManage.agentBean.ratingMSPowerpoint}"
+								stars="#{personManage.ratingBase}" />
+						</h:panelGrid>
+					</div>
+				</div>
+			</p:tab>
+		</p:tabView>
+
+		<p:toolbar>
+			<f:facet name="right">
+				<p:commandButton value="#{msg.register}" icon="ui-icon-check"
+					action="#{personManage.register}" update="userform"></p:commandButton>
+				<p:commandButton value="#{msg.cancel}" process="@this"
+					update="userform" action="#{personManage.cancelUerRegistration}">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
 	</h:form>
 </h:body>
 </html>

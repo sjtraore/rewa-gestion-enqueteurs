@@ -18,6 +18,8 @@
         <mapping class="com.rewa.hibernate.data.CoordinateType"/>
         <mapping class="com.rewa.hibernate.data.Field"/>
         <mapping class="com.rewa.hibernate.data.Role"/>
+        <mapping class="com.rewa.hibernate.data.Diploma"/>
+        <mapping class="com.rewa.hibernate.data.PersonDiploma"/>
         <mapping class="com.rewa.hibernate.data.PersonRole"/>
         <mapping class="com.rewa.hibernate.data.PersonLevel"/>
         <mapping class="com.rewa.hibernate.data.Study"/>

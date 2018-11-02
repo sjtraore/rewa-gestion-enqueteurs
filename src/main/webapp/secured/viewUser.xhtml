@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<title>#{msg.add_user_or_agent}</title>
+	<h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<link href="../css/custom.css" type="text/css" rel="stylesheet" />
+</h:head>
+<h:body>
+	<ui:include src="/secured/header.xhtml" />
+	<h:form id="userform">
+		<p:fieldset legend="#{msg.identity}" style="margin-bottom:20px">
+			<p:panelGrid columns="2" layout="grid" id="identity">
+				<p:outputLabel value="#{msg.id}" id="idPerson"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.idPerson}"></p:outputLabel>
+			
+				<p:outputLabel value="#{msg.lastname}"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.lastname}" />
+				
+				<p:outputLabel value="#{msg.firstname}"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.firstname}" />
+			</p:panelGrid>
+		</p:fieldset>
+		
+		<!-- Coordinates -->
+		<p:fieldset legend="#{msg.coordinates}" style="margin-bottom:20px">
+			<p:panelGrid columns="2" layout="grid" id="coordinates">
+				<p:outputLabel value="#{msg.address}" id="idAddress"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.address}"></p:outputLabel>
+			
+				<p:outputLabel value="#{msg.primary_email}"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.primaryEmail}" />
+				
+				<p:outputLabel value="#{msg.primary_phone}"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.primaryPhone}" />
+				
+				<p:outputLabel value="#{msg.secondary_phone}"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.secondaryPhone}" />
+			</p:panelGrid>
+		</p:fieldset>
+
+		<!-- Roles -->
+		<p:fieldset legend="#{msg.roles}" style="margin-bottom:20px">
+			<h:panelGrid columns="2" cellpadding="5" layout="grid">
+				<p:selectManyCheckbox id="grid2" disabled="true"
+					value="#{personManage.selectedRoles}" layout="grid" columns="2">
+					<f:selectItems value="#{personManage.rolesList}" var="role"
+						itemLabel="#{role}" itemValue="#{role}" />
+				</p:selectManyCheckbox>
+			</h:panelGrid>
+		</p:fieldset>
+		
+		<!-- Username and Password -->
+		<p:fieldset legend="#{msg.username} et #{msg.password}" style="margin-bottom:20px">
+			<p:panelGrid columns="2" layout="grid" id="usernamepasspanel">
+				<p:outputLabel value="#{msg.username}" id="usernamepass"></p:outputLabel>
+				<p:outputLabel value="#{personManage.agentBean.username}"></p:outputLabel>
+			
+				<p:outputLabel value="#{msg.password}"></p:outputLabel>
+				<c:if test="${not empty personManage.agentBean.password}">
+					<p:outputLabel value="***************" />
+				</c:if>
+			</p:panelGrid>
+		</p:fieldset>
+				
+		<!-- Status -->
+		<p:fieldset legend="#{msg.status}" style="margin-bottom:20px">
+			<h:panelGrid columns="1" layout="grid">
+				<p:selectOneButton value="#{personManage.agentBean.status}" disabled="true">
+					<f:selectItem itemLabel="#{msg.active}" itemValue="#{msg.active}" />
+					<f:selectItem itemLabel="#{msg.inactive}"
+						itemValue="#{msg.inactive}" />
+				</p:selectOneButton>
+			</h:panelGrid>
+		</p:fieldset>
+		<p:toolbar>
+			<f:facet name="right">
+				<p:commandButton value="#{msg.back}"
+					action="#{personManage.cancelUerRegistration}" />
+			</f:facet>
+		</p:toolbar>
+	</h:form>
+</h:body>
+</html>

@@ -3,7 +3,9 @@ package com.rewa.hibernate.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -33,7 +35,7 @@ public class Person implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idPerson;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -60,9 +62,9 @@ public class Person implements Serializable {
 			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
 					@JoinColumn(name = "idRole", referencedColumnName = "idRole") })
 	private List<Role> roles;
-	
-	@OneToMany(mappedBy="owner")
-	private List<Coordinate> coordinates;
+
+	@OneToMany(mappedBy = "owner")
+	private Set<Coordinate> coordinates;
 
 	// bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -78,6 +80,12 @@ public class Person implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "status")
 	private Status status;
+
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "rewa_person_diploma", joinColumns = {
+			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
+					@JoinColumn(name = "idDiploma", referencedColumnName = "idDiploma") })
+	private Set<Diploma> diplomas;
 
 	public Person() {
 	}
@@ -179,7 +187,7 @@ public class Person implements Serializable {
 	}
 
 	public Role addRole(Role role) {
-		if(getRoles() == null) {
+		if (getRoles() == null) {
 			setRoles(new ArrayList<Role>());
 		}
 		getRoles().add(role);
@@ -191,6 +199,21 @@ public class Person implements Serializable {
 		getRoles().remove(role);
 
 		return role;
+	}
+
+	public Diploma addDiploma(Diploma diploma) {
+		if (getDiplomas() == null) {
+			setDiplomas(new HashSet<Diploma>());
+		}
+		getDiplomas().add(diploma);
+
+		return diploma;
+	}
+
+	public Diploma removeRole(Diploma diploma) {
+		getDiplomas().remove(diploma);
+
+		return diploma;
 	}
 
 	@Override
@@ -220,17 +243,17 @@ public class Person implements Serializable {
 		return true;
 	}
 
-	public List<Coordinate> getCoordinates() {
+	public Set<Coordinate> getCoordinates() {
 		return coordinates;
 	}
 
-	public void setCoordinates(List<Coordinate> coordinates) {
+	public void setCoordinates(Set<Coordinate> coordinates) {
 		this.coordinates = coordinates;
 	}
-	
+
 	public Coordinate addCoordinate(Coordinate coordinate) {
-		if(getCoordinates() == null) {
-			setCoordinates(new ArrayList<Coordinate>());
+		if (getCoordinates() == null) {
+			setCoordinates(new HashSet<Coordinate>());
 		}
 		getCoordinates().add(coordinate);
 		return coordinate;
@@ -239,6 +262,14 @@ public class Person implements Serializable {
 	public Coordinate removeCoordinate(Coordinate coordinate) {
 		getCoordinates().remove(coordinate);
 		return coordinate;
+	}
+
+	public Set<Diploma> getDiplomas() {
+		return diplomas;
+	}
+
+	public void setDiplomas(Set<Diploma> diplomas) {
+		this.diplomas = diplomas;
 	}
 
 }

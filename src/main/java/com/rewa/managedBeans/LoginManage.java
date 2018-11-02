@@ -1,6 +1,7 @@
 package com.rewa.managedBeans;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -11,6 +12,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.rewa.constant.Constant;
+import com.rewa.hibernate.data.Person;
+import com.rewa.hibernate.data.Role;
 import com.rewa.spring.service.LoginService;
 import com.rewa.utils.RewaUtils;
 import com.rewa.utils.SessionUtils;
@@ -25,6 +29,10 @@ public class LoginManage implements Serializable {
 	private String pwd;
 	private String msg;
 	private String user;
+	private Person connectedUser;
+	
+	/**** Application roles***/
+	private boolean isAdmin;
 
 	@ManagedProperty("#{loginService}")
 	private LoginService loginService;
@@ -56,10 +64,11 @@ public class LoginManage implements Serializable {
 	// validate login
 	public String loginActionEvent() {
 		log.debug("validateUsernamePassword: " + user + "/" + pwd);
-		boolean valid = loginService.validate(user, pwd);
-		if (valid) {
+		connectedUser = loginService.validate(user, pwd);
+		if (connectedUser != null) {
 			HttpSession session = SessionUtils.getSession();
 			session.setAttribute("username", user);
+			session.setAttribute("connectedUser", connectedUser);
 			return "admin";
 		} else {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -71,7 +80,7 @@ public class LoginManage implements Serializable {
 	public String logoutAction() {
 		HttpSession session = SessionUtils.getSession();
 		session.invalidate();
-		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Déconnexion effectuée avec succès !", null);
+		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Déconnexion effectuée avec succes !", null);
 		return "login";
 	}
 
@@ -81,5 +90,29 @@ public class LoginManage implements Serializable {
 
 	public void setLoginService(LoginService loginService) {
 		this.loginService = loginService;
+	}
+
+	public Person getConnectedUser() {
+		return connectedUser;
+	}
+
+	public void setConnectedUser(Person connectedUser) {
+		this.connectedUser = connectedUser;
+	}
+
+	public boolean isAdmin() {
+		if (connectedUser != null) {
+			List<Role> roles = connectedUser.getRoles();
+			if (roles != null && !roles.isEmpty())
+				for (Role role : roles) {
+					if (role.getIdRole() == Constant.ADMIN_ROLE_ID)
+						this.isAdmin = true;
+				} 
+		}
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

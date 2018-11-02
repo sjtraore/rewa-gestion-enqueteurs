@@ -1,6 +1,8 @@
 package com.rewa.spring.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rewa.hibernate.data.CoordinateType;
+import com.rewa.hibernate.data.Diploma;
+import com.rewa.hibernate.data.Person;
+import com.rewa.hibernate.data.PersonDiploma;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 
@@ -26,12 +31,8 @@ public class CommonService {
 		return sessionFactory;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-	
 	public Status getStatusByStatusName(String status) {
-		if(status == null) {
+		if (status == null) {
 			return null;
 		}
 		try {
@@ -45,6 +46,19 @@ public class CommonService {
 			log.error(e, e);
 			return null;
 		}
+	}
+	
+	public Status getStatusByStatusId(int id) {
+		Status result = null;
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			Criteria createCriteria = session.createCriteria(Status.class);
+			result = (Status) createCriteria.add(Restrictions.eq("idStatus", id)).uniqueResult();
+			log.debug("getStatusByStatusId (" + id + "): " + result);
+		} catch (Exception e) {
+			log.error(e, e);
+		}
+		return result;
 	}
 
 	public Role getRoleById(int roleId) {
@@ -74,6 +88,52 @@ public class CommonService {
 			return null;
 		}
 	}
+	
+	public Diploma getDiplomaByDiplomaName(String diploma) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Criteria createCriteria = session.createCriteria(Diploma.class);
+			Diploma result = (Diploma) createCriteria.add(Restrictions.eq("diploma", diploma)).uniqueResult();
+			log.debug("getDiplomaByDiplomaName (" + diploma + "): " + result);
+			return result;
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Set<Diploma> getDiplomasByPerson(Person person){
+		Set<Diploma> result = null;
+		
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Criteria criteria = session.createCriteria(PersonDiploma.class);
+			List<PersonDiploma> personDiplomaList = criteria.add(Restrictions.eq("person", person)).list();
+			if(personDiplomaList != null && !personDiplomaList.isEmpty()) {
+				result = new HashSet<Diploma>();
+				for(PersonDiploma personDiploma : personDiplomaList) {
+					result.add(personDiploma.getDiploma());
+				}
+			}
+			int nbResult = (result != null) ? result.size() : 0;
+			log.debug("getDiplomasByPerson - Person = " + person + ", result: " + nbResult);
+			return result;
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+	}
+
+	public boolean userHasRole(Person person, int roleId) {
+		for (Role role : person.getRoles()) {
+			if (role.getIdRole() == roleId)
+				return true;
+		}
+		return false;
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Role> getALLRoles() {
@@ -84,6 +144,22 @@ public class CommonService {
 			result = session.createCriteria(Role.class).list();
 			int nbResult = (result != null) ? result.size() : 0;
 			log.debug("getALLRoles: " + nbResult + " " + result);
+			return result;
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Diploma> getALLDiplomas() {
+		List<Diploma> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			result = session.createCriteria(Diploma.class).list();
+			int nbResult = (result != null) ? result.size() : 0;
+			log.debug("getALLDiplomas: " + nbResult + " " + result);
 			return result;
 		} catch (Exception e) {
 			log.error(e, e);
@@ -104,13 +180,14 @@ public class CommonService {
 			return null;
 		}
 	}
-	
+
 	public CoordinateType getCoordinateTypeById(int coordinateTypeId) {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			Criteria createCriteria = session.createCriteria(CoordinateType.class);
-			CoordinateType result = (CoordinateType) createCriteria.add(Restrictions.idEq(coordinateTypeId)).uniqueResult();
+			CoordinateType result = (CoordinateType) createCriteria.add(Restrictions.idEq(coordinateTypeId))
+					.uniqueResult();
 			log.debug("getCoordinateTypeById (" + coordinateTypeId + "): " + result);
 			return result;
 		} catch (Exception e) {
@@ -118,4 +195,5 @@ public class CommonService {
 			return null;
 		}
 	}
+
 }

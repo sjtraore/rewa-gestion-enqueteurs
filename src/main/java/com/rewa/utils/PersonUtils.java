@@ -1,6 +1,8 @@
 package com.rewa.utils;
 
 import com.rewa.beans.PersonBean;
+import com.rewa.hibernate.data.Coordinate;
+import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Person;
 
 public class PersonUtils {
@@ -18,7 +20,7 @@ public class PersonUtils {
 			personBean.setUsername(person.getUsername());
 			//We don't want to fill the password for the user. 
 			//He will then see blank in password field
-			//personBean.setPassword(person.getPassword());
+			personBean.setPassword(person.getPassword());
 			
 			Person personCreator = person.getCreator();
 			if(personCreator != null) {
@@ -28,10 +30,26 @@ public class PersonUtils {
 			if(personUpdator != null) {
 				personBean.setUpdatorName(personUpdator.getFirstname() + " " + personUpdator.getLastname());
 			}
-			
-			
 		}
-		
+		return personBean;
+	}
+	
+	public static PersonBean addCoordinatesToPersonBean(PersonBean personBean, Coordinate coordinate){
+		if(coordinate != null) {
+			CoordinateType ct = coordinate.getType();
+			switch(ct.getIdCoordinateType()) {
+			case 1:
+				//Primary phone
+				personBean.setPrimaryPhone(coordinate.getCoordinate());
+				break;
+			case 2: 
+				//Secondary phone
+				personBean.setSecondaryPhone(coordinate.getCoordinate());
+				break;
+			default:
+				break;
+			}
+		}
 		return personBean;
 	}
 

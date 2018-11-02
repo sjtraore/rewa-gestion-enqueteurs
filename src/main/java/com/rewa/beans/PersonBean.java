@@ -3,6 +3,7 @@ package com.rewa.beans;
 import java.util.Date;
 import java.util.List;
 
+
 public class PersonBean {
 	private int idPerson;
 	private String firstname;
@@ -30,6 +31,8 @@ public class PersonBean {
 	private String region;
 	private String contry;
 	
+
+	
 	/********** Roles ***********/
 	private List<String> roles;
 	
@@ -37,6 +40,15 @@ public class PersonBean {
 	private double enqueteurAverage;
 	private double controlleurAverage;
 	
+	/********** Language rating ***********/
+	private Integer ratingFrenchOral;
+	private Integer ratingFrenchWriting;
+	private Integer ratingLocalLanguage;
+	private String localLanguages;
+	
+	private Integer ratingMSWord;
+	private Integer ratingMSExcel;
+	private Integer ratingMSPowerpoint;
 	
 	public PersonBean() {
 		super();
@@ -235,6 +247,76 @@ public class PersonBean {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+
+	public Integer getRatingFrenchOral() {
+		return ratingFrenchOral;
+	}
+
+
+	public void setRatingFrenchOral(Integer ratingFrenchOral) {
+		this.ratingFrenchOral = ratingFrenchOral;
+	}
+
+
+	public Integer getRatingFrenchWriting() {
+		return ratingFrenchWriting;
+	}
+
+
+	public void setRatingFrenchWriting(Integer ratingFrenchWriting) {
+		this.ratingFrenchWriting = ratingFrenchWriting;
+	}
+
+
+	public Integer getRatingLocalLanguage() {
+		return ratingLocalLanguage;
+	}
+
+
+	public void setRatingLocalLanguage(Integer ratingLocalLanguage) {
+		this.ratingLocalLanguage = ratingLocalLanguage;
+	}
+
+
+	public String getLocalLanguages() {
+		return localLanguages;
+	}
+
+
+	public void setLocalLanguages(String localLanguages) {
+		this.localLanguages = localLanguages;
+	}
+
+
+	public Integer getRatingMSWord() {
+		return ratingMSWord;
+	}
+
+
+	public void setRatingMSWord(Integer ratingMSWord) {
+		this.ratingMSWord = ratingMSWord;
+	}
+
+
+	public Integer getRatingMSExcel() {
+		return ratingMSExcel;
+	}
+
+
+	public void setRatingMSExcel(Integer ratingMSExcel) {
+		this.ratingMSExcel = ratingMSExcel;
+	}
+
+
+	public Integer getRatingMSPowerpoint() {
+		return ratingMSPowerpoint;
+	}
+
+
+	public void setRatingMSPowerpoint(Integer ratingMSPowerpoint) {
+		this.ratingMSPowerpoint = ratingMSPowerpoint;
 	}
 	
 }
