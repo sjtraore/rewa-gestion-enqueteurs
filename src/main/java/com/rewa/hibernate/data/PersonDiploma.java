@@ -17,10 +17,10 @@ public class PersonDiploma implements Serializable {
 	@EmbeddedId
 	private PersonDiplomaPK id;
 
-	@Column(name="idPerson", insertable = false, updatable = false)
+	@Column(name="idPerson", nullable = false, insertable = false, updatable = false)
 	private Person person;
 
-	@Column(name="idDiploma", insertable = false, updatable = false)
+	@Column(name="idDiploma", nullable = false, insertable = false, updatable = false)
 	private Diploma diploma;
 
 	public PersonDiploma() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -18,12 +19,15 @@ import com.rewa.hibernate.data.Coordinate;
 import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.PersonDiploma;
+import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.utils.PersonUtils;;
 
 @Component
 @Transactional
 public class PersonService {
+	private static final Logger log = Logger.getLogger(PersonService.class);
+
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -77,12 +81,12 @@ public class PersonService {
 		}
 		return coordinate;
 	}
-	
+
 	public PersonDiploma savePersonDiploma(PersonDiploma personDiploma) {
 		if (personDiploma != null) {
 			Session session = sessionFactory.getCurrentSession();
 			if (personDiploma.getId() == null) {
-				session.save(personDiploma);
+				session.saveOrUpdate(personDiploma);
 			} else {
 				session.merge(personDiploma);
 			}
@@ -106,7 +110,7 @@ public class PersonService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 
 		return result;
@@ -122,43 +126,28 @@ public class PersonService {
 			List<Person> persons = criteria.list();
 			if (persons != null) {
 				result = new ArrayList<PersonBean>();
+				Role enqueteurRole = commonService.getRoleById(Constant.ENQUETEUR_ROLE_ID);
 
 				for (Person person : persons) {
-					PersonBean personBean = PersonUtils.getPersonBeanByPerson(person);
-					/********** Coordinates *************/
-					Status activeCoordinateStatus = commonService
-							.getStatusByStatusId(Constant.ACTIVE_STATUS_ID);
-					//Address
-					CoordinateType ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_ADDRESS);
-					setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
-					
-					//Phone
-					ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_PRIMARY_PHONE);
-					setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
-					
-					ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_SECONDARY_PHONE);
-					setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
-					
-					//email
-					ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_PRIMARY_EMAIL);
-					setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
-					
-					//facebook id
-					ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_FACEBOOK_ID);
-					setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+					// Proceed only with enqueteurs
+					List<Role> roles = person.getRoles();
+					if (roles != null && !roles.isEmpty() && roles.contains(enqueteurRole)) {
+						PersonBean personBean = PersonUtils.getPersonBeanByPerson(person);
+						setCoordinates(person, personBean);
 
-					result.add(personBean);
+						result.add(personBean);
+					}
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 
 		return result;
 	}
 
-	private void setPersonBeanCoordinate(Person person, PersonBean personBean,
-			CoordinateType coordinateType, Status activeCoordinateStatus) {
+	private void setPersonBeanCoordinate(Person person, PersonBean personBean, CoordinateType coordinateType,
+			Status activeCoordinateStatus) {
 
 		List<Coordinate> activeCoordinates = getCoordinateByOwnerTypeAndStatus(person, coordinateType,
 				activeCoordinateStatus);
@@ -192,7 +181,7 @@ public class PersonService {
 			Criteria criteria = session.createCriteria(Person.class).add(Restrictions.idEq(idPerson));
 			return (Person) criteria.uniqueResult();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e, e);
 			return null;
 		}
 	}
@@ -215,7 +204,7 @@ public class PersonService {
 					.add(Restrictions.eq("type", type)).add(Restrictions.eq("status", status));
 			results = (List<Coordinate>) criteria.list();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return results;
 	}
@@ -237,7 +226,7 @@ public class PersonService {
 					.add(Restrictions.eq("type", type));
 			results = (List<Coordinate>) criteria.list();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return results;
 	}
@@ -250,4 +239,59 @@ public class PersonService {
 	public void setCommonService(CommonService commonService) {
 		this.commonService = commonService;
 	}
+
+	public List<PersonBean> getActiveSystemUsers(boolean displayAllUsers) {
+		List<PersonBean> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+//			Status status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
+			Criteria criteria = session.createCriteria(Person.class);
+//			if (!displayAllUsers) {
+//				criteria.add(Restrictions.eq("status", status)).add(Restrictions.isNotNull("username"))
+//						.add(Restrictions.not(Restrictions.eq("username", "")));
+//			}
+			@SuppressWarnings("unchecked")
+			List<Person> persons = criteria.list();
+			if (persons != null) {
+				result = new ArrayList<PersonBean>();
+
+				for (Person person : persons) {
+					log.debug("Username: " + person.getUsername());
+					PersonBean personBean = PersonUtils.getPersonBeanByPerson(person);
+					setCoordinates(person, personBean);
+
+					result.add(personBean);
+				}
+			}
+		} catch (Exception e) {
+			log.error(e, e);
+		}
+
+		return result;
+	}
+
+	private void setCoordinates(Person person, PersonBean personBean) {
+		/********** Coordinates *************/
+		Status activeCoordinateStatus = commonService.getStatusByStatusId(Constant.ACTIVE_STATUS_ID);
+		// Address
+		CoordinateType ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_ADDRESS);
+		setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+
+		// Phone
+		ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_PRIMARY_PHONE);
+		setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+
+		ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_SECONDARY_PHONE);
+		setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+
+		// email
+		ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_PRIMARY_EMAIL);
+		setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+
+		// facebook id
+		ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_FACEBOOK_ID);
+		setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+	}
+
 }

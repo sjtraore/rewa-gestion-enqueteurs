@@ -1,0 +1,55 @@
+<?xml version = "1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+<head>
+<h:outputStylesheet library="webjars"
+	name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+<link href="../../css/custom.css" type="text/css" rel="stylesheet" />
+</head>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	<div class="ui-g">
+		<div class="ui-g-12 ui-md-6">
+			<p:graphicImage value="../images/rewa-logo.png" style="width: 50%;" />
+		</div>
+		<div class="ui-g-12 ui-md-6">
+			<h:form style="text-align: right; padding-top: 6%;">
+				<p:growl id="growl" life="2000" />
+				<h:outputFormat value="#{msg['welcome']}" style="margin-right:10px;">
+					<f:param value="#{loginManage.user}" />
+				</h:outputFormat>
+				<p:commandLink id="ajax" update="growl"
+					actionListener="#{loginManage.logoutAction}"
+					style="margin-right:10px;">
+					<h:outputText value="#{msg.my_profile}" />
+				</p:commandLink>
+
+				<h:commandButton action="#{loginManage.logoutAction}"
+					value="#{msg.disconnect}"></h:commandButton>
+			</h:form>
+		</div>
+	</div>
+	<div>
+		<p:tabMenu activeIndex="#{param.i}">
+			<p:menuitem value="#{msg.agents}" outcome="agent" icon="fa fa-user">
+				<f:param name="i" value="0" />
+			</p:menuitem>
+			<p:menuitem value="#{msg.studies}" outcome="study"
+				icon="fa fa-folder-open-o">
+				<f:param name="i" value="1" />
+			</p:menuitem>
+			<p:menuitem value="#{msg.system_users}" outcome="users"
+				icon="fa fa-fw fa-users" rendered="#{loginManage.admin}">
+				<f:param name="i" value="2" />
+			</p:menuitem>
+		</p:tabMenu>
+	</div>
+</ui:composition>
+</html>

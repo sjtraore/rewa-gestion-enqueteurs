@@ -110,8 +110,8 @@ public class CommonService {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(PersonDiploma.class);
-			List<PersonDiploma> personDiplomaList = criteria.add(Restrictions.eq("person", person)).list();
+			//Criteria criteria = session.createCriteria(PersonDiploma.class);
+			List<PersonDiploma> personDiplomaList = session.createCriteria(PersonDiploma.class).list(); //criteria.add(Restrictions.eq("person", person)).list();
 			if(personDiplomaList != null && !personDiplomaList.isEmpty()) {
 				result = new HashSet<Diploma>();
 				for(PersonDiploma personDiploma : personDiplomaList) {

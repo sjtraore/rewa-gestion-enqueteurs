@@ -17,12 +17,17 @@ public class Study implements Serializable {
 
 	@Id
 	private int idStudy;
+	
+	private String title;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createDate;
 
 	//bi-directional many-to-one association to RewaCustomer
 	@ManyToOne
@@ -32,7 +37,7 @@ public class Study implements Serializable {
 	//bi-directional many-to-one association to RewaStatus
 	@ManyToOne
 	@JoinColumn(name="idStatus")
-	private Status rewaStatus;
+	private Status status;
 
 	//bi-directional many-to-one association to RewaTeam
 	@ManyToOne
@@ -74,12 +79,12 @@ public class Study implements Serializable {
 		this.rewaCustomer = rewaCustomer;
 	}
 
-	public Status getRewaStatus() {
-		return this.rewaStatus;
+	public Status getStatus() {
+		return this.status;
 	}
 
-	public void setRewaStatus(Status rewaStatus) {
-		this.rewaStatus = rewaStatus;
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	public Team getRewaTeam() {
@@ -88,6 +93,50 @@ public class Study implements Serializable {
 
 	public void setRewaTeam(Team rewaTeam) {
 		this.rewaTeam = rewaTeam;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + idStudy;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Study other = (Study) obj;
+		if (idStudy != other.idStudy)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Study [idStudy=" + idStudy + ", title=" + title + ", endDate=" + endDate + ", startDate=" + startDate
+				+ "]";
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 
 }

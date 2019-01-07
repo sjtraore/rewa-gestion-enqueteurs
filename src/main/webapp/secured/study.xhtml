@@ -1,0 +1,80 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="templates/common.xhtml">
+		<ui:define name="content">
+			<p:dataTable var="study" value="#{studyManage.activeStudies}"
+				widgetVar="studiesTable" emptyMessage="#{msg.no_study_found}"
+				filteredValue="#{studyManage.activeStudies}" id="studyTable"
+				lazy="true">
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:inputText id="globalFilter"
+							style="width:50%; text-align: center;"
+							onkeyup="PF('studyTable').filter()"
+							placeholder="#{msg.google_search_study}" />
+						<p:spacer width="100" height="10" />
+						<p:commandButton icon="ui-icon-plus" title="Ajouter une étude"
+							action="#{personManage.forwardToAddUser(null)}">#{msg.add_study}</p:commandButton>
+					</p:outputPanel>
+				</f:facet>
+				<p:column headerText="#{msg.id}">
+					<h:form>
+						<h:commandLink action="#{personManage.forwardToViewUser(agent)}"
+							value="#{study.id}" />
+					</h:form>
+				</p:column>
+				<p:column headerText="#{msg.studyTitle}" priority="2">
+					<h:outputText value="#{study.title}" />
+				</p:column>
+				<p:column headerText="#{msg.customer}" priority="4">
+					<h:outputText value="#{study.customer}" />
+				</p:column>
+				<p:column headerText="#{msg.from}" priority="5">
+					<h:outputText value="#{study.startDate}" />
+				</p:column>
+				<p:column headerText="#{msg.to}" priority="6">
+					<h:outputText value="#{study.endDate}" />
+				</p:column>
+				<p:column headerText="#{msg.supervisor}" priority="6">
+					<h:outputText value="#{study.supervisor}" />
+				</p:column>
+				<p:column headerText="#{msg.status}" priority="6">
+					<h:outputText value="#{study.status}" />
+				</p:column>
+				<p:column headerText="#{msg.actions}" priority="2">
+					<p:commandButton icon="fa fa-fw fa-trash-o"
+						actionListener="#{studyManage.softDeleteStudy(study)}"
+						update="studyTable" title="#{msg.delete}">
+						<p:confirm header="#{msg.confirmation}"
+							message="#{msg.soft_delete_agent_confirmation}"
+							icon="ui-icon-alert" />
+						<f:setPropertyActionListener value="#{agent}"
+							target="#{personManage.agentBean}" />
+					</p:commandButton>
+					<p:commandButton icon="fa fa-edit"
+						action="#{personManage.forwardToAddUser(agent)}"
+						title="#{msg.edit}">
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="#{msg.yes}" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="#{msg.no}" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

@@ -2,8 +2,10 @@ package com.rewa.managedBeans;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -21,7 +23,6 @@ import com.rewa.hibernate.data.Coordinate;
 import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Diploma;
 import com.rewa.hibernate.data.Person;
-import com.rewa.hibernate.data.PersonDiploma;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.spring.service.CommonService;
@@ -57,6 +58,8 @@ public class PersonManage {
 	private CommonService commonService;
 
 	private Integer ratingBase;
+	
+	private boolean displayAllUsers;
 
 	@PostConstruct
 	public void init() {
@@ -86,6 +89,10 @@ public class PersonManage {
 
 	public String register() {
 		person = getPersonByPersonBean(person, agentBean);
+
+		/**************** Coordinates *********************/
+		setCoordinates();
+		
 		// Roles
 		// If no role selected, check if the person already has any role and remove it
 		if (selectedRoles == null || selectedRoles.length == 0) {
@@ -100,25 +107,31 @@ public class PersonManage {
 			}
 		}
 
-		/**************** Coordinates *********************/
-		setCoordinates();
-
 		/**************** Diplomas *********************/
 		// If no Diploma selected, check if the person already has any diploma and
 		// remove it
 		if (selectedDiplomas == null || selectedDiplomas.length == 0) {
 			person.setDiplomas(null);
 		} else {
-			for (String diplomaname : selectedDiplomas) {
-				Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
-				// be sure the person doesn't already have the diplomaname
-				Set<Diploma> personDiplomas = commonService.getDiplomasByPerson(person);
-				if (diploma != null && (personDiplomas == null || !personDiplomas.contains(diploma))) {
-					PersonDiploma pd = new PersonDiploma();
-					pd.setDiploma(diploma);
-					pd.setPerson(person);
-					pd = personService.savePersonDiploma(pd);
+			//If only selected diplomas in UI is different than the registered 
+			//ones in database then update the database
+			Set<Diploma> personDiplomas = person.getDiplomas();
+			boolean dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
+					.collect(Collectors.toSet()).equals(selectedDiplomas);
+			
+			log.debug("dbDiplomasMatchesSelectedDiplomas: " + dbDiplomasMatchesSelectedDiplomas);
+			if(!dbDiplomasMatchesSelectedDiplomas) {
+				HashSet<Diploma> diplomas = new HashSet<Diploma>();
+				person.getDiplomas().clear();
+				//person.setDiplomas(diplomas);
+				for (String diplomaname : selectedDiplomas) {
+					Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
+					if (diploma != null 
+							&& (personDiplomas == null || !personDiplomas.contains(diploma))) {
+						diplomas.add(diploma);
+					}
 				}
+				person.setDiplomas(diplomas);
 			}
 		}
 
@@ -132,7 +145,7 @@ public class PersonManage {
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage("La personne " + this.agentBean.getFullname() + " a été enregistré avec succés"));
 		log.debug("New person registred: " + person.getIdPerson());
-		return Constant.ADMIN_PAGE_OUTCOME;
+		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
 	private void setCoordinates() {
@@ -175,7 +188,7 @@ public class PersonManage {
 		CoordinateType ct = commonService.getCoordinateTypeById(coordinateTypeId);
 		try {
 			List<Coordinate> coordinates = personService.getCoordinateByOwnerTypeAndStatus(person, ct, status);
-			if (coordinates != null) {
+			if (coordinates != null && !coordinates.isEmpty()) {
 				coordinate = coordinates.get(0);
 			}
 		} catch (Exception e) {
@@ -276,7 +289,7 @@ public class PersonManage {
 	}
 
 	public String cancelUerRegistration() {
-		return Constant.ADMIN_PAGE_OUTCOME;
+		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
 	public List<Person> getPersons() {
@@ -304,6 +317,10 @@ public class PersonManage {
 	public List<PersonBean> getActiveAgents() {
 		agents = personService.getAgentsByStatus(status);
 		return agents;
+	}
+	
+	public List<PersonBean> getActiveSystemUsers() {
+		return personService.getActiveSystemUsers(displayAllUsers);
 	}
 
 	public void setAgents(List<PersonBean> personsBean) {
@@ -411,7 +428,7 @@ public class PersonManage {
 			person = getPersonByPersonBean(person, agentBean);
 		}
 
-		Set<Diploma> diplomas = commonService.getDiplomasByPerson(person);
+		Set<Diploma> diplomas = person.getDiplomas();
 		int nb = (diplomas != null) ? diplomas.size() : 0;
 		if (nb > 0) {
 			selectedDiplomas = new String[nb];
@@ -435,6 +452,14 @@ public class PersonManage {
 
 	public void setRatingBase(Integer ratingBase) {
 		this.ratingBase = ratingBase;
+	}
+
+	public boolean isDisplayAllUsers() {
+		return displayAllUsers;
+	}
+
+	public void setDisplayAllUsers(boolean displayAllUsers) {
+		this.displayAllUsers = displayAllUsers;
 	}
 
 }

@@ -24,6 +24,7 @@ public class RewaManage {
 	
 	@PostConstruct
     public void init() {
+		log.debug("init");
 		statusMap = new HashMap<String, String>();
 		for(Status status: commonService.getAllStatus()) {
 			statusMap.put(status.getStatus(), status.getStatus());

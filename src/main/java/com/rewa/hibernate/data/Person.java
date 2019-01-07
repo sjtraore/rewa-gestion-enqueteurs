@@ -63,6 +63,12 @@ public class Person implements Serializable {
 					@JoinColumn(name = "idRole", referencedColumnName = "idRole") })
 	private List<Role> roles;
 
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "rewa_person_diploma", joinColumns = {
+			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
+					@JoinColumn(name = "idDiploma", referencedColumnName = "idDiploma") })
+	private Set<Diploma> diplomas;
+
 	@OneToMany(mappedBy = "owner")
 	private Set<Coordinate> coordinates;
 
@@ -80,12 +86,6 @@ public class Person implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "status")
 	private Status status;
-
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "rewa_person_diploma", joinColumns = {
-			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
-					@JoinColumn(name = "idDiploma", referencedColumnName = "idDiploma") })
-	private Set<Diploma> diplomas;
 
 	public Person() {
 	}
@@ -210,7 +210,7 @@ public class Person implements Serializable {
 		return diploma;
 	}
 
-	public Diploma removeRole(Diploma diploma) {
+	public Diploma removeDiploma(Diploma diploma) {
 		getDiplomas().remove(diploma);
 
 		return diploma;

@@ -35,12 +35,12 @@ public class Customer implements Serializable {
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
 	@JoinColumn(name="createdBy")
-	private Person rewaPerson1;
+	private Person createdBy;
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
 	@JoinColumn(name="modifiedBy")
-	private Person rewaPerson2;
+	private Person modifiedBy;
 
 	//bi-directional many-to-one association to RewaStudy
 	@OneToMany(mappedBy="rewaCustomer")
@@ -89,20 +89,20 @@ public class Customer implements Serializable {
 		this.rewaStatus = rewaStatus;
 	}
 
-	public Person getRewaPerson1() {
-		return this.rewaPerson1;
+	public Person getCreatedBy() {
+		return this.createdBy;
 	}
 
-	public void setRewaPerson1(Person rewaPerson1) {
-		this.rewaPerson1 = rewaPerson1;
+	public void setCreatedBy(Person createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public Person getRewaPerson2() {
-		return this.rewaPerson2;
+	public Person getModifiedBy() {
+		return this.modifiedBy;
 	}
 
-	public void setRewaPerson2(Person rewaPerson2) {
-		this.rewaPerson2 = rewaPerson2;
+	public void setModifiedBy(Person modifiedBy) {
+		this.modifiedBy = modifiedBy;
 	}
 
 	public List<Study> getRewaStudies() {

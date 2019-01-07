@@ -49,6 +49,8 @@ public class PersonBean {
 	private Integer ratingMSWord;
 	private Integer ratingMSExcel;
 	private Integer ratingMSPowerpoint;
+	private double averageEnq;
+	private double averageCont;
 	
 	public PersonBean() {
 		super();
@@ -317,6 +319,26 @@ public class PersonBean {
 
 	public void setRatingMSPowerpoint(Integer ratingMSPowerpoint) {
 		this.ratingMSPowerpoint = ratingMSPowerpoint;
+	}
+
+
+	public double getAverageCont() {
+		return averageCont;
+	}
+
+
+	public void setAverageCont(double averageCont) {
+		this.averageCont = averageCont;
+	}
+
+
+	public double getAverageEnq() {
+		return averageEnq;
+	}
+
+
+	public void setAverageEnq(double averageEnq) {
+		this.averageEnq = averageEnq;
 	}
 	
 }

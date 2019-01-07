@@ -69,7 +69,7 @@ public class LoginManage implements Serializable {
 			HttpSession session = SessionUtils.getSession();
 			session.setAttribute("username", user);
 			session.setAttribute("connectedUser", connectedUser);
-			return "admin";
+			return "agent";
 		} else {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
 					"Utilisateur ou mot de passe incorrect", "Veuillez ré-essayer ou contacter un administrateur"));

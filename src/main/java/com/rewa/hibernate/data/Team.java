@@ -27,7 +27,7 @@ public class Team implements Serializable {
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
 	@JoinColumn(name="idSupervisor")
-	private Person rewaPerson;
+	private Person supervisor;
 
 	public Team() {
 	}
@@ -70,12 +70,12 @@ public class Team implements Serializable {
 		return rewaStudy;
 	}
 
-	public Person getRewaPerson() {
-		return this.rewaPerson;
+	public Person getSupervisor() {
+		return this.supervisor;
 	}
 
-	public void setRewaPerson(Person rewaPerson) {
-		this.rewaPerson = rewaPerson;
+	public void setSupervisor(Person supervisor) {
+		this.supervisor = supervisor;
 	}
 
 }

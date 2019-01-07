@@ -7,6 +7,9 @@
    <PROCESS-ITEM-OUTPUT ID="admin::#secured#admin-main.xhtml"
     NAME="output" PATH="/secured/admin-main.xhtml"
     TARGET="rules:#secured#admin-main.xhtml" TITLE="admin" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="agent::#secured#agent.xhtml" NAME="output1"
+    PATH="/secured/agent.xhtml" TARGET="rules:#secured#agent.xhtml"
+    TITLE="agent" model-entity="JSFProcessItemOutput"/>
   </PROCESS-ITEM>
  </PROCESS-ITEM>
  <PROCESS-ITEM NAME="rules:#secured#*" PATH="/secured/*"
@@ -31,8 +34,10 @@
  </PROCESS-ITEM>
  <PROCESS-ITEM NAME="rules:#secured#addUser.xhtml"
   PATH="/secured/addUser.xhtml" SHAPE="256,145,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#secured#viewUser.xhtml"
+  PATH="/secured/viewUser.xhtml" SHAPE="256,224,50,25" model-entity="JSFProcessGroup"/>
  <PROCESS-ITEM NAME="rules:#secured#admin-main.xhtml"
   PATH="/secured/admin-main.xhtml" SHAPE="480,17,0,0" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#secured#viewUser.xhtml"
-  PATH="/secured/viewUser.xhtml" SHAPE="272,321,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#secured#agent.xhtml"
+  PATH="/secured/agent.xhtml" SHAPE="496,161,0,0" model-entity="JSFProcessGroup"/>
 </PROCESS>
