@@ -59,6 +59,8 @@ public class PersonManage {
 	private Integer ratingBase;
 	
 	private boolean displayAllUsers;
+	
+	private boolean connectedUserIsAdmin;
 
 	@PostConstruct
 	public void init() {
@@ -72,9 +74,10 @@ public class PersonManage {
 
 		person = getPersonByPersonBean(person, agentBean);
 		rolesList = new ArrayList<String>();
+		setConnectedUserIsAdmin(connectedUserRoles.contains(adminRole));
 		// Only an admin can see and give Admin role to someone else
 		for (Role role : commonService.getALLRoles()) {
-			if (role.getIdRole() != Constant.ADMIN_ROLE_ID || connectedUserRoles.contains(adminRole))
+			if (role.getIdRole() != Constant.ADMIN_ROLE_ID || isConnectedUserIsAdmin())
 				rolesList.add(role.getRole());
 		}
 		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
@@ -240,13 +243,40 @@ public class PersonManage {
 		return "";
 	}
 
+	//Hard delete. Allowed only for admin
 	public String deletePerson(PersonBean agentBean) {
-		System.out.println("Deleting: " + agentBean);
-		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Utilisateur suprimé", null);
-		return "";
+		if(isConnectedUserIsAdmin()) {
+			log.debug("Hard deleting PersonBean: " + agentBean);
+			Person person = getPersonByPersonBean(null, agentBean);
+			//Allow only deleting inactive person
+			Status inactiveStatus = commonService.getStatusByStatusName(Constant.INACTIVE_STATUS);
+			if(person.getStatus().equals(inactiveStatus)) {
+				personService.delete(person);
+
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage("Utilisateur, " + person + ", définitement supprimé."));
+				
+			} else {
+				// Add message
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage("On ne peut pas supprimer un utilisateur actif. "
+								+ "\nMerci de désactivé avant en utilisant le bouton Supprimer' à côté de l\'icône poubelle."));
+				log.debug("Person person NOT deleted");
+				
+			}
+		}
+		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
+	/**
+	 * Returns PersonBean object from Person. 
+	 * If person in parameter is null then returns new Person to be probably registered in database
+	 * @param person
+	 * @param personBean
+	 * @return
+	 */
 	private Person getPersonByPersonBean(Person person, PersonBean personBean) {
+		//TODO check if person in parameter is necessary
 		if (personBean != null) {
 			person = new Person();
 			int idPerson = personBean.getIdPerson();
@@ -459,6 +489,14 @@ public class PersonManage {
 
 	public void setDisplayAllUsers(boolean displayAllUsers) {
 		this.displayAllUsers = displayAllUsers;
+	}
+
+	public boolean isConnectedUserIsAdmin() {
+		return connectedUserIsAdmin;
+	}
+
+	public void setConnectedUserIsAdmin(boolean connectedUserIsAdmin) {
+		this.connectedUserIsAdmin = connectedUserIsAdmin;
 	}
 
 }

@@ -4,6 +4,7 @@ public class Constant {
 	public static final String ADMIN_MAIN_PAGE = "secured/admin-main";
 	public static final String ADMIN_PAGE_OUTCOME = "admin";
 	public static final String USER_HOME_PAGE_OUTCOME = "agent";
+	public static final String SYSTEM_USER_PAGE_OUTCOME = "users";
 	public static final String LOGIN_PAGE_OUTCOME = "login";
 	public static final String ADD_USER_PAGE_OUTCOME = "adduser";
 	public static final String VIEW_USER_PAGE_OUTCOME = "viewuser";

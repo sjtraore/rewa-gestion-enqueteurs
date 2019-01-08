@@ -54,6 +54,14 @@ public class PersonService {
 			session.merge(person);
 		}
 	}
+	
+	//Hard delete
+	@Transactional
+	public void delete(Person person) {
+		// Acquire session
+		Session session = sessionFactory.getCurrentSession();
+		session.delete(person);
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Person> getPersons() {

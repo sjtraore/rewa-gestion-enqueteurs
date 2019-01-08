@@ -63,6 +63,15 @@
 							action="#{personManage.forwardToAddUser(agent)}"
 							title="#{msg.edit}">
 						</p:commandButton>
+						<p:commandButton icon="fa fa-remove" style="color:red"
+							actionListener="#{personManage.deletePerson(agent)}"
+							update="systemUserTable" title="#{msg.delete}" rendered="#{personManage.connectedUserIsAdmin}">
+							<p:confirm header="#{msg.confirmation}"
+								message="#{msg.hard_delete_agent_confirmation}"
+								icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{agent}"
+								target="#{personManage.agentBean}" />
+						</p:commandButton>
 					</p:column>
 				</p:dataTable>
 				<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
