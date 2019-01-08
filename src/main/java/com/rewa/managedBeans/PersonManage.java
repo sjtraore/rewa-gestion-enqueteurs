@@ -44,7 +44,6 @@ public class PersonManage {
 	// Diploma
 	private List<String> schoolLevelList;
 	private String[] selectedDiplomas = null;
-
 	private Status status;
 	private Person connectedUser;
 

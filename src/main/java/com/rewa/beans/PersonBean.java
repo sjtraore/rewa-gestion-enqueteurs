@@ -31,8 +31,6 @@ public class PersonBean {
 	private String region;
 	private String contry;
 	
-
-	
 	/********** Roles ***********/
 	private List<String> roles;
 	

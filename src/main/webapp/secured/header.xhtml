@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	<link href="css/custom.css" type="text/css" rel="stylesheet" />
+	<div class="ui-g">
+		<!-- Logo -->
+		<div style="float: left">
+			<p:graphicImage value="images/rewa-logo.png" />
+		</div>
+
+		<!-- Menu -->
+		<div class="header-right">
+			<h:form>
+				<p:growl id="growl" life="2000" />
+				<h:outputFormat value="#{msg['welcome']}" style="margin-right:10px;">
+					<f:param value="#{loginManage.user}" />
+				</h:outputFormat>
+				<p:commandLink id="ajax" update="growl"
+					actionListener="#{loginManage.logoutAction}"
+					style="margin-right:10px;">
+					<h:outputText value="#{msg.my_profile}" />
+				</p:commandLink>
+
+				<h:commandButton action="#{loginManage.logoutAction}"
+					value="#{msg.disconnect}"></h:commandButton>
+			</h:form>
+		</div>
+	</div>
+</ui:composition>
