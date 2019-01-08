@@ -1,8 +1,11 @@
 package com.rewa.utils;
 
+import java.util.Set;
+
 import com.rewa.beans.PersonBean;
 import com.rewa.hibernate.data.Coordinate;
 import com.rewa.hibernate.data.CoordinateType;
+import com.rewa.hibernate.data.Diploma;
 import com.rewa.hibernate.data.Person;
 
 public class PersonUtils {
@@ -29,6 +32,19 @@ public class PersonUtils {
 			Person personUpdator = person.getUpdator();
 			if(personUpdator != null) {
 				personBean.setUpdatorName(personUpdator.getFirstname() + " " + personUpdator.getLastname());
+			}
+			
+			//List of diplomas
+			Set<Diploma> diplomas = person.getDiplomas();
+			if(diplomas != null) {
+				int nbDiplomas = diplomas.size();
+				String[] selectedDiplomas = new String[nbDiplomas];
+				int counter = 0;
+				for(Diploma diploma : diplomas) {
+					selectedDiplomas[counter] = diploma.getDiploma();
+					counter++;
+				}
+				personBean.setSelectedDiplomas(selectedDiplomas);
 			}
 		}
 		return personBean;

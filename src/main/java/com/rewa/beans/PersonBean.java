@@ -50,6 +50,8 @@ public class PersonBean {
 	private double averageEnq;
 	private double averageCont;
 	
+	private String[] selectedDiplomas = null;
+	
 	public PersonBean() {
 		super();
 		this.createdDate = new Date();
@@ -337,6 +339,16 @@ public class PersonBean {
 
 	public void setAverageEnq(double averageEnq) {
 		this.averageEnq = averageEnq;
+	}
+
+
+	public String[] getSelectedDiplomas() {
+		return selectedDiplomas;
+	}
+
+
+	public void setSelectedDiplomas(String[] selectedDiplomas) {
+		this.selectedDiplomas = selectedDiplomas;
 	}
 	
 }

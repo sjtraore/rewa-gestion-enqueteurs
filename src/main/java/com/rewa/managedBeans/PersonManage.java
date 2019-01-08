@@ -43,7 +43,6 @@ public class PersonManage {
 	private String[] selectedRoles = null;
 	// Diploma
 	private List<String> schoolLevelList;
-	private String[] selectedDiplomas = null;
 	private Status status;
 	private Person connectedUser;
 
@@ -109,33 +108,6 @@ public class PersonManage {
 			}
 		}
 
-		/**************** Diplomas *********************/
-		// If no Diploma selected, check if the person already has any diploma and
-		// remove it
-		if (selectedDiplomas == null || selectedDiplomas.length == 0) {
-			person.setDiplomas(null);
-		} else {
-			//If only selected diplomas in UI is different than the registered 
-			//ones in database then update the database
-			Set<Diploma> personDiplomas = person.getDiplomas();
-			boolean dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
-					.collect(Collectors.toSet()).equals(selectedDiplomas);
-			
-			log.debug("dbDiplomasMatchesSelectedDiplomas: " + dbDiplomasMatchesSelectedDiplomas);
-			if(!dbDiplomasMatchesSelectedDiplomas) {
-				HashSet<Diploma> diplomas = new HashSet<Diploma>();
-				person.getDiplomas().clear();
-				//person.setDiplomas(diplomas);
-				for (String diplomaname : selectedDiplomas) {
-					Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
-					if (diploma != null 
-							&& (personDiplomas == null || !personDiplomas.contains(diploma))) {
-						diplomas.add(diploma);
-					}
-				}
-				person.setDiplomas(diplomas);
-			}
-		}
 
 		/**************** Rating *********************/
 		// Languages
@@ -312,6 +284,37 @@ public class PersonManage {
 			/*********** Status ************/
 			status = commonService.getStatusByStatusName(personBean.getStatus());
 			person.setStatus(status);
+			
+
+			/**************** Diplomas *********************/
+			// If no Diploma selected, check if the person already has any diploma and
+			// remove it
+
+			String[] selectedDiplomas = personBean.getSelectedDiplomas();
+			if (selectedDiplomas == null || selectedDiplomas.length == 0) {
+				person.setDiplomas(null);
+			} else {
+				//If only selected diplomas in UI is different than the registered 
+				//ones in database then update the database
+				Set<Diploma> personDiplomas = person.getDiplomas();
+				boolean dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
+						.collect(Collectors.toSet()).equals(selectedDiplomas);
+				
+				log.debug("dbDiplomasMatchesSelectedDiplomas: " + dbDiplomasMatchesSelectedDiplomas);
+				if(!dbDiplomasMatchesSelectedDiplomas) {
+					HashSet<Diploma> diplomas = new HashSet<Diploma>();
+					person.getDiplomas().clear();
+					//person.setDiplomas(diplomas);
+					for (String diplomaname : selectedDiplomas) {
+						Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
+						if (diploma != null 
+								&& (personDiplomas == null || !personDiplomas.contains(diploma))) {
+							diplomas.add(diploma);
+						}
+					}
+					person.setDiplomas(diplomas);
+				}
+			}
 
 		}
 		return person;
@@ -450,29 +453,6 @@ public class PersonManage {
 
 	public void setSchoolLevelList(List<String> schoolLevelList) {
 		this.schoolLevelList = schoolLevelList;
-	}
-
-	public String[] getSelectedDiplomas() {
-		if (person == null || person.getIdPerson() != agentBean.getIdPerson()) {
-			person = getPersonByPersonBean(person, agentBean);
-		}
-
-		Set<Diploma> diplomas = person.getDiplomas();
-		int nb = (diplomas != null) ? diplomas.size() : 0;
-		if (nb > 0) {
-			selectedDiplomas = new String[nb];
-			int counter = 0;
-			for (Diploma diploma : diplomas) {
-				selectedDiplomas[counter] = diploma.getDiploma();
-				counter++;
-			}
-		}
-		System.out.println("selectedDiplomas: " + selectedDiplomas);
-		return selectedDiplomas;
-	}
-
-	public void setSelectedDiplomas(String[] selectedDiplomas) {
-		this.selectedDiplomas = selectedDiplomas;
 	}
 
 	public Integer getRatingBase() {

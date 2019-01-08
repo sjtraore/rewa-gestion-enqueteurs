@@ -130,9 +130,9 @@
 							<div class="ui-grid-col-4">
 								<h3>#{msg.shool_level}</h3>
 								<p:selectManyCheckbox id="smcLevel" layout="pageDirection"
-									columns="1" value="#{personManage.selectedDiplomas}"
+									columns="1" value="#{personManage.agentBean.selectedDiplomas}"
 									label="#{msg.diplomas}" panelStyle="width:250px">
-									<f:selectItems value="#{personManage.schoolLevelList}" var="diploma" itemValue="diploma" />
+									<f:selectItems value="#{personManage.schoolLevelList}" var="diploma" itemValue="#{diploma}" />
 								</p:selectManyCheckbox>
 							</div>
 							<div class="ui-grid-col-4">
