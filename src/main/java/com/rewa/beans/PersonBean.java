@@ -51,6 +51,8 @@ public class PersonBean {
 	private double averageCont;
 	
 	private String[] selectedDiplomas = null;
+
+	private String[] selectedRoles = null;
 	
 	public PersonBean() {
 		super();
@@ -349,6 +351,16 @@ public class PersonBean {
 
 	public void setSelectedDiplomas(String[] selectedDiplomas) {
 		this.selectedDiplomas = selectedDiplomas;
+	}
+
+
+	public String[] getSelectedRoles() {
+		return selectedRoles;
+	}
+
+
+	public void setSelectedRoles(String[] selectedRoles) {
+		this.selectedRoles = selectedRoles;
 	}
 	
 }

@@ -34,6 +34,14 @@ public class Constant {
 	public static final String SUPERVISEUR_ROLE_STRING = "Superviseur";
 	public static final String CONTROLLEUR_ROLE_STRING = "Controlleur";
 	public static final String ADMIN_ROLE_STRING = "Admin";
+
+	public static final int ID_RATING_FRENCH_WRITING = 1;
+	public static final int ID_RATING_FRENCH_ORAL = 2;
+	public static final int ID_RATING_LOCAL_LANGUAGES = 3;
+	
+	public static final int ID_RATING_MS_EXCEL = 4;
+	public static final int ID_RATING_MS_WORD = 5;
+	public static final int ID_RATING_MS_POWERPOINT = 6;
 	
 	public static final int RATING_BASE = 3;
 	

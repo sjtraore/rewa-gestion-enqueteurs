@@ -3,9 +3,11 @@ package com.rewa.spring.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -71,7 +73,6 @@ public class PersonService {
 			List<Person> result = session.createCriteria(Person.class).list();
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -102,6 +103,7 @@ public class PersonService {
 		return personDiploma;
 	}
 
+	
 	public List<PersonBean> getAllAgents() {
 		List<PersonBean> result = null;
 		try {
@@ -129,16 +131,21 @@ public class PersonService {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(Person.class).add(Restrictions.eq("status", status));
+//			Query query = session.getNamedQuery("Person.findByStatus").setParameter("status", status);
+//			List<Person> persons = query.list();
+			
+			Criteria criteria = session.createCriteria(Person.class)
+					.add(Restrictions.eq("status", status));
 			@SuppressWarnings("unchecked")
 			List<Person> persons = criteria.list();
+			
 			if (persons != null) {
 				result = new ArrayList<PersonBean>();
 				Role enqueteurRole = commonService.getRoleById(Constant.ENQUETEUR_ROLE_ID);
 
 				for (Person person : persons) {
 					// Proceed only with enqueteurs
-					List<Role> roles = person.getRoles();
+					Set<Role> roles = person.getRoles();
 					if (roles != null && !roles.isEmpty() && roles.contains(enqueteurRole)) {
 						PersonBean personBean = PersonUtils.getPersonBeanByPerson(person);
 						setCoordinates(person, personBean);
@@ -182,6 +189,21 @@ public class PersonService {
 		}
 	}
 
+	
+	public Person getPersonByIdLoadingPersonLevels(int idPerson) {
+		Person person = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.getNamedQuery("Person.findByIdLoadingPersonLevels").setParameter("idPerson", idPerson);
+			person = (Person) query.uniqueResult();
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+		return person;
+	}
+	
 	public Person getPersonById(int idPerson) {
 		try {
 			// Acquire session

@@ -1,7 +1,7 @@
 package com.rewa.managedBeans;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -102,7 +102,7 @@ public class LoginManage implements Serializable {
 
 	public boolean isAdmin() {
 		if (connectedUser != null) {
-			List<Role> roles = connectedUser.getRoles();
+			Set<Role> roles = connectedUser.getRoles();
 			if (roles != null && !roles.isEmpty())
 				for (Role role : roles) {
 					if (role.getIdRole() == Constant.ADMIN_ROLE_ID)

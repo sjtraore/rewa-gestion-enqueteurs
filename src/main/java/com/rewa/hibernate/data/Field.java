@@ -21,8 +21,8 @@ public class Field implements Serializable {
 	private String field;
 
 	//bi-directional many-to-one association to RewaPersonLevel
-	@OneToMany(mappedBy="rewaField")
-	private List<PersonLevel> rewaPersonLevels;
+	@OneToMany(mappedBy="field")
+	private List<PersonLevel> personLevels;
 
 	public Field() {
 	}
@@ -43,26 +43,54 @@ public class Field implements Serializable {
 		this.field = field;
 	}
 
-	public List<PersonLevel> getRewaPersonLevels() {
-		return this.rewaPersonLevels;
+	public List<PersonLevel> getPersonLevels() {
+		return this.personLevels;
 	}
 
-	public void setRewaPersonLevels(List<PersonLevel> rewaPersonLevels) {
-		this.rewaPersonLevels = rewaPersonLevels;
+	public void setPersonLevels(List<PersonLevel> personLevels) {
+		this.personLevels = personLevels;
 	}
 
-	public PersonLevel addRewaPersonLevel(PersonLevel rewaPersonLevel) {
-		getRewaPersonLevels().add(rewaPersonLevel);
-		rewaPersonLevel.setRewaField(this);
+	public PersonLevel addPersonLevel(PersonLevel personLevel) {
+		getPersonLevels().add(personLevel);
+		personLevel.setField(this);
 
-		return rewaPersonLevel;
+		return personLevel;
 	}
 
-	public PersonLevel removeRewaPersonLevel(PersonLevel rewaPersonLevel) {
-		getRewaPersonLevels().remove(rewaPersonLevel);
-		rewaPersonLevel.setRewaField(null);
+	public PersonLevel removePersonLevel(PersonLevel personLevel) {
+		getPersonLevels().remove(personLevel);
+		personLevel.setField(null);
 
-		return rewaPersonLevel;
+		return personLevel;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((field == null) ? 0 : field.hashCode());
+		result = prime * result + idField;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Field other = (Field) obj;
+		if (field == null) {
+			if (other.field != null)
+				return false;
+		} else if (!field.equals(other.field))
+			return false;
+		if (idField != other.idField)
+			return false;
+		return true;
 	}
 
 }

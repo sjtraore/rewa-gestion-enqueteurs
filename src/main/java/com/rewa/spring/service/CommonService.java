@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Diploma;
+import com.rewa.hibernate.data.Field;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.PersonDiploma;
 import com.rewa.hibernate.data.Role;
@@ -47,7 +48,39 @@ public class CommonService {
 			return null;
 		}
 	}
+
+	public Field getFieldById(int idField) {
+		Field field = null;
+		if (idField != 0) {
+			try {
+				// Acquire session
+				Session session = sessionFactory.getCurrentSession();
+				Criteria createCriteria = session.createCriteria(Field.class);
+				field = (Field) createCriteria.add(Restrictions.eq("idField", idField)).uniqueResult();
+				log.debug("Found field: " + field);
+			} catch (Exception e) {
+				log.error(e, e);
+			}
+		}
+		return field;
+	}
 	
+	public Field getFieldByFieldname(String fieldname) {
+		Field field = null;
+		if (fieldname != null) {
+			try {
+				// Acquire session
+				Session session = sessionFactory.getCurrentSession();
+				Criteria createCriteria = session.createCriteria(Field.class);
+				field = (Field) createCriteria.add(Restrictions.eq("field", fieldname)).uniqueResult();
+				log.debug("Found field by its name: " + field);
+			} catch (Exception e) {
+				log.error(e, e);
+			}
+		}
+		return field;
+	}
+
 	public Status getStatusByStatusId(int id) {
 		Status result = null;
 		try {
@@ -88,7 +121,7 @@ public class CommonService {
 			return null;
 		}
 	}
-	
+
 	public Diploma getDiplomaByDiplomaName(String diploma) {
 		try {
 			// Acquire session
@@ -102,19 +135,20 @@ public class CommonService {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public Set<Diploma> getDiplomasByPerson(Person person){
+	public Set<Diploma> getDiplomasByPerson(Person person) {
 		Set<Diploma> result = null;
-		
+
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			//Criteria criteria = session.createCriteria(PersonDiploma.class);
-			List<PersonDiploma> personDiplomaList = session.createCriteria(PersonDiploma.class).list(); //criteria.add(Restrictions.eq("person", person)).list();
-			if(personDiplomaList != null && !personDiplomaList.isEmpty()) {
+			// Criteria criteria = session.createCriteria(PersonDiploma.class);
+			List<PersonDiploma> personDiplomaList = session.createCriteria(PersonDiploma.class).list(); // criteria.add(Restrictions.eq("person",
+																										// person)).list();
+			if (personDiplomaList != null && !personDiplomaList.isEmpty()) {
 				result = new HashSet<Diploma>();
-				for(PersonDiploma personDiploma : personDiplomaList) {
+				for (PersonDiploma personDiploma : personDiplomaList) {
 					result.add(personDiploma.getDiploma());
 				}
 			}

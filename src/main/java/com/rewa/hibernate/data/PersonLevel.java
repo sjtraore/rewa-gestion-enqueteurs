@@ -25,13 +25,13 @@ public class PersonLevel implements Serializable {
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
-	@JoinColumn(name="evaluatedBy")
+	@JoinColumn(name="evaluatedBy", insertable = false, updatable = false)
 	private Person evaluator;
 
 	//bi-directional many-to-one association to RewaField
 	@ManyToOne
 	@JoinColumn(name="idField", insertable = false, updatable = false)
-	private Field rewaField;
+	private Field field;
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -73,28 +73,64 @@ public class PersonLevel implements Serializable {
 		this.observation = observation;
 	}
 
-	public Person getRewaPerson1() {
+	public Person getEvaluator() {
 		return this.evaluator;
 	}
 
-	public void setRewaPerson1(Person rewaPerson1) {
-		this.evaluator = rewaPerson1;
+	public void setEvaluator(Person evaluator) {
+		this.evaluator = evaluator;
 	}
 
-	public Field getRewaField() {
-		return this.rewaField;
+	public Field getField() {
+		return this.field;
 	}
 
-	public void setRewaField(Field rewaField) {
-		this.rewaField = rewaField;
+	public void setField(Field field) {
+		this.field = field;
 	}
 
-	public Person getRewaPerson2() {
+	public Person getPerson() {
 		return this.person;
 	}
 
-	public void setRewaPerson2(Person rewaPerson2) {
-		this.person = rewaPerson2;
+	public void setPerson(Person person) {
+		this.person = person;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((field == null) ? 0 : field.hashCode());
+		result = prime * result + notation;
+		result = prime * result + ((person == null) ? 0 : person.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PersonLevel other = (PersonLevel) obj;
+		if (field == null) {
+			if (other.field != null)
+				return false;
+		} else if (!field.equals(other.field))
+			return false;
+		if (notation != other.notation)
+			return false;
+		if (person == null) {
+			if (other.person != null)
+				return false;
+		} else if (!person.equals(other.person))
+			return false;
+		return true;
+	}
+
+
 
 }

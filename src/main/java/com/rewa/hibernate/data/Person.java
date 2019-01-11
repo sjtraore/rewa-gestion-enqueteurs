@@ -1,10 +1,8 @@
 package com.rewa.hibernate.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -18,11 +16,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
 
 /**
  * The persistent class for the rewa_person database table.
@@ -30,7 +30,11 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "rewa_person")
-@NamedQuery(name = "Person.findAll", query = "SELECT r FROM Person r")
+@NamedQueries({
+	@NamedQuery(name = "Person.findAll", query = "SELECT r FROM Person r"),
+	@NamedQuery(name = "Person.findByStatus", query = "SELECT r FROM Person r where r.status = :status"),
+	@NamedQuery(name = "Person.findByIdLoadingPersonLevels", query = "SELECT r FROM Person r left join fetch r.personLevels where r.idPerson = :idPerson")
+})
 public class Person implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -61,13 +65,16 @@ public class Person implements Serializable {
 	@JoinTable(name = "rewa_person_role", joinColumns = {
 			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
 					@JoinColumn(name = "idRole", referencedColumnName = "idRole") })
-	private List<Role> roles;
+	private Set<Role> roles;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "rewa_person_diploma", joinColumns = {
 			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
 					@JoinColumn(name = "idDiploma", referencedColumnName = "idDiploma") })
 	private Set<Diploma> diplomas;
+	
+	@OneToMany(mappedBy = "person", cascade=CascadeType.ALL)
+	private Set<PersonLevel> personLevels;
 
 	@OneToMany(mappedBy = "owner")
 	private Set<Coordinate> coordinates;
@@ -178,17 +185,17 @@ public class Person implements Serializable {
 		this.username = username;
 	}
 
-	public List<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 
 	public Role addRole(Role role) {
 		if (getRoles() == null) {
-			setRoles(new ArrayList<Role>());
+			setRoles(new HashSet<Role>());
 		}
 		getRoles().add(role);
 
@@ -270,6 +277,28 @@ public class Person implements Serializable {
 
 	public void setDiplomas(Set<Diploma> diplomas) {
 		this.diplomas = diplomas;
+	}
+
+	
+	public PersonLevel addPersonLevel(PersonLevel personLevel) {
+		if (getPersonLevels() == null) {
+			setPersonLevels(new HashSet<PersonLevel>());
+		}
+		getPersonLevels().add(personLevel);
+		return personLevel;
+	}
+
+	public PersonLevel removePersonLevel(PersonLevel personLevel) {
+		getPersonLevels().remove(personLevel);
+		return personLevel;
+	}
+
+	public Set<PersonLevel> getPersonLevels() {
+		return personLevels;
+	}
+
+	public void setPersonLevels(Set<PersonLevel> personLevels) {
+		this.personLevels = personLevels;
 	}
 
 }

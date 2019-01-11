@@ -50,7 +50,7 @@
 				<p:fieldset legend="#{msg.roles}" style="margin-bottom:20px">
 					<h:panelGrid columns="2" cellpadding="5" layout="grid">
 						<p:selectManyCheckbox id="grid2" disabled="true"
-							value="#{personManage.selectedRoles}" layout="grid" columns="2">
+							value="#{personManage.agentBean.selectedRoles}" layout="grid" columns="2">
 							<f:selectItems value="#{personManage.rolesList}" var="role"
 								itemLabel="#{role}" itemValue="#{role}" />
 						</p:selectManyCheckbox>

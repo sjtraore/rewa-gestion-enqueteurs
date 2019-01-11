@@ -22,7 +22,10 @@ import com.rewa.constant.Constant;
 import com.rewa.hibernate.data.Coordinate;
 import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Diploma;
+import com.rewa.hibernate.data.Field;
 import com.rewa.hibernate.data.Person;
+import com.rewa.hibernate.data.PersonLevel;
+import com.rewa.hibernate.data.PersonLevelPK;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.spring.service.CommonService;
@@ -40,7 +43,6 @@ public class PersonManage {
 	private List<Person> persons;
 	private List<Person> filteredPersons;
 	private List<String> rolesList;
-	private String[] selectedRoles = null;
 	// Diploma
 	private List<String> schoolLevelList;
 	private Status status;
@@ -67,11 +69,15 @@ public class PersonManage {
 		HttpSession session = SessionUtils.getSession();
 		setConnectedUser((Person) session.getAttribute("connectedUser"));
 
-		List<Role> connectedUserRoles = (connectedUser != null) ? connectedUser.getRoles() : new ArrayList<Role>();
+		Set<Role> connectedUserRoles = (connectedUser != null) ? connectedUser.getRoles() : new HashSet<Role>();
 
 		Role adminRole = commonService.getRoleById(Constant.ADMIN_ROLE_ID);
 
 		person = getPersonByPersonBean(person, agentBean);
+
+		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
+		agents = personService.getAgentsByStatus(status);
+		
 		rolesList = new ArrayList<String>();
 		setConnectedUserIsAdmin(connectedUserRoles.contains(adminRole));
 		// Only an admin can see and give Admin role to someone else
@@ -79,7 +85,6 @@ public class PersonManage {
 			if (role.getIdRole() != Constant.ADMIN_ROLE_ID || isConnectedUserIsAdmin())
 				rolesList.add(role.getRole());
 		}
-		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 
 		schoolLevelList = new ArrayList<String>();
 		for (Diploma diploma : commonService.getALLDiplomas()) {
@@ -93,24 +98,6 @@ public class PersonManage {
 
 		/**************** Coordinates *********************/
 		setCoordinates();
-		
-		// Roles
-		// If no role selected, check if the person already has any role and remove it
-		if (selectedRoles == null || selectedRoles.length == 0) {
-			person.setRoles(null);
-		} else {
-			for (String rolename : selectedRoles) {
-				Role role = commonService.getRoleByRoleName(rolename);
-				// be sure the person doesn't already have the role
-				if (role != null && (person.getRoles() == null || !person.getRoles().contains(role))) {
-					person.addRole(role);
-				}
-			}
-		}
-
-
-		/**************** Rating *********************/
-		// Languages
 
 		// Calling Business Service
 		personService.save(person);
@@ -253,7 +240,8 @@ public class PersonManage {
 			person = new Person();
 			int idPerson = personBean.getIdPerson();
 			if (idPerson != 0) {
-				person = personService.getPersonById(idPerson);
+				//person = personService.getPersonById(idPerson);
+				person = personService.getPersonByIdLoadingPersonLevels(idPerson);
 			}
 			person.setFirstname(personBean.getFirstname());
 			person.setLastname(personBean.getLastname());
@@ -267,19 +255,7 @@ public class PersonManage {
 				person.setPassword(passwordBean);
 
 			/************ Rôles ***********/
-			List<String> rolenames = personBean.getRoles();
-			if (rolenames != null && !rolenames.isEmpty()) {
-				try {
-					List<Role> roles = new ArrayList<Role>();
-					for (String rolename : rolenames) {
-						Role role = commonService.getRoleByRoleName(rolename);
-						roles.add(role);
-					}
-					person.setRoles(roles);
-				} catch (Exception e) {
-					log.error(e, e);
-				}
-			}
+			setRoles(person, personBean);
 
 			/*********** Status ************/
 			status = commonService.getStatusByStatusName(personBean.getStatus());
@@ -287,37 +263,131 @@ public class PersonManage {
 			
 
 			/**************** Diplomas *********************/
-			// If no Diploma selected, check if the person already has any diploma and
-			// remove it
-
-			String[] selectedDiplomas = personBean.getSelectedDiplomas();
-			if (selectedDiplomas == null || selectedDiplomas.length == 0) {
-				person.setDiplomas(null);
-			} else {
-				//If only selected diplomas in UI is different than the registered 
-				//ones in database then update the database
-				Set<Diploma> personDiplomas = person.getDiplomas();
-				boolean dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
-						.collect(Collectors.toSet()).equals(selectedDiplomas);
-				
-				log.debug("dbDiplomasMatchesSelectedDiplomas: " + dbDiplomasMatchesSelectedDiplomas);
-				if(!dbDiplomasMatchesSelectedDiplomas) {
-					HashSet<Diploma> diplomas = new HashSet<Diploma>();
-					person.getDiplomas().clear();
-					//person.setDiplomas(diplomas);
-					for (String diplomaname : selectedDiplomas) {
-						Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
-						if (diploma != null 
-								&& (personDiplomas == null || !personDiplomas.contains(diploma))) {
-							diplomas.add(diploma);
-						}
-					}
-					person.setDiplomas(diplomas);
-				}
-			}
+			setPersonDiplomas(person, personBean);
+			
+			/**************************** Languages **************************/
+			setPersonLanguages(person, personBean);
 
 		}
 		return person;
+	}
+
+	private void setRoles(Person person, PersonBean personBean) {
+		String[] selectedRoles = personBean.getSelectedRoles();
+		
+		// Roles
+		// If no role selected, check if the person already has any role and remove it
+		if (selectedRoles == null || selectedRoles.length == 0) {
+			person.setRoles(null);
+		} else {
+			//If only selected diplomas in UI is different than the registered 
+			//ones in database then update the database
+			Set<Role> personRoles = person.getRoles();
+			boolean dbRolesMatchSelectedRoles = personRoles.stream().map(Role::getRole)
+					.collect(Collectors.toSet()).equals(selectedRoles);
+			log.debug("dbRolesMatchSelectedRoles: " + dbRolesMatchSelectedRoles);
+			
+			if(!dbRolesMatchSelectedRoles) {
+				Set<Role> roles = new HashSet<Role>();
+				person.getRoles().clear();
+				//person.setDiplomas(diplomas);
+				for (String rolename : selectedRoles) {
+					Role role = commonService.getRoleByRoleName(rolename);
+					if (role != null 
+							&& (personRoles == null || !personRoles.contains(role))) {
+						roles.add(role);
+					}
+				}
+				person.setRoles(roles);
+			}
+		}
+	}
+	
+	/**
+	 * Setting languages levels
+	 * @param person
+	 * @param personBean
+	 */
+	private void setPersonLanguages(Person person, PersonBean personBean) {
+		//PersonLevel pl = null;
+		Set<PersonLevel> plSetDB = person.getPersonLevels();
+		
+		Set<PersonLevel> plSet = new HashSet<PersonLevel>();
+		
+		//French Oral
+		Integer frenchOral = personBean.getRatingFrenchOral();
+		Field frenchOralField = commonService.getFieldById(Constant.ID_RATING_FRENCH_ORAL);
+		buildPersonLevel(person, plSet, frenchOral, frenchOralField, null);
+		
+		//French Writing
+		Integer frenchWriting = personBean.getRatingFrenchWriting();
+		Field frenchWritingField = commonService.getFieldById(Constant.ID_RATING_FRENCH_WRITING);
+		buildPersonLevel(person, plSet, frenchWriting, frenchWritingField, null);
+		
+		//Local Languages
+		Integer localLanguage = personBean.getRatingLocalLanguage();
+		Field localLanguageField = commonService.getFieldById(Constant.ID_RATING_LOCAL_LANGUAGES);
+		buildPersonLevel(person, plSet, localLanguage, localLanguageField, agentBean.getLocalLanguages());
+		
+		if(!plSet.equals(plSetDB)) {
+			person.getPersonLevels().clear();
+			person.setPersonLevels(plSet);
+		}
+	}
+
+	private void buildPersonLevel(Person person, Set<PersonLevel> plSet, Integer localLanguage,
+			Field field, String observation) {
+		if(field != null) {
+			int languageValue = (localLanguage == null) ? 0 : localLanguage.intValue();
+			PersonLevel pl = new PersonLevel();
+			pl.setField(field);
+			pl.setBaseNotation(Constant.RATING_BASE);
+			pl.setEvaluator(connectedUser);
+			pl.setNotation(languageValue);
+			pl.setPerson(person);
+			pl.setObservation(observation);
+			
+			PersonLevelPK plPK = new PersonLevelPK();
+			plPK.setIdPerson(person.getIdPerson());
+			plPK.setIdField(field.getIdField());
+			plPK.setDateLevel(new Date());
+			pl.setId(plPK);
+			
+			plSet.add(pl);
+		}
+	}
+
+	/**
+	 * Gets diploma names from personBean and add the matching diploma object to person
+	 * If no Diploma selected, check if the person already has any diploma in database and remove it
+	 * @param person
+	 * @param personBean
+	 */
+	private void setPersonDiplomas(Person person, PersonBean personBean) {
+		String[] selectedDiplomas = personBean.getSelectedDiplomas();
+		if (selectedDiplomas == null || selectedDiplomas.length == 0) {
+			person.setDiplomas(null);
+		} else {
+			//If only selected diplomas in UI is different than the registered 
+			//ones in database then update the database
+			Set<Diploma> personDiplomas = person.getDiplomas();
+			boolean dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
+					.collect(Collectors.toSet()).equals(selectedDiplomas);
+			
+			if(!dbDiplomasMatchesSelectedDiplomas) {
+				HashSet<Diploma> diplomas = new HashSet<Diploma>();
+				person.getDiplomas().clear();
+				//person.setDiplomas(diplomas);
+				for (String diplomaname : selectedDiplomas) {
+					Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
+					if (diploma != null 
+							&& (personDiplomas == null || !personDiplomas.contains(diploma))) {
+						diplomas.add(diploma);
+					}
+				}
+				person.setDiplomas(diplomas);
+			}
+		}
 	}
 
 	public String cancelUerRegistration() {
@@ -347,7 +417,6 @@ public class PersonManage {
 	}
 
 	public List<PersonBean> getActiveAgents() {
-		agents = personService.getAgentsByStatus(status);
 		return agents;
 	}
 	
@@ -408,27 +477,6 @@ public class PersonManage {
 
 	public void setRolesList(List<String> rolesList) {
 		this.rolesList = rolesList;
-	}
-
-	public String[] getSelectedRoles() {
-		selectedRoles = null;
-		if (person == null || person.getIdPerson() != agentBean.getIdPerson()) {
-			person = getPersonByPersonBean(person, agentBean);
-		}
-		if (person != null && person.getRoles() != null && !person.getRoles().isEmpty()) {
-			int personRoleList = person.getRoles().size();
-			selectedRoles = new String[personRoleList];
-			for (int i = 0; i < personRoleList; i++) {
-				selectedRoles[i] = (person.getRoles().get(i)).getRole();
-			}
-		}
-		System.out.println("person: " + person);
-		System.out.println("selectedRoles: " + selectedRoles);
-		return selectedRoles;
-	}
-
-	public void setSelectedRoles(String[] selectedRoles) {
-		this.selectedRoles = selectedRoles;
 	}
 
 	public Status getStatus() {
