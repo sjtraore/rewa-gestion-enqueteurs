@@ -30,6 +30,7 @@ import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.spring.service.CommonService;
 import com.rewa.spring.service.PersonService;
+import com.rewa.utils.PersonUtils;
 import com.rewa.utils.RewaUtils;
 import com.rewa.utils.SessionUtils;
 
@@ -76,7 +77,7 @@ public class PersonManage {
 		person = getPersonByPersonBean(person, agentBean);
 
 		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
-		agents = personService.getAgentsByStatus(status);
+		agents = personService.getAgentsByStatus(status, true);
 		
 		rolesList = new ArrayList<String>();
 		setConnectedUserIsAdmin(connectedUserRoles.contains(adminRole));
@@ -179,8 +180,8 @@ public class PersonManage {
 	}
 
 	public String forwardToAddUser(PersonBean agentBean) {
-		System.out.println("Agent: " + agentBean);
-		this.agentBean = agentBean;
+		Person eagerPerson = personService.getPersonByIdLoadingPersonLevels(agentBean.getIdPerson());
+		this.agentBean = PersonUtils.getPersonBeanByPerson(eagerPerson, false);
 		return Constant.ADD_USER_PAGE_OUTCOME;
 	}
 
@@ -411,7 +412,7 @@ public class PersonManage {
 	}
 
 	public List<PersonBean> getAgents() {
-		agents = personService.getAllAgents();
+		agents = personService.getAllAgents(true);
 		System.out.println("Agents : " + agents);
 		return agents;
 	}
@@ -421,7 +422,7 @@ public class PersonManage {
 	}
 	
 	public List<PersonBean> getActiveSystemUsers() {
-		return personService.getActiveSystemUsers(displayAllUsers);
+		return personService.getActiveSystemUsers(displayAllUsers, true);
 	}
 
 	public void setAgents(List<PersonBean> personsBean) {

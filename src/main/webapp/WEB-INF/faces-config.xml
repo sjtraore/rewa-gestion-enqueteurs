@@ -28,6 +28,18 @@
 			<from-outcome>viewuser</from-outcome>
 			<to-view-id>/secured/viewUser.xhtml</to-view-id>
 		</navigation-case>
+		<navigation-case>
+			<from-outcome>addstudy</from-outcome>
+			<to-view-id>/secured/addStudy.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>customers</from-outcome>
+			<to-view-id>/secured/customers.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>customers</from-outcome>
+			<to-view-id>/secured/addCustomer.xhtml</to-view-id>
+		</navigation-case>
 	</navigation-rule>
 	<navigation-rule>
 		<from-view-id>*</from-view-id>

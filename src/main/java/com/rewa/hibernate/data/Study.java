@@ -75,7 +75,7 @@ public class Study implements Serializable {
 		return this.rewaCustomer;
 	}
 
-	public void setRewaCustomer(Customer rewaCustomer) {
+	public void setCustomer(Customer rewaCustomer) {
 		this.rewaCustomer = rewaCustomer;
 	}
 

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>#{msg.add_user_or_agent}</title>
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+	<link href="../css/custom.css" type="text/css" rel="stylesheet" />
+	<h:outputScript library="js" name="../scripts/pfCalendarFrench.js" />
+</h:head>
+<h:body>
+	<ui:composition template="templates/common.xhtml">
+		<ui:define name="content">
+			<br />
+			<h:form id="studyform">
+				<p:growl id="msgstudy" showDetail="true" autoUpdate="true"></p:growl>
+				<p:fieldset legend="#{msg.adding_new_study}"
+					style="margin-bottom:20px">
+					<p:panelGrid columns="3" layout="grid" id="pgstudy">
+						<p:outputLabel value="#{msg.id}" id="idstudy"></p:outputLabel>
+						<p:outputLabel value="#{studyManage.studyBean.id}"></p:outputLabel>
+						<h:message for="idstudy"></h:message>
+
+						<p:outputLabel value="#{msg.study_name}"></p:outputLabel>
+						<p:inputText value="#{studyManage.studyBean.title}"
+							required="true" label="#{msg.study_name}" id="idstudyname"
+							style="width: 100%;" />
+						<h:message for="idstudyname"></h:message>
+
+						<p:outputLabel value="#{msg.customer}"></p:outputLabel>
+						<h:panelGrid columns="2">
+							<p:selectOneMenu id="somcustomer"
+								value="#{studyManage.studyBean.customer}" style="width:70%"
+								required="true">
+								<f:selectItem itemLabel="#{msg.select_with_dashes}" itemValue=""
+									noSelectionOption="true" />
+								<f:selectItems value="#{studyManage.customersStringMap}" />
+							</p:selectOneMenu>
+							<p:commandButton icon="ui-icon-plus"
+								title="#{msg.manage_customers}" immediate="true"
+								action="#{studyManage.forwardToManageCustomers()}">#{msg.manage_customers}</p:commandButton>
+						</h:panelGrid>
+						<h:message for="somcustomer"></h:message>
+
+						<p:outputLabel value="#{msg.from}"></p:outputLabel>
+						<p:calendar id="idstudyfrom"
+							value="#{studyManage.studyBean.startDate}" locale="fr"
+							navigator="true" pattern="dd-MM-yyyy" required="true">
+							<p:ajax event="dateSelect" update="idstudyto" />
+						</p:calendar>
+						<h:message for="idstudyfrom"></h:message>
+
+						<p:outputLabel value="#{msg.to}"></p:outputLabel>
+						<p:calendar id="idstudyto"
+							mindate="#{studyManage.studyBean.startDate}"
+							value="#{studyManage.studyBean.endDate}" locale="fr"
+							navigator="true" pattern="dd-MM-yyyy" required="true">
+							<f:attribute name="startDate"
+								value="#{studyManage.studyBean.startDate}" />
+							<f:validator validatorId="dateRangeValidator" />
+						</p:calendar>
+						<h:message for="idstudyto"></h:message>
+
+						<p:outputLabel value="#{msg.supervisor}"></p:outputLabel>
+						<p:selectOneMenu id="somsupervisor"
+							value="#{studyManage.studyBean.supervisor}" style="width:100%"
+							required="true">
+							<f:selectItem itemLabel="#{msg.select_with_dashes}" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{studyManage.supervisorsStringMap}" />
+						</p:selectOneMenu>
+						<h:message for="somsupervisor"></h:message>
+
+					</p:panelGrid>
+				</p:fieldset>
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

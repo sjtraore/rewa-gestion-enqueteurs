@@ -1,0 +1,80 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="templates/common.xhtml">
+		<ui:define name="content">
+			<h:form>
+				<p:dataTable var="customer" value="#{customerManage.customerBeanList}"
+					widgetVar="customersTable" emptyMessage="#{msg.no_agent_found}"
+					 id="customerTable">
+					<f:facet name="header">
+						<p:outputPanel>
+							<p:inputText id="globalFilter"
+								style="width:50%; text-align: center;"
+								onkeyup="PF('customersTable').filter()"
+								placeholder="#{msg.google_search_agent}" />
+							<p:spacer width="100" height="10" />
+							<p:commandButton icon="ui-icon-plus" title="Ajouter un client"
+								action="#{customerManage.forwardToAddCustomer(null)}">#{msg.add_customer}</p:commandButton>
+						</p:outputPanel>
+					</f:facet>
+					<p:column headerText="#{msg.id}" filterBy="#{customer.id}"
+						filterMatchMode="contains">
+						<h:commandLink action="#{customerManage.forwardToAddCustomer(customer)}"
+							value="#{customer.id}" />
+					</p:column>
+					<p:column headerText="#{msg.fullname}" sortBy="#{customer.name}"
+						filterBy="#{customer.name}" priority="3">
+						<h:outputText value="#{customer.name}" />
+					</p:column>
+					<p:column headerText="#{msg.status}" priority="4">
+						<h:outputText value="#{customer.modifiedBy}" />
+					</p:column>
+					<p:column headerText="#{msg.created_date}" priority="5">
+						<h:outputText value="#{customer.createdDate}" />
+					</p:column>
+					<p:column headerText="#{msg.created_by}" priority="8">
+						<h:outputText value="#{customer.createdBy}" />
+					</p:column>
+					<p:column headerText="#{msg.modified_date}" priority="7">
+						<h:outputText value="#{customer.modifiedDate}" />
+					</p:column>
+					<p:column headerText="#{msg.modified_by}" priority="6">
+						<h:outputText value="#{customer.modifiedBy}" />
+					</p:column>
+					<p:column headerText="#{msg.actions}" priority="2">
+						<p:commandButton icon="fa fa-fw fa-trash-o"
+							actionListener="#{customerManage.disableCustomer(customer)}"
+							update="customerTable" title="#{msg.delete}">
+							<p:confirm header="#{msg.confirmation}"
+								message="#{msg.soft_delete_agent_confirmation}"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:commandButton icon="fa fa-edit"
+							action="#{customerManage.forwardToAddCustomer(customer)}"
+							title="#{msg.edit}">
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+
+
+				<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+					<p:commandButton value="#{msg.yes}" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="#{msg.no}" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

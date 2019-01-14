@@ -1,5 +1,6 @@
 package com.rewa.utils;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.rewa.beans.PersonBean;
@@ -13,7 +14,7 @@ import com.rewa.hibernate.data.PersonLevel;
 import com.rewa.hibernate.data.Role;
 
 public class PersonUtils {
-	public static PersonBean getPersonBeanByPerson(Person person) {
+	public static PersonBean getPersonBeanByPerson(Person person, boolean lazyMode) {
 		PersonBean personBean = null;
 		if (person != null) {
 			personBean = new PersonBean();
@@ -37,57 +38,68 @@ public class PersonUtils {
 			if (personUpdator != null) {
 				personBean.setUpdatorName(personUpdator.getFirstname() + " " + personUpdator.getLastname());
 			}
-			
 
-			// List of roles
-			Set<Role> roles = person.getRoles();
-			if (roles != null) {
-				int nbRoles = roles.size();
-				String[] selectedRoles = new String[nbRoles];
-				int counter = 0;
-				for (Role role : roles) {
-					selectedRoles[counter] = role.getRole();
-					counter++;
+			if (!lazyMode) {
+				// List of roles
+				Set<Role> roles = person.getRoles();
+				if (roles != null) {
+					int nbRoles = roles.size();
+					String[] selectedRoles = new String[nbRoles];
+					int counter = 0;
+					for (Role role : roles) {
+						selectedRoles[counter] = role.getRole();
+						counter++;
+					}
+					personBean.setSelectedRoles(selectedRoles);
 				}
-				personBean.setSelectedRoles(selectedRoles);
-			}
 
-
-			// List of diplomas
-			Set<Diploma> diplomas = person.getDiplomas();
-			if (diplomas != null) {
-				int nbDiplomas = diplomas.size();
-				String[] selectedDiplomas = new String[nbDiplomas];
-				int counter = 0;
-				for (Diploma diploma : diplomas) {
-					selectedDiplomas[counter] = diploma.getDiploma();
-					counter++;
+				// List of diplomas
+				Set<Diploma> diplomas = person.getDiplomas();
+				if (diplomas != null) {
+					int nbDiplomas = diplomas.size();
+					String[] selectedDiplomas = new String[nbDiplomas];
+					int counter = 0;
+					for (Diploma diploma : diplomas) {
+						selectedDiplomas[counter] = diploma.getDiploma();
+						counter++;
+					}
+					personBean.setSelectedDiplomas(selectedDiplomas);
 				}
-				personBean.setSelectedDiplomas(selectedDiplomas);
-			}
 
-			// Languages
-			Set<PersonLevel> levels = person.getPersonLevels();
-			if (levels != null) {
-				for (PersonLevel pl : levels) {
-					Field field = pl.getField();
-					switch (field.getIdField()) {
-					case Constant.ID_RATING_FRENCH_ORAL:
-						personBean.setRatingFrenchOral(pl.getNotation());
-						break;
-					case Constant.ID_RATING_FRENCH_WRITING:
-						personBean.setRatingFrenchWriting(pl.getNotation());
-						break;
-					case Constant.ID_RATING_LOCAL_LANGUAGES:
-						personBean.setRatingLocalLanguage(pl.getNotation());
-						break;
-					default:
-						break;
+				// Languages
+				Set<PersonLevel> levels = person.getPersonLevels();
+				if (levels != null) {
+					for (PersonLevel pl : levels) {
+						Field field = pl.getField();
+						switch (field.getIdField()) {
+						case Constant.ID_RATING_FRENCH_ORAL:
+							personBean.setRatingFrenchOral(pl.getNotation());
+							break;
+						case Constant.ID_RATING_FRENCH_WRITING:
+							personBean.setRatingFrenchWriting(pl.getNotation());
+							break;
+						case Constant.ID_RATING_LOCAL_LANGUAGES:
+							personBean.setRatingLocalLanguage(pl.getNotation());
+							break;
+						default:
+							break;
+						}
 					}
 				}
 			}
 		}
 		return personBean;
+	}
+
+	public static Set<PersonBean> getPersonBeanListFromPersonList(Set<Person> persons, boolean lazyMode) {
+		Set<PersonBean> result = null;
+		if (persons != null && !persons.isEmpty()) {
+			result = new HashSet<PersonBean>();
+			for (Person person : persons) {
+				result.add(getPersonBeanByPerson(person, lazyMode));
+			}
+		}
+		return result;
 	}
 
 	public static PersonBean addCoordinatesToPersonBean(PersonBean personBean, Coordinate coordinate) {

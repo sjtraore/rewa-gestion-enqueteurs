@@ -30,7 +30,7 @@ public class Customer implements Serializable {
 	//bi-directional many-to-one association to RewaStatus
 	@ManyToOne
 	@JoinColumn(name="idStatus")
-	private Status rewaStatus;
+	private Status status;
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -44,7 +44,7 @@ public class Customer implements Serializable {
 
 	//bi-directional many-to-one association to RewaStudy
 	@OneToMany(mappedBy="rewaCustomer")
-	private List<Study> rewaStudies;
+	private List<Study> studies;
 
 	public Customer() {
 	}
@@ -81,12 +81,12 @@ public class Customer implements Serializable {
 		this.name = name;
 	}
 
-	public Status getRewaStatus() {
-		return this.rewaStatus;
+	public Status getStatus() {
+		return this.status;
 	}
 
-	public void setRewaStatus(Status rewaStatus) {
-		this.rewaStatus = rewaStatus;
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	public Person getCreatedBy() {
@@ -105,26 +105,26 @@ public class Customer implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public List<Study> getRewaStudies() {
-		return this.rewaStudies;
+	public List<Study> getStudies() {
+		return this.studies;
 	}
 
-	public void setRewaStudies(List<Study> rewaStudies) {
-		this.rewaStudies = rewaStudies;
+	public void setStudies(List<Study> studies) {
+		this.studies = studies;
 	}
 
-	public Study addRewaStudy(Study rewaStudy) {
-		getRewaStudies().add(rewaStudy);
-		rewaStudy.setRewaCustomer(this);
+	public Study addStudy(Study study) {
+		getStudies().add(study);
+		study.setCustomer(this);
 
-		return rewaStudy;
+		return study;
 	}
 
-	public Study removeRewaStudy(Study rewaStudy) {
-		getRewaStudies().remove(rewaStudy);
-		rewaStudy.setRewaCustomer(null);
+	public Study removeStudy(Study study) {
+		getStudies().remove(study);
+		study.setCustomer(null);
 
-		return rewaStudy;
+		return study;
 	}
 
 }

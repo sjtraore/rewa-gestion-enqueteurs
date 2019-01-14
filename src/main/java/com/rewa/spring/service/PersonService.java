@@ -104,7 +104,7 @@ public class PersonService {
 	}
 
 	
-	public List<PersonBean> getAllAgents() {
+	public List<PersonBean> getAllAgents(boolean lazyMode) {
 		List<PersonBean> result = null;
 		try {
 			// Acquire session
@@ -116,7 +116,7 @@ public class PersonService {
 			if (persons != null) {
 				result = new ArrayList<PersonBean>();
 				for (Person person : persons) {
-					result.add(PersonUtils.getPersonBeanByPerson(person));
+					result.add(PersonUtils.getPersonBeanByPerson(person, lazyMode));
 				}
 			}
 		} catch (Exception e) {
@@ -126,7 +126,7 @@ public class PersonService {
 		return result;
 	}
 
-	public List<PersonBean> getAgentsByStatus(Status status) {
+	public List<PersonBean> getAgentsByStatus(Status status, boolean lazyMode) {
 		List<PersonBean> result = null;
 		try {
 			// Acquire session
@@ -147,7 +147,7 @@ public class PersonService {
 					// Proceed only with enqueteurs
 					Set<Role> roles = person.getRoles();
 					if (roles != null && !roles.isEmpty() && roles.contains(enqueteurRole)) {
-						PersonBean personBean = PersonUtils.getPersonBeanByPerson(person);
+						PersonBean personBean = PersonUtils.getPersonBeanByPerson(person, lazyMode);
 						setCoordinates(person, personBean);
 
 						result.add(personBean);
@@ -158,6 +158,23 @@ public class PersonService {
 			log.error(e, e);
 		}
 
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Person> getPersonsByRole(Role role) {
+		List<Person> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			
+			Criteria criteria = session.createCriteria(Person.class, "person");
+			criteria.createAlias("roles", "role");
+			criteria.add(Restrictions.eq("role.idRole", role.getIdRole()));
+			result = criteria.list();
+		} catch (Exception e) {
+			log.error(e, e);
+		}
 		return result;
 	}
 
@@ -270,7 +287,7 @@ public class PersonService {
 		this.commonService = commonService;
 	}
 
-	public List<PersonBean> getActiveSystemUsers(boolean displayAllUsers) {
+	public List<PersonBean> getActiveSystemUsers(boolean displayAllUsers, boolean lazyMode) {
 		List<PersonBean> result = null;
 		try {
 			// Acquire session
@@ -288,7 +305,7 @@ public class PersonService {
 
 				for (Person person : persons) {
 					log.debug("Username: " + person.getUsername());
-					PersonBean personBean = PersonUtils.getPersonBeanByPerson(person);
+					PersonBean personBean = PersonUtils.getPersonBeanByPerson(person, lazyMode);
 					setCoordinates(person, personBean);
 
 					result.add(personBean);

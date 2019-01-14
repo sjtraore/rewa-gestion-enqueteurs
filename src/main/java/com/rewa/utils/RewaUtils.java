@@ -1,7 +1,6 @@
 package com.rewa.utils;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Date;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
@@ -12,9 +11,9 @@ public class RewaUtils {
 		FacesMessage message = new FacesMessage(severity, summary, detail);
 		FacesContext.getCurrentInstance().addMessage(null, message);
 	}
-	
-	public static Set<?> safe( Set<?> other ) {
-	    return other == null ? Collections.EMPTY_SET : other;
+
+	public static FacesMessage newBundledFacesMessage(Severity severity, String summary, Date startDate) {
+		return new FacesMessage(severity, summary, startDate.toString());
 	}
 
 }

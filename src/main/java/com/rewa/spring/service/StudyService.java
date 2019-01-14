@@ -44,6 +44,14 @@ public class StudyService {
 			session.merge(study);
 		}
 	}
+	
+	@Transactional
+	public void delete(Study study) {
+		log.debug("Deleting study: " + study);
+		// Acquire session
+		Session session = sessionFactory.getCurrentSession();
+		session.delete(study);
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Study> getStudies() {
