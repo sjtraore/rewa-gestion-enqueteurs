@@ -10,6 +10,14 @@ public class StudyBean {
 	private Date startDate;
 	private Date endDate;
 	private String status;
+	private Date createdDate;
+	private String createdBy;
+	private int creatorId;
+	private Date modifiedDate;
+	private String modifiedBy;
+	private int modifierId;
+	private String teamName;
+	private int teamId;
 	
 	public int getId() {
 		return id;
@@ -77,6 +85,54 @@ public class StudyBean {
 	public String toString() {
 		return "StudyBean [id=" + id + ", title=" + title + ", customer=" + customer + ", supervisor=" + supervisor
 				+ ", startDate=" + startDate + ", endDate=" + endDate + ", status=" + status + "]";
+	}
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+	public int getModifierId() {
+		return modifierId;
+	}
+	public void setModifierId(int modifierId) {
+		this.modifierId = modifierId;
+	}
+	public int getCreatorId() {
+		return creatorId;
+	}
+	public void setCreatorId(int creatorId) {
+		this.creatorId = creatorId;
+	}
+	public String getTeamName() {
+		return teamName;
+	}
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+	public int getTeamId() {
+		return teamId;
+	}
+	public void setTeamId(int teamId) {
+		this.teamId = teamId;
 	}
 
 }

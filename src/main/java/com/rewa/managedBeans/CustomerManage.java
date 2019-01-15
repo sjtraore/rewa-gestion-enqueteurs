@@ -1,12 +1,15 @@
 package com.rewa.managedBeans;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 //import org.apache.log4j.Logger;
 
@@ -20,11 +23,12 @@ import com.rewa.spring.service.CommonService;
 import com.rewa.spring.service.CustomerService;
 import com.rewa.spring.service.PersonService;
 import com.rewa.utils.PersonUtils;
+import com.rewa.utils.SessionUtils;
 
 @ManagedBean
 @SessionScoped
 public class CustomerManage {
-	//private static final Logger log = Logger.getLogger(CustomerManage.class);
+	// private static final Logger log = Logger.getLogger(CustomerManage.class);
 	private CustomerBean customerBean;
 	private List<CustomerBean> customerBeanList;
 	private Customer customer;
@@ -48,46 +52,64 @@ public class CustomerManage {
 		customerBeanList = customerBeanListFromCustomer(customers);
 	}
 
-	public List<CustomerBean> customerBeanListFromCustomer(List<Customer> customers){
+	public List<CustomerBean> customerBeanListFromCustomer(List<Customer> customers) {
 		List<CustomerBean> result = null;
-		if(customers != null) {
+		if (customers != null) {
 			result = new ArrayList<CustomerBean>();
-			for(Customer customer : customers) {
+			for (Customer customer : customers) {
 				result.add(getCustomerBeanByCustomer(customer));
 			}
 		}
 		return result;
 	}
 
-	public String register(String returnPage) {
+	public String register() {
+		Date createdDate = customerBean.getCreatedDate();
+		int connectedUserId = SessionUtils.getConnectedPerson().getIdPerson();
+		if (createdDate == null) {
+			customerBean.setCreatedDate(new Date());
+			customerBean.setCreatorId(connectedUserId);
+		}
+
+		customerBean.setModifierId(connectedUserId);
+		customerBean.setModifiedDate(new Date());
 		customer = getCustomerByCustomerBean(customerBean);
 		customerService.save(customer);
 
-		return returnPage;
+		// Add message
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage("Le client " + this.customerBean.getName() + " a été enregistré avec succés"));
+		return Constant.VIEW_CUSTOMERS_PAGE_OUTCOME;
 	}
-	
+
 	public String forwardToAddCustomer(CustomerBean customerBean) {
+		customerBean = (customerBean == null) ? new CustomerBean() : customerBean;
 		this.customerBean = customerBean;
-		return "addcustomer";
+		return Constant.VIEW_ADD_CUSTOMER_PAGE_OUTCOME;
 	}
-	
+
+	public String cancelRegistration() {
+		return Constant.VIEW_CUSTOMERS_PAGE_OUTCOME;
+	}
+
 	public void disableCustomer(CustomerBean customerBean) {
 		Customer customer = customerService.getCustomerById(customerBean.getId());
 		Status inactiveStatus = commonService.getStatusByStatusId(Constant.INACTIVE_STATUS_ID);
 		customer.setStatus(inactiveStatus);
 		customerService.save(customer);
 	}
-	
+
 	/**
 	 * For Admin only
+	 * 
 	 * @param customerBean
 	 */
 	public void deleteCustomer(CustomerBean customerBean) {
-		//TODO ensure that connected user is admin
+		// TODO ensure that connected user is admin
 		Customer customer = customerService.getCustomerById(customerBean.getId());
 		customerService.delete(customer);
 	}
-	
+
 	public CustomerBean getCustomerBean() {
 		return customerBean;
 	}
@@ -110,7 +132,8 @@ public class CustomerManage {
 			Customer customer = new Customer();
 			customer.setIdCustomer(customerBean.getId());
 			customer.setName(customerBean.getName());
-			customer.setCreatedDate(customerBean.getCreatedDate());
+			Date createdDate = customerBean.getCreatedDate();
+			customer.setCreatedDate(createdDate);
 			customer.setModifiedDate(customerBean.getModifiedDate());
 
 			Person creator = personService.getPersonById(customerBean.getCreatorId());
@@ -118,6 +141,11 @@ public class CustomerManage {
 
 			Person modifier = personService.getPersonById(customerBean.getModifierId());
 			customer.setModifiedBy(modifier);
+
+			status = commonService.getStatusByStatusName(customerBean.getStatus());
+			customer.setStatus(status);
+
+			return customer;
 		}
 		return null;
 	}
@@ -130,13 +158,16 @@ public class CustomerManage {
 			customerBean.setCreatedDate(customer.getCreatedDate());
 			customerBean.setModifiedDate(customer.getModifiedDate());
 
-			Person creator = personService.getPersonById(customerBean.getCreatorId());
+			Person creator = customer.getCreatedBy();
 			PersonBean creatorBean = PersonUtils.getPersonBeanByPerson(creator, true);
-			customerBean.setCreatedBy(creatorBean.getFullname());
+			if(creatorBean != null)
+				customerBean.setCreatedBy(creatorBean.getFullname());
 
-			Person modifier = personService.getPersonById(customerBean.getModifierId());
+			Person modifier = customer.getModifiedBy();
 			PersonBean modifierBean = PersonUtils.getPersonBeanByPerson(modifier, true);
-			customerBean.setModifiedBy(modifierBean.getFullname());
+			if(modifierBean != null)
+				customerBean.setModifiedBy(modifierBean.getFullname());
+			return customerBean;
 		}
 		return null;
 	}
@@ -188,9 +219,5 @@ public class CustomerManage {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
-
-	// soft delete customer
-
-	// hard delete customer
 
 }

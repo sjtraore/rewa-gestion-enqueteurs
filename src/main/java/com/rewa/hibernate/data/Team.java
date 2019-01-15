@@ -21,8 +21,8 @@ public class Team implements Serializable {
 	private int validated;
 
 	//bi-directional many-to-one association to RewaStudy
-	@OneToMany(mappedBy="rewaTeam")
-	private List<Study> rewaStudies;
+	@OneToMany(mappedBy="team")
+	private List<Study> studies;
 
 	//bi-directional many-to-one association to RewaPerson
 	@ManyToOne
@@ -48,26 +48,26 @@ public class Team implements Serializable {
 		this.validated = validated;
 	}
 
-	public List<Study> getRewaStudies() {
-		return this.rewaStudies;
+	public List<Study> getStudies() {
+		return this.studies;
 	}
 
-	public void setRewaStudies(List<Study> rewaStudies) {
-		this.rewaStudies = rewaStudies;
+	public void setStudies(List<Study> studies) {
+		this.studies = studies;
 	}
 
-	public Study addRewaStudy(Study rewaStudy) {
-		getRewaStudies().add(rewaStudy);
-		rewaStudy.setRewaTeam(this);
+	public Study addStudy(Study study) {
+		getStudies().add(study);
+		study.setTeam(this);
 
-		return rewaStudy;
+		return study;
 	}
 
-	public Study removeRewaStudy(Study rewaStudy) {
-		getRewaStudies().remove(rewaStudy);
-		rewaStudy.setRewaTeam(null);
+	public Study removeStudy(Study study) {
+		getStudies().remove(study);
+		study.setTeam(null);
 
-		return rewaStudy;
+		return study;
 	}
 
 	public Person getSupervisor() {

@@ -73,10 +73,27 @@
 							<f:selectItems value="#{studyManage.supervisorsStringMap}" />
 						</p:selectOneMenu>
 						<h:message for="somsupervisor"></h:message>
-
+						
+						<p:outputLabel value="#{msg.study_state}"></p:outputLabel>
+						<p:selectOneMenu value="#{studyManage.studyBean.status}"
+									required="true">
+									<f:selectItem itemLabel="#{msg.open}"
+										itemValue="#{msg.active}"/>
+									<f:selectItem itemLabel="#{msg.closed}"
+										itemValue="#{msg.inactive}" />
+								</p:selectOneMenu>
 					</p:panelGrid>
 				</p:fieldset>
-
+				<p:toolbar>
+					<f:facet name="right">
+						<p:commandButton value="#{msg.register}" icon="ui-icon-check"
+							action="#{studyManage.register()}" update="studyform"></p:commandButton>
+						<p:commandButton value="#{msg.cancel}" process="@this"
+							update="studyform"
+							action="#{customerManage.cancelRegistration}">
+						</p:commandButton>
+					</f:facet>
+				</p:toolbar>
 			</h:form>
 		</ui:define>
 	</ui:composition>

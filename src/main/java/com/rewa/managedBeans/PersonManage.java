@@ -180,8 +180,11 @@ public class PersonManage {
 	}
 
 	public String forwardToAddUser(PersonBean agentBean) {
-		Person eagerPerson = personService.getPersonByIdLoadingPersonLevels(agentBean.getIdPerson());
-		this.agentBean = PersonUtils.getPersonBeanByPerson(eagerPerson, false);
+		if(agentBean != null) {
+			Person eagerPerson = personService.getPersonByIdLoadingPersonLevels(agentBean.getIdPerson());
+			agentBean = PersonUtils.getPersonBeanByPerson(eagerPerson, false);
+		}
+		this.agentBean = agentBean;
 		return Constant.ADD_USER_PAGE_OUTCOME;
 	}
 
@@ -328,7 +331,8 @@ public class PersonManage {
 		//Local Languages
 		Integer localLanguage = personBean.getRatingLocalLanguage();
 		Field localLanguageField = commonService.getFieldById(Constant.ID_RATING_LOCAL_LANGUAGES);
-		buildPersonLevel(person, plSet, localLanguage, localLanguageField, agentBean.getLocalLanguages());
+		String localLanguages = (agentBean != null) ? agentBean.getLocalLanguages() : null;
+		buildPersonLevel(person, plSet, localLanguage, localLanguageField, localLanguages);
 		
 		if(!plSet.equals(plSetDB)) {
 			person.getPersonLevels().clear();

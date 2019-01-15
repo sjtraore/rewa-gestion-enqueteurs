@@ -2,6 +2,10 @@ package com.rewa.hibernate.data;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
+
 import java.util.Date;
 
 
@@ -11,7 +15,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name="rewa_study")
-@NamedQuery(name="Study.findAll", query="SELECT r FROM Study r")
+@NamedQueries({
+	@NamedQuery(name="Study.findAll", query="SELECT r FROM Study r"),
+	@NamedQuery(name="Study.findByStatus", query="SELECT r FROM Study r where r.status = :status")
+})
 public class Study implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -32,7 +39,18 @@ public class Study implements Serializable {
 	//bi-directional many-to-one association to RewaCustomer
 	@ManyToOne
 	@JoinColumn(name="idCustomer")
-	private Customer rewaCustomer;
+	private Customer customer;
+	
+	@ManyToOne
+	@JoinColumn(name="idCreatedBy")
+	private Person createdBy;
+	
+	@ManyToOne
+	@JoinColumn(name="idModifiedBy")
+	private Person modifiedBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date modifiedDate;
 
 	//bi-directional many-to-one association to RewaStatus
 	@ManyToOne
@@ -42,7 +60,7 @@ public class Study implements Serializable {
 	//bi-directional many-to-one association to RewaTeam
 	@ManyToOne
 	@JoinColumn(name="idTeam")
-	private Team rewaTeam;
+	private Team team;
 
 	public Study() {
 	}
@@ -71,12 +89,12 @@ public class Study implements Serializable {
 		this.startDate = startDate;
 	}
 
-	public Customer getRewaCustomer() {
-		return this.rewaCustomer;
+	public Customer getCustomer() {
+		return this.customer;
 	}
 
-	public void setCustomer(Customer rewaCustomer) {
-		this.rewaCustomer = rewaCustomer;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public Status getStatus() {
@@ -87,12 +105,12 @@ public class Study implements Serializable {
 		this.status = status;
 	}
 
-	public Team getRewaTeam() {
-		return this.rewaTeam;
+	public Team getTeam() {
+		return this.team;
 	}
 
-	public void setRewaTeam(Team rewaTeam) {
-		this.rewaTeam = rewaTeam;
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 	public String getTitle() {
@@ -137,6 +155,30 @@ public class Study implements Serializable {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public Person getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Person createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Person getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(Person modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
 }

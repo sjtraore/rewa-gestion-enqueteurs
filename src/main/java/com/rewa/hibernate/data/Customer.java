@@ -1,9 +1,20 @@
 package com.rewa.hibernate.data;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
 
 
 /**
@@ -12,7 +23,10 @@ import java.util.List;
  */
 @Entity
 @Table(name="rewa_customer")
-@NamedQuery(name="Customer.findAll", query="SELECT r FROM Customer r")
+@NamedQueries({
+	@NamedQuery(name="Customer.findAll", query="SELECT r FROM Customer r"),
+	@NamedQuery(name="Customer.findByStatus", query="SELECT r FROM Customer r where r.status = :status")
+})
 public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -43,7 +57,7 @@ public class Customer implements Serializable {
 	private Person modifiedBy;
 
 	//bi-directional many-to-one association to RewaStudy
-	@OneToMany(mappedBy="rewaCustomer")
+	@OneToMany(mappedBy="customer")
 	private List<Study> studies;
 
 	public Customer() {
@@ -125,6 +139,33 @@ public class Customer implements Serializable {
 		study.setCustomer(null);
 
 		return study;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + idCustomer;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (idCustomer != other.idCustomer)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Customer [idCustomer=" + idCustomer + ", name=" + name + ", status=" + status + "]";
 	}
 
 }

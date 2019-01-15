@@ -76,7 +76,7 @@ public class Person implements Serializable {
 	@OneToMany(mappedBy = "person", cascade=CascadeType.ALL)
 	private Set<PersonLevel> personLevels;
 
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = {CascadeType.ALL})
 	private Set<Coordinate> coordinates;
 
 	// bi-directional many-to-one association to RewaPerson

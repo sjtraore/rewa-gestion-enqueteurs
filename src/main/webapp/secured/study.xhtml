@@ -11,9 +11,9 @@
 <h:body>
 	<ui:composition template="templates/common.xhtml">
 		<ui:define name="content">
-			<p:dataTable var="study" value="#{studyManage.activeStudies}"
+			<p:dataTable var="study" value="#{studyManage.studiesBean}"
 				widgetVar="studiesTable" emptyMessage="#{msg.no_study_found}"
-				filteredValue="#{studyManage.activeStudies}" id="studyTable"
+				filteredValue="#{studyManage.studiesBean}" id="studyTable"
 				lazy="true">
 				<f:facet name="header">
 					<p:outputPanel>
@@ -36,13 +36,17 @@
 					<h:outputText value="#{study.title}" />
 				</p:column>
 				<p:column headerText="#{msg.customer}" priority="4">
-					<h:outputText value="#{study.customer}" />
+					<h:outputText value="#{study.customer}"/>
 				</p:column>
 				<p:column headerText="#{msg.from}" priority="5">
-					<h:outputText value="#{study.startDate}" />
+					<h:outputText value="#{study.startDate}">
+						<f:convertDateTime pattern="dd/MM/yyyy hh:mm" />
+					</h:outputText>
 				</p:column>
 				<p:column headerText="#{msg.to}" priority="6">
-					<h:outputText value="#{study.endDate}" />
+					<h:outputText value="#{study.endDate}">
+						<f:convertDateTime pattern="dd/MM/yyyy hh:mm" />
+					</h:outputText>
 				</p:column>
 				<p:column headerText="#{msg.supervisor}" priority="6">
 					<h:outputText value="#{study.supervisor}" />
@@ -57,11 +61,9 @@
 						<p:confirm header="#{msg.confirmation}"
 							message="#{msg.soft_delete_agent_confirmation}"
 							icon="ui-icon-alert" />
-						<f:setPropertyActionListener value="#{agent}"
-							target="#{personManage.agentBean}" />
 					</p:commandButton>
 					<p:commandButton icon="fa fa-edit"
-						action="#{personManage.forwardToAddUser(agent)}"
+						action="#{studyManage.forwardToAddStudy(study)}"
 						title="#{msg.edit}">
 					</p:commandButton>
 				</p:column>

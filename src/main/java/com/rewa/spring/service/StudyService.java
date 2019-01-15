@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -74,18 +75,17 @@ public class StudyService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Study> getActiveStudies(Status status) {
+	public List<Study> getStudiesByStatus(Status status) {
+		List<Study> result = null;
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(Study.class).
-					add(Restrictions.eq("status", status));
-			return criteria.list();
+			Query query = session.getNamedQuery("Study.findByStatus").setParameter("status", status);
+			result = (List<Study>) query.list();
 		} catch (Exception e) {
 			log.debug(e, e);
-			e.printStackTrace();
-			return null;
 		}
+		return result;
 	}
 
 	public Study getStudyById(int id) {

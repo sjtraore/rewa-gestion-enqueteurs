@@ -6,8 +6,14 @@ public class Constant {
 	public static final String USER_HOME_PAGE_OUTCOME = "agent";
 	public static final String SYSTEM_USER_PAGE_OUTCOME = "users";
 	public static final String LOGIN_PAGE_OUTCOME = "login";
-	public static final String ADD_USER_PAGE_OUTCOME = "adduser";
 	public static final String VIEW_USER_PAGE_OUTCOME = "viewuser";
+	public static final String ADD_USER_PAGE_OUTCOME = "adduser";
+	public static final String VIEW_CUSTOMERS_PAGE_OUTCOME = "customers";
+	public static final String VIEW_ADD_CUSTOMER_PAGE_OUTCOME = "addcustomer";
+	public static final String VIEW_STUDIES_PAGE_OUTCOME = "studies";
+	public static final String VIEW_ADD_STUDY_PAGE_OUTCOME = "addstudy";
+	
+	
 	public static final int ROLE_ENQUETEUR = 1;
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";

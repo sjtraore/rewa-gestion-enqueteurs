@@ -1,6 +1,7 @@
 package com.rewa.managedBeans;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.rewa.spring.service.CustomerService;
 import com.rewa.spring.service.PersonService;
 import com.rewa.spring.service.StudyService;
 import com.rewa.utils.PersonUtils;
+import com.rewa.utils.SessionUtils;
 
 @ManagedBean
 @SessionScoped
@@ -34,6 +36,7 @@ public class StudyManage {
 	private static final Logger log = Logger.getLogger(StudyManage.class);
 
 	private List<StudyBean> studiesBean;
+	
 	@ManagedProperty("#{studyService}")
 	private StudyService studyService;
 
@@ -47,6 +50,7 @@ public class StudyManage {
 	private PersonService personService;
 
 	private StudyBean studyBean;
+	private Study study;
 	private Status status;
 
 	//Key = fullname, Value = fullname
@@ -57,6 +61,7 @@ public class StudyManage {
 	@PostConstruct
 	public void init() {
 		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
+		studiesBean = getActiveStudies();
 	}
 
 	private void setSupervisorsMap() {
@@ -77,23 +82,69 @@ public class StudyManage {
 	private void setCustomersMap() {
 		List<Customer> customers = customerService.getCustomersByStatus(status);
 		if (customers != null) {
+			if(customersStringMap == null) {
+				customersStringMap = new HashMap<String, String>();
+			}
 			for (Customer customer : customers) {
 				customersStringMap.put(customer.getName(), customer.getName());
 			}
 		}
 	}
 
-	public String saveStudy() {
-		return "";
+	public String register() {
+		int connectedUserId = SessionUtils.getConnectedPerson().getIdPerson();
+		if(studyBean.getCreatedDate() == null) {
+			studyBean.setCreatedDate(new Date());
+			studyBean.setCreatorId(connectedUserId);;
+		}
+		studyBean.setModifiedDate(new Date());
+		studyBean.setModifierId(connectedUserId);
+		study = getStudyByStudyBean(studyBean);
+		studyService.save(study);
+		
+		return Constant.VIEW_STUDIES_PAGE_OUTCOME;
 	}
 
-	public List<StudyBean> getActiveStudies() {
+	private Study getStudyByStudyBean(StudyBean studyBean) {
+		Study study = null;
+		if(studyBean != null) {
+			study = new Study();
+			
+			study.setIdStudy(studyBean.getId());
+			study.setTitle(studyBean.getTitle());
+			study.setCreateDate(studyBean.getCreatedDate());
+			study.setModifiedDate(studyBean.getModifiedDate());
+			
+			Person creator = personService.getPersonById(studyBean.getCreatorId());
+			study.setCreatedBy(creator);
+			
+			Person modifier = personService.getPersonById(studyBean.getModifierId());
+			study.setModifiedBy(modifier);
+			
+			Customer customer = customerService.getCustomerByName(studyBean.getCustomer());
+			study.setCustomer(customer);
+
+			study.setStartDate(studyBean.getStartDate());
+			study.setEndDate(studyBean.getEndDate());
+			
+			status = commonService.getStatusByStatusName(studyBean.getStatus());
+			study.setStatus(status);
+			
+			//TODO set team
+//			Team team = teamServervice.getTeamById(studyBean.getTeamId());
+//			study.setTeam(team);
+			
+		}
+		return study;
+	}
+
+	private List<StudyBean> getActiveStudies() {
 		log.debug("Getting Active studies");
 		List<StudyBean> result = null;
 		if(status.getIdStatus() != Constant.ACTIVE_STATUS_ID) {
 			status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 		}
-		List<Study> studies = studyService.getActiveStudies(status);
+		List<Study> studies = studyService.getStudiesByStatus(status);
 		if (studies != null && !studies.isEmpty()) {
 			result = new ArrayList<StudyBean>();
 			for (Study study : studies) {
@@ -110,13 +161,15 @@ public class StudyManage {
 			studyBean.setId(study.getIdStudy());
 			studyBean.setTitle(study.getTitle());
 			studyBean.setStatus(study.getStatus().getStatus());
-			studyBean.setCustomer(study.getRewaCustomer().getName());
+			studyBean.setCustomer(study.getCustomer().getName());
 			studyBean.setStartDate(study.getStartDate());
 			studyBean.setEndDate(study.getEndDate());
-
-			Person supervisor = study.getRewaTeam().getSupervisor();
-			if (supervisor != null) {
-				studyBean.setSupervisor(supervisor.getFirstname() + " " + supervisor.getLastname());
+			
+			if(study.getTeam() != null) {
+				Person supervisor = study.getTeam().getSupervisor();
+				if (supervisor != null) {
+					studyBean.setSupervisor(supervisor.getFirstname() + " " + supervisor.getLastname());
+				}
 			}
 		}
 		return studyBean;
@@ -134,11 +187,11 @@ public class StudyManage {
 		this.studyBean = studyBean;
 		setCustomersMap();
 		setSupervisorsMap();
-		return "addstudy";
+		return Constant.VIEW_ADD_STUDY_PAGE_OUTCOME;
 	}
 	
 	public String forwardToManageCustomers() {
-		return "customers";
+		return Constant.VIEW_CUSTOMERS_PAGE_OUTCOME;
 	}
 
 	public void delete(StudyBean studyBean) {
@@ -224,6 +277,14 @@ public class StudyManage {
 
 	public void setPersonService(PersonService personService) {
 		this.personService = personService;
+	}
+
+	public Study getStudy() {
+		return study;
+	}
+
+	public void setStudy(Study study) {
+		this.study = study;
 	}
 
 }

@@ -4,6 +4,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.rewa.hibernate.data.Person;
+
 public class SessionUtils {
 
 	public static HttpSession getSession() {
@@ -22,11 +24,15 @@ public class SessionUtils {
 		return session.getAttribute("username").toString();
 	}
 
-	public static String getUserId() {
+	public static int getUserId() {
 		HttpSession session = getSession();
 		if (session != null)
-			return (String) session.getAttribute("userid");
+			return (int) session.getAttribute("userid");
 		else
-			return null;
+			return 0;
+	}
+	
+	public static Person getConnectedPerson() {
+		return (Person) getSession().getAttribute("connectedUser");
 	}
 }
