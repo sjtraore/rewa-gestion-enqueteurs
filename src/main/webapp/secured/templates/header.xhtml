@@ -22,14 +22,12 @@
 		<div class="ui-g-12 ui-md-6">
 			<h:form style="text-align: right; padding-top: 6%;">
 				<p:growl id="growl" life="2000" />
-				<h:outputFormat value="#{msg['welcome']}" style="margin-right:10px;">
-					<f:param value="#{loginManage.user}" />
-				</h:outputFormat>
-				<p:commandLink id="ajax" update="growl"
-					actionListener="#{loginManage.logoutAction}"
+				<h:outputLabel value="#{msg.welcome} " />
+				<h:outputLabel value="#{loginManage.connectedUserBean.fullname} " style="font-weight: bold;" />
+				<h:commandButton id="ajax" update="growl" icon="fa fa-user"
+					actionListener="#{loginManage.logoutAction}" value="#{msg.my_profile}"
 					style="margin-right:10px;">
-					<h:outputText value="#{msg.my_profile}" />
-				</p:commandLink>
+				</h:commandButton>
 
 				<h:commandButton action="#{loginManage.logoutAction}"
 					value="#{msg.disconnect}"></h:commandButton>

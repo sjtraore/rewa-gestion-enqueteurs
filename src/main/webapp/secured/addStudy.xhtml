@@ -44,7 +44,6 @@
 								action="#{studyManage.forwardToManageCustomers()}">#{msg.manage_customers}</p:commandButton>
 						</h:panelGrid>
 						<h:message for="somcustomer"></h:message>
-
 						<p:outputLabel value="#{msg.from}"></p:outputLabel>
 						<p:calendar id="idstudyfrom"
 							value="#{studyManage.studyBean.startDate}" locale="fr"
@@ -66,31 +65,62 @@
 
 						<p:outputLabel value="#{msg.supervisor}"></p:outputLabel>
 						<p:selectOneMenu id="somsupervisor"
-							value="#{studyManage.studyBean.supervisor}" style="width:100%"
+							value="#{studyManage.studyBean.supervisorId}" style="width:100%"
 							required="true">
 							<f:selectItem itemLabel="#{msg.select_with_dashes}" itemValue=""
 								noSelectionOption="true" />
 							<f:selectItems value="#{studyManage.supervisorsStringMap}" />
 						</p:selectOneMenu>
 						<h:message for="somsupervisor"></h:message>
-						
+
 						<p:outputLabel value="#{msg.study_state}"></p:outputLabel>
 						<p:selectOneMenu value="#{studyManage.studyBean.status}"
-									required="true">
-									<f:selectItem itemLabel="#{msg.open}"
-										itemValue="#{msg.active}"/>
-									<f:selectItem itemLabel="#{msg.closed}"
-										itemValue="#{msg.inactive}" />
-								</p:selectOneMenu>
+							required="true">
+							<f:selectItem itemLabel="#{msg.open}" itemValue="#{msg.active}" />
+							<f:selectItem itemLabel="#{msg.closed}"
+								itemValue="#{msg.inactive}" />
+						</p:selectOneMenu>
 					</p:panelGrid>
+				</p:fieldset>
+				<p:fieldset legend="#{msg.team}">
+					<p:dataTable var="enqueteur"
+						value="#{studyManage.studyBean.enqueteurs}" widgetVar="teamTable"
+						emptyMessage="#{msg.no_agent_found}"
+						filteredValue="#{studyManage.studiesBean}" id="teamTable"
+						lazy="true">
+						<f:facet name="header">
+							<p:outputPanel>
+								<p:selectOneMenu id="somagentstobeaddedtoteam"
+									value="#{studyManage.selectedAgentIdToBeAddedToTeam}"
+									style="width:50%">
+									<f:selectItem itemLabel="#{msg.select_with_dashes}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems value="#{studyManage.availableAgentsStringMap}" />
+								</p:selectOneMenu>
+								<p:spacer width="100" height="10" />
+								<p:commandButton icon="ui-icon-plus" title="#{msg.add_agent}"
+									update="teamTable"
+									action="#{studyManage.addAgentToTeam(studyManage.selectedAgentIdToBeAddedToTeam)}">#{msg.add_agent}</p:commandButton>
+							</p:outputPanel>
+						</f:facet>
+						<p:column headerText="#{msg.id}" filterBy="#{enqueteur.idPerson}"
+							filterMatchMode="contains">
+							<h:commandLink
+								action="#{studyManage.forwardToViewAgent(enqueteur)}"
+								value="#{enqueteur.idPerson}" />
+						</p:column>
+						<p:column headerText="#{msg.fullname}" sortBy="#{enqueteur.fullname}"
+							filterBy="#{enqueteur.fullname}" priority="3">
+							<h:outputText value="#{enqueteur.fullname}" />
+						</p:column>
+					</p:dataTable>
 				</p:fieldset>
 				<p:toolbar>
 					<f:facet name="right">
 						<p:commandButton value="#{msg.register}" icon="ui-icon-check"
 							action="#{studyManage.register()}" update="studyform"></p:commandButton>
 						<p:commandButton value="#{msg.cancel}" process="@this"
-							update="studyform"
-							action="#{customerManage.cancelRegistration}">
+							update="studyform" action="#{customerManage.cancelRegistration}">
 						</p:commandButton>
 					</f:facet>
 				</p:toolbar>

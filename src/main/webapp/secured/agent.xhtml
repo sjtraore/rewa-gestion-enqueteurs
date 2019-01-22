@@ -24,6 +24,7 @@
 							<p:spacer width="100" height="10" />
 							<p:commandButton icon="ui-icon-plus" title="Ajouter un agent"
 								action="#{personManage.forwardToAddUser(null)}">#{msg.add_agent}</p:commandButton>
+							<p:commandButton action="#{personManage.relaodAgentTable()}" icon="fa fa-refresh" title="#{msg.reload}">#{msg.reload}</p:commandButton>
 						</p:outputPanel>
 					</f:facet>
 					<p:column headerText="#{msg.id}" filterBy="#{agent.idPerson}"
@@ -62,13 +63,13 @@
 					</p:column>
 				</p:dataTable>
 
-
 				<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
 					<p:commandButton value="#{msg.yes}" type="button"
 						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
 					<p:commandButton value="#{msg.no}" type="button"
 						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 				</p:confirmDialog>
+
 			</h:form>
 		</ui:define>
 	</ui:composition>

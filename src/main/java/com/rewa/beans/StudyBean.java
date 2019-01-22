@@ -1,12 +1,15 @@
 package com.rewa.beans;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class StudyBean {
 	private int id;
 	private String title;
 	private String customer;
 	private String supervisor;
+	private int supervisorId;
 	private Date startDate;
 	private Date endDate;
 	private String status;
@@ -18,6 +21,7 @@ public class StudyBean {
 	private int modifierId;
 	private String teamName;
 	private int teamId;
+	private List<PersonBean> enqueteurs;
 	
 	public int getId() {
 		return id;
@@ -133,6 +137,32 @@ public class StudyBean {
 	}
 	public void setTeamId(int teamId) {
 		this.teamId = teamId;
+	}
+	public List<PersonBean> getEnqueteurs() {
+		return enqueteurs;
+	}
+	public void setEnqueteurs(List<PersonBean> enqueteurs) {
+		this.enqueteurs = enqueteurs;
+	}
+	
+	public PersonBean addEnqueteur(PersonBean enqueteurBean) {
+		if (getEnqueteurs() == null) {
+			setEnqueteurs(new ArrayList<PersonBean>());
+		}
+		getEnqueteurs().add(enqueteurBean);
+		return enqueteurBean;
+	}
+
+	public PersonBean removePerson(PersonBean enqueteurBean) {
+		getEnqueteurs().remove(enqueteurBean);
+		return enqueteurBean;
+	}
+	
+	public int getSupervisorId() {
+		return supervisorId;
+	}
+	public void setSupervisorId(int supervisorId) {
+		this.supervisorId = supervisorId;
 	}
 
 }

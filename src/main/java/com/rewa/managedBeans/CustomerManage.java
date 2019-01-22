@@ -89,7 +89,7 @@ public class CustomerManage {
 	}
 
 	public String cancelRegistration() {
-		return Constant.VIEW_CUSTOMERS_PAGE_OUTCOME;
+		return Constant.VIEW_STUDIES_PAGE_OUTCOME;
 	}
 
 	public void disableCustomer(CustomerBean customerBean) {
@@ -167,6 +167,11 @@ public class CustomerManage {
 			PersonBean modifierBean = PersonUtils.getPersonBeanByPerson(modifier, true);
 			if(modifierBean != null)
 				customerBean.setModifiedBy(modifierBean.getFullname());
+			
+			Status customerStatus = customer.getStatus();
+			if(customerStatus != null) {
+				customerBean.setStatus(customerStatus.getStatus());
+			}
 			return customerBean;
 		}
 		return null;

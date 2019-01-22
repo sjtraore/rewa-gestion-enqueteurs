@@ -1,12 +1,21 @@
 package com.rewa.hibernate.data;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
-
-import java.util.Date;
 
 
 /**
@@ -56,11 +65,13 @@ public class Study implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="idStatus")
 	private Status status;
-
-	//bi-directional many-to-one association to RewaTeam
+	
 	@ManyToOne
-	@JoinColumn(name="idTeam")
-	private Team team;
+	@JoinColumn(name="idSupervisor")
+	private Person supervisor;
+
+	@ManyToMany(mappedBy = "studiesAttended")
+	private Set<Person> enqueteurs;
 
 	public Study() {
 	}
@@ -103,14 +114,6 @@ public class Study implements Serializable {
 
 	public void setStatus(Status status) {
 		this.status = status;
-	}
-
-	public Team getTeam() {
-		return this.team;
-	}
-
-	public void setTeam(Team team) {
-		this.team = team;
 	}
 
 	public String getTitle() {
@@ -179,6 +182,35 @@ public class Study implements Serializable {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public Set<Person> getEnqueteurs() {
+		return enqueteurs;
+	}
+
+	public void setEnqueteurs(Set<Person> enqueteurs) {
+		this.enqueteurs = enqueteurs;
+	}
+	
+	public Person addEnqueteur(Person enqueteur) {
+		if (getEnqueteurs() == null) {
+			setEnqueteurs(new HashSet<Person>());
+		}
+		getEnqueteurs().add(enqueteur);
+		return enqueteur;
+	}
+
+	public Person removePerson(Person person) {
+		getEnqueteurs().remove(person);
+		return person;
+	}
+
+	public Person getSupervisor() {
+		return supervisor;
+	}
+
+	public void setSupervisor(Person supervisor) {
+		this.supervisor = supervisor;
 	}
 
 }

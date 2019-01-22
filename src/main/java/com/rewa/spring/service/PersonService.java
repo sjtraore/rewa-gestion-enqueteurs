@@ -221,6 +221,20 @@ public class PersonService {
 		return person;
 	}
 	
+	public Person getFindInEagerMode(int idPerson) {
+		Person person = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.getNamedQuery("Person.findInEagerMode").setParameter("idPerson", idPerson);
+			person = (Person) query.uniqueResult();
+		} catch (Exception e) {
+			log.error(e, e);
+			return null;
+		}
+		return person;
+	}
+	
 	public Person getPersonById(int idPerson) {
 		try {
 			// Acquire session

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -18,6 +19,7 @@ import com.rewa.hibernate.data.Diploma;
 import com.rewa.hibernate.data.Field;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.PersonDiploma;
+import com.rewa.hibernate.data.PersonLevel;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 
@@ -79,6 +81,28 @@ public class CommonService {
 			}
 		}
 		return field;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public PersonLevel getPersonLevelByField(Person person, Field field) {
+		PersonLevel personLevel = null;
+		if (field != null) {
+			try {
+				// Acquire session
+				Session session = sessionFactory.getCurrentSession();
+				
+				Query query = session.getNamedQuery("PersonLevel.findByPersonAndField")
+						.setParameter("person", person)
+						.setParameter("field", field);
+				List<PersonLevel> resultList = query.list();
+				if(resultList != null && !resultList.isEmpty())
+					personLevel = resultList.get(0);
+				log.debug("Found PersonLevel: " + personLevel);
+			} catch (Exception e) {
+				log.error(e, e);
+			}
+		}
+		return personLevel;
 	}
 
 	public Status getStatusByStatusId(int id) {

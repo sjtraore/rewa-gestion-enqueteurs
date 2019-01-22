@@ -12,10 +12,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.rewa.beans.PersonBean;
 import com.rewa.constant.Constant;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.Role;
 import com.rewa.spring.service.LoginService;
+import com.rewa.utils.PersonUtils;
 import com.rewa.utils.RewaUtils;
 import com.rewa.utils.SessionUtils;
 
@@ -30,6 +32,7 @@ public class LoginManage implements Serializable {
 	private String msg;
 	private String user;
 	private Person connectedUser;
+	private PersonBean connectedUserBean;
 	
 	/**** Application roles***/
 	private boolean isAdmin;
@@ -69,6 +72,7 @@ public class LoginManage implements Serializable {
 			HttpSession session = SessionUtils.getSession();
 			session.setAttribute("username", user);
 			session.setAttribute("connectedUser", connectedUser);
+			connectedUserBean = PersonUtils.getPersonBeanByPerson(connectedUser, true);
 			return "agent";
 		} else {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -114,5 +118,13 @@ public class LoginManage implements Serializable {
 
 	public void setAdmin(boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+
+	public PersonBean getConnectedUserBean() {
+		return connectedUserBean;
+	}
+
+	public void setConnectedUserBean(PersonBean connectedUserBean) {
+		this.connectedUserBean = connectedUserBean;
 	}
 }

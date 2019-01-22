@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +38,7 @@ public class StudyManage {
 	private static final Logger log = Logger.getLogger(StudyManage.class);
 
 	private List<StudyBean> studiesBean;
-	
+
 	@ManagedProperty("#{studyService}")
 	private StudyService studyService;
 
@@ -53,27 +55,53 @@ public class StudyManage {
 	private Study study;
 	private Status status;
 
-	//Key = fullname, Value = fullname
+	// Key = fullname, Value = fullname
 	private Map<String, String> customersStringMap;
-	//Key = fullname, Value = fullname
-	private Map<String, String> supervisorsStringMap;
+	
+	// Key = fullname, Value = fullname
+	private Map<String, Integer> selectedAgentsStringMap;
+	private Map<String, Integer> availableAgentsStringMap;
+	private int selectedAgentIdToBeAddedToTeam;
+	
+	// Key = fullname, Value = fullname
+	private Map<String, Integer> supervisorsStringMap;
 
 	@PostConstruct
 	public void init() {
 		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 		studiesBean = getActiveStudies();
 	}
+	
+	public void addAgentToTeam(int enqueteurId) {
+		Person selectedPerson = personService.getPersonById(selectedAgentIdToBeAddedToTeam);
+		if(selectedPerson != null) {
+			PersonBean selectedPersonBean = PersonUtils.getPersonBeanByPerson(selectedPerson, true);
+			studyBean.addEnqueteur(selectedPersonBean);
+			if(selectedAgentsStringMap == null) {
+				selectedAgentsStringMap = new HashMap<>();
+			}
+			selectedAgentsStringMap.put(selectedPersonBean.getFullname(), selectedPersonBean.getIdPerson());
+			//Remove selected agents from availables
+			availableAgentsStringMap.entrySet().removeAll(selectedAgentsStringMap.entrySet());
+			
+			// Add message
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage("Agent " + selectedPersonBean.getFullname() + " ajouté à l'équipe"));
+			log.debug("New person added to team: " + selectedPerson.getIdPerson());
+		}
+	}
 
 	private void setSupervisorsMap() {
 		Role supervisorRole = commonService.getRoleById(Constant.SUPERVISEUR_ROLE_ID);
 		List<Person> supervisors = personService.getPersonsByRole(supervisorRole);
-		Set<PersonBean> supervisorsBean = PersonUtils.getPersonBeanListFromPersonList(new HashSet<Person>(supervisors), true);
+		Set<PersonBean> supervisorsBean = PersonUtils.getPersonBeanListFromPersonList(new HashSet<Person>(supervisors),
+				true);
 		if (supervisorsBean != null && !supervisorsBean.isEmpty()) {
-			if(supervisorsStringMap == null) {
-				supervisorsStringMap = new HashMap<String, String>();
+			if (supervisorsStringMap == null) {
+				supervisorsStringMap = new HashMap<String, Integer>();
 			}
 			for (PersonBean supervisorBean : supervisorsBean) {
-				supervisorsStringMap.put(supervisorBean.getFullname(), supervisorBean.getFullname());
+				supervisorsStringMap.put(supervisorBean.getFullname(), supervisorBean.getIdPerson());
 			}
 		}
 
@@ -82,7 +110,7 @@ public class StudyManage {
 	private void setCustomersMap() {
 		List<Customer> customers = customerService.getCustomersByStatus(status);
 		if (customers != null) {
-			if(customersStringMap == null) {
+			if (customersStringMap == null) {
 				customersStringMap = new HashMap<String, String>();
 			}
 			for (Customer customer : customers) {
@@ -93,46 +121,58 @@ public class StudyManage {
 
 	public String register() {
 		int connectedUserId = SessionUtils.getConnectedPerson().getIdPerson();
-		if(studyBean.getCreatedDate() == null) {
+		if (studyBean.getCreatedDate() == null) {
 			studyBean.setCreatedDate(new Date());
-			studyBean.setCreatorId(connectedUserId);;
+			studyBean.setCreatorId(connectedUserId);
 		}
 		studyBean.setModifiedDate(new Date());
 		studyBean.setModifierId(connectedUserId);
 		study = getStudyByStudyBean(studyBean);
 		studyService.save(study);
-		
+
 		return Constant.VIEW_STUDIES_PAGE_OUTCOME;
 	}
 
 	private Study getStudyByStudyBean(StudyBean studyBean) {
 		Study study = null;
-		if(studyBean != null) {
+		if (studyBean != null) {
 			study = new Study();
-			
+
 			study.setIdStudy(studyBean.getId());
 			study.setTitle(studyBean.getTitle());
 			study.setCreateDate(studyBean.getCreatedDate());
 			study.setModifiedDate(studyBean.getModifiedDate());
-			
+
 			Person creator = personService.getPersonById(studyBean.getCreatorId());
 			study.setCreatedBy(creator);
-			
+
 			Person modifier = personService.getPersonById(studyBean.getModifierId());
 			study.setModifiedBy(modifier);
-			
+
 			Customer customer = customerService.getCustomerByName(studyBean.getCustomer());
 			study.setCustomer(customer);
 
 			study.setStartDate(studyBean.getStartDate());
 			study.setEndDate(studyBean.getEndDate());
-			
+
 			status = commonService.getStatusByStatusName(studyBean.getStatus());
 			study.setStatus(status);
-			
-			//TODO set team
-//			Team team = teamServervice.getTeamById(studyBean.getTeamId());
-//			study.setTeam(team);
+
+			// Supervisor
+			Person supervisor = personService.getPersonById(studyBean.getSupervisorId());
+			study.setSupervisor(supervisor);
+
+			//Enqueteurs
+			List<PersonBean> enqueteursBean = studyBean.getEnqueteurs();
+			Set<Person> enqueteurs = null;
+			if(enqueteursBean != null) {
+				enqueteurs = new HashSet<Person>();
+				for(PersonBean enqueteurBean : enqueteursBean) {
+					Person enqueteur = personService.getPersonById(enqueteurBean.getIdPerson());
+					enqueteurs.add(enqueteur);
+				}
+			}
+			study.setEnqueteurs(enqueteurs);
 			
 		}
 		return study;
@@ -141,7 +181,7 @@ public class StudyManage {
 	private List<StudyBean> getActiveStudies() {
 		log.debug("Getting Active studies");
 		List<StudyBean> result = null;
-		if(status.getIdStatus() != Constant.ACTIVE_STATUS_ID) {
+		if (status.getIdStatus() != Constant.ACTIVE_STATUS_ID) {
 			status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 		}
 		List<Study> studies = studyService.getStudiesByStatus(status);
@@ -164,12 +204,12 @@ public class StudyManage {
 			studyBean.setCustomer(study.getCustomer().getName());
 			studyBean.setStartDate(study.getStartDate());
 			studyBean.setEndDate(study.getEndDate());
-			
-			if(study.getTeam() != null) {
-				Person supervisor = study.getTeam().getSupervisor();
-				if (supervisor != null) {
-					studyBean.setSupervisor(supervisor.getFirstname() + " " + supervisor.getLastname());
-				}
+
+			Person supervisor = study.getSupervisor();
+			if (supervisor != null) {
+				PersonBean supervisorBean = PersonUtils.getPersonBeanByPerson(supervisor, true);
+				studyBean.setSupervisor(supervisorBean.getFullname());
+				studyBean.setSupervisorId(supervisorBean.getIdPerson());
 			}
 		}
 		return studyBean;
@@ -187,9 +227,28 @@ public class StudyManage {
 		this.studyBean = studyBean;
 		setCustomersMap();
 		setSupervisorsMap();
+		setAvailableAgentsMaps();
 		return Constant.VIEW_ADD_STUDY_PAGE_OUTCOME;
 	}
 	
+	public String forwardToViewAgent(PersonBean agentBean) {
+		if(agentBean == null)
+			return null;
+		return Constant.VIEW_USER_PAGE_OUTCOME;
+	}
+
+	private void setAvailableAgentsMaps() {
+		List<PersonBean> allAgents = personService.getAgentsByStatus(status, true);
+		if(allAgents != null) {
+			if(availableAgentsStringMap == null){
+				availableAgentsStringMap = new HashMap<>();
+			}
+			for(PersonBean agent : allAgents) {
+				availableAgentsStringMap.put(agent.getFullname(), agent.getIdPerson());
+			}
+		}
+	}
+
 	public String forwardToManageCustomers() {
 		return Constant.VIEW_CUSTOMERS_PAGE_OUTCOME;
 	}
@@ -198,7 +257,6 @@ public class StudyManage {
 		Study study = studyService.getStudyById(studyBean.getId());
 		studyService.delete(study);
 	}
-	
 
 	public void closeStudy(StudyBean studyBean) {
 		Study study = studyService.getStudyById(studyBean.getId());
@@ -263,14 +321,6 @@ public class StudyManage {
 		this.customersStringMap = customersStringMap;
 	}
 
-	public Map<String, String> getSupervisorsStringMap() {
-		return supervisorsStringMap;
-	}
-
-	public void setSupervisorsStringMap(Map<String, String> supervisorsStringMap) {
-		this.supervisorsStringMap = supervisorsStringMap;
-	}
-
 	public PersonService getPersonService() {
 		return personService;
 	}
@@ -285,6 +335,38 @@ public class StudyManage {
 
 	public void setStudy(Study study) {
 		this.study = study;
+	}
+
+	public Map<String, Integer> getSupervisorsStringMap() {
+		return supervisorsStringMap;
+	}
+
+	public void setSupervisorsStringMap(Map<String, Integer> supervisorsStringMap) {
+		this.supervisorsStringMap = supervisorsStringMap;
+	}
+
+	public Map<String, Integer> getSelectedAgentsStringMap() {
+		return selectedAgentsStringMap;
+	}
+
+	public void setSelectedAgentsStringMap(Map<String, Integer> selectedAgentsStringMap) {
+		this.selectedAgentsStringMap = selectedAgentsStringMap;
+	}
+
+	public Map<String, Integer> getAvailableAgentsStringMap() {
+		return availableAgentsStringMap;
+	}
+
+	public void setAvailableAgentsStringMap(Map<String, Integer> availableAgentsStringMap) {
+		this.availableAgentsStringMap = availableAgentsStringMap;
+	}
+
+	public int getSelectedAgentIdToBeAddedToTeam() {
+		return selectedAgentIdToBeAddedToTeam;
+	}
+
+	public void setSelectedAgentIdToBeAddedToTeam(int selectedAgentIdToBeAddedToTeam) {
+		this.selectedAgentIdToBeAddedToTeam = selectedAgentIdToBeAddedToTeam;
 	}
 
 }

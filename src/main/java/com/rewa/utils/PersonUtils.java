@@ -80,15 +80,68 @@ public class PersonUtils {
 							break;
 						case Constant.ID_RATING_LOCAL_LANGUAGES:
 							personBean.setRatingLocalLanguage(pl.getNotation());
+							personBean.setLocalLanguages(pl.getObservation());
+							break;
+						case Constant.ID_RATING_MS_WORD:
+							personBean.setRatingMSWord(pl.getNotation());
+							break;
+						case Constant.ID_RATING_MS_EXCEL:
+							personBean.setRatingMSExcel(pl.getNotation());
+							break;
+						case Constant.ID_RATING_MS_POWERPOINT:
+							personBean.setRatingMSPowerpoint(pl.getNotation());
 							break;
 						default:
 							break;
 						}
 					}
 				}
+
+				// Coordinates
+				Set<Coordinate> coordinates = person.getCoordinates();
+				if (coordinates != null && !coordinates.isEmpty()) {
+					for (Coordinate coordinate : coordinates) {
+						// Only active coordinates are handled
+						if (coordinate.getStatus().getIdStatus() == Constant.ACTIVE_STATUS_ID) {
+							CoordinateType coordinateType = coordinate.getType();
+							
+							switch (coordinateType.getIdCoordinateType()) {
+//							case Constant.COORDINATE_TYPE_ADDRESS:
+//								personBean.setAddress(coordinate.getCoordinate());
+//								break;
+							case Constant.COORDINATE_TYPE_PRIMARY_PHONE:
+								personBean.setPrimaryPhone(coordinate.getCoordinate());
+								break;
+							case Constant.COORDINATE_TYPE_SECONDARY_PHONE:
+								personBean.setSecondaryPhone(coordinate.getCoordinate());
+								break;
+							case Constant.COORDINATE_TYPE_PRIMARY_EMAIL:
+								personBean.setPrimaryEmail(coordinate.getCoordinate());
+								break;
+							case Constant.COORDINATE_TYPE_FACEBOOK_ID:
+								personBean.setFacebook(coordinate.getCoordinate());
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 		return personBean;
+	}
+
+	/**
+	 * Returns PersonBean loading its collections (roles, diplomas, languages,
+	 * technical skills)
+	 * 
+	 * @param personBean
+	 * @param person
+	 * @return
+	 */
+	public static PersonBean getPersonBeanByPersonEager(Person person) {
+		return getPersonBeanByPerson(person, false);
 	}
 
 	public static Set<PersonBean> getPersonBeanListFromPersonList(Set<Person> persons, boolean lazyMode) {

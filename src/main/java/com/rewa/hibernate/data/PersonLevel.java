@@ -1,7 +1,12 @@
 package com.rewa.hibernate.data;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import javax.persistence.*;
+
+import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;
 
 
 /**
@@ -10,7 +15,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rewa_person_level")
-@NamedQuery(name="PersonLevel.findAll", query="SELECT r FROM PersonLevel r")
+@NamedQueries({
+	@NamedQuery(name="PersonLevel.findAll", query="SELECT r FROM PersonLevel r"),
+	@NamedQuery(name="PersonLevel.findByPersonAndField", query="SELECT r FROM PersonLevel r where r.person = :person and r.field = :field")
+})
 public class PersonLevel implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -22,9 +30,13 @@ public class PersonLevel implements Serializable {
 	private int notation;
 
 	private String observation;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="dateLevel", nullable = false, insertable = false, updatable = false)
+	private Date dateLevel;
 
 	//bi-directional many-to-one association to RewaPerson
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.ALL})
 	@JoinColumn(name="evaluatedBy", insertable = false, updatable = false)
 	private Person evaluator;
 
@@ -34,7 +46,7 @@ public class PersonLevel implements Serializable {
 	private Field field;
 
 	//bi-directional many-to-one association to RewaPerson
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.ALL})
 	@JoinColumn(name="idPerson", insertable = false, updatable = false)
 	private Person person;
 
@@ -129,6 +141,14 @@ public class PersonLevel implements Serializable {
 		} else if (!person.equals(other.person))
 			return false;
 		return true;
+	}
+
+	public Date getDateLevel() {
+		return dateLevel;
+	}
+
+	public void setDateLevel(Date dateLevel) {
+		this.dateLevel = dateLevel;
 	}
 
 

@@ -47,6 +47,7 @@ public class PersonManage {
 	// Diploma
 	private List<String> schoolLevelList;
 	private Status status;
+	private Status activeStatus;
 	private Person connectedUser;
 
 	private PersonBean agentBean;
@@ -59,9 +60,9 @@ public class PersonManage {
 	private CommonService commonService;
 
 	private Integer ratingBase;
-	
+
 	private boolean displayAllUsers;
-	
+
 	private boolean connectedUserIsAdmin;
 
 	@PostConstruct
@@ -76,9 +77,10 @@ public class PersonManage {
 
 		person = getPersonByPersonBean(person, agentBean);
 
-		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
+		activeStatus = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
+		status = activeStatus;
 		agents = personService.getAgentsByStatus(status, true);
-		
+
 		rolesList = new ArrayList<String>();
 		setConnectedUserIsAdmin(connectedUserRoles.contains(adminRole));
 		// Only an admin can see and give Admin role to someone else
@@ -110,12 +112,17 @@ public class PersonManage {
 		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
+	public String relaodAgentTable() {
+		this.agents = personService.getAgentsByStatus(activeStatus, true);
+		return Constant.USER_HOME_PAGE_OUTCOME;
+	}
+
 	private void setCoordinates() {
 		Status coordinateStatus = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 
 		// Primary phone
-		String address = agentBean.getAddress();
-		addCoordinate(coordinateStatus, address, Constant.COORDINATE_TYPE_ADDRESS);
+		// String address = agentBean.getAddress();
+		// addCoordinate(coordinateStatus, address, Constant.COORDINATE_TYPE_ADDRESS);
 
 		// Primary phone
 		String primaryPhone = agentBean.getPrimaryPhone();
@@ -149,23 +156,29 @@ public class PersonManage {
 		Coordinate coordinate = null;
 		CoordinateType ct = commonService.getCoordinateTypeById(coordinateTypeId);
 		try {
-			List<Coordinate> coordinates = personService.getCoordinateByOwnerTypeAndStatus(person, ct, status);
+			List<Coordinate> coordinates = null;
+			if (person.getIdPerson() != 0) {
+				coordinates = personService.getCoordinateByOwnerTypeAndStatus(person, ct, status);
+			}
 			if (coordinates != null && !coordinates.isEmpty()) {
 				coordinate = coordinates.get(0);
 			}
 		} catch (Exception e) {
 			log.debug(e, e);
 		}
+		String coordinateFromDatabase = null;
 		if (coordinate == null) {
+			if (coordinateValue == null || coordinateValue.trim().isEmpty())
+				return;
 			coordinate = new Coordinate();
 			coordinate.setCreatedDate(new Date());
 			coordinate.setCreatedBy(connectedUser);
 		}
 
-		String coordinateFromDatabase = coordinate.getCoordinate();
-		if (coordinateFromDatabase == null && coordinateValue.trim().isEmpty()) {
+		coordinateFromDatabase = coordinate.getCoordinate();
+		if (coordinateValue.trim().equals(coordinateFromDatabase)) {
 			return;
-		} else if (!coordinateValue.equals(coordinateFromDatabase)) {
+		} else {
 			coordinate.setType(ct);
 			coordinate.setCoordinate(coordinateValue);
 			coordinate.setStatus(coordinateStatus);
@@ -180,11 +193,9 @@ public class PersonManage {
 	}
 
 	public String forwardToAddUser(PersonBean agentBean) {
-		if(agentBean != null) {
-			Person eagerPerson = personService.getPersonByIdLoadingPersonLevels(agentBean.getIdPerson());
-			agentBean = PersonUtils.getPersonBeanByPerson(eagerPerson, false);
-		}
 		this.agentBean = agentBean;
+		person = personService.getFindInEagerMode(agentBean.getIdPerson());
+		this.agentBean = PersonUtils.getPersonBeanByPersonEager(person);
 		return Constant.ADD_USER_PAGE_OUTCOME;
 	}
 
@@ -206,45 +217,46 @@ public class PersonManage {
 		return "";
 	}
 
-	//Hard delete. Allowed only for admin
+	// Hard delete. Allowed only for admin
 	public String deletePerson(PersonBean agentBean) {
-		if(isConnectedUserIsAdmin()) {
+		if (isConnectedUserIsAdmin()) {
 			log.debug("Hard deleting PersonBean: " + agentBean);
 			Person person = getPersonByPersonBean(null, agentBean);
-			//Allow only deleting inactive person
+			// Allow only deleting inactive person
 			Status inactiveStatus = commonService.getStatusByStatusName(Constant.INACTIVE_STATUS);
-			if(person.getStatus().equals(inactiveStatus)) {
+			if (person.getStatus().equals(inactiveStatus)) {
 				personService.delete(person);
 
 				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage("Utilisateur, " + person + ", définitement supprimé."));
-				
+						new FacesMessage("Utilisateur, " + agentBean.getFullname() + ", définitement supprimé."));
+
 			} else {
 				// Add message
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage("On ne peut pas supprimer un utilisateur actif. "
 								+ "\nMerci de désactivé avant en utilisant le bouton Supprimer' à côté de l\'icône poubelle."));
 				log.debug("Person person NOT deleted");
-				
+
 			}
 		}
 		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
 	/**
-	 * Returns PersonBean object from Person. 
-	 * If person in parameter is null then returns new Person to be probably registered in database
+	 * Returns PersonBean object from Person. If person in parameter is null then
+	 * returns new Person to be probably registered in database
+	 * 
 	 * @param person
 	 * @param personBean
 	 * @return
 	 */
 	private Person getPersonByPersonBean(Person person, PersonBean personBean) {
-		//TODO check if person in parameter is necessary
+		// TODO check if person in parameter is necessary
 		if (personBean != null) {
 			person = new Person();
 			int idPerson = personBean.getIdPerson();
 			if (idPerson != 0) {
-				//person = personService.getPersonById(idPerson);
+				// person = personService.getPersonById(idPerson);
 				person = personService.getPersonByIdLoadingPersonLevels(idPerson);
 			}
 			person.setFirstname(personBean.getFirstname());
@@ -264,11 +276,10 @@ public class PersonManage {
 			/*********** Status ************/
 			status = commonService.getStatusByStatusName(personBean.getStatus());
 			person.setStatus(status);
-			
 
 			/**************** Diplomas *********************/
 			setPersonDiplomas(person, personBean);
-			
+
 			/**************************** Languages **************************/
 			setPersonLanguages(person, personBean);
 
@@ -278,27 +289,28 @@ public class PersonManage {
 
 	private void setRoles(Person person, PersonBean personBean) {
 		String[] selectedRoles = personBean.getSelectedRoles();
-		
+
 		// Roles
 		// If no role selected, check if the person already has any role and remove it
 		if (selectedRoles == null || selectedRoles.length == 0) {
 			person.setRoles(null);
 		} else {
-			//If only selected diplomas in UI is different than the registered 
-			//ones in database then update the database
+			// If only selected diplomas in UI is different than the registered
+			// ones in database then update the database
 			Set<Role> personRoles = person.getRoles();
-			boolean dbRolesMatchSelectedRoles = personRoles.stream().map(Role::getRole)
-					.collect(Collectors.toSet()).equals(selectedRoles);
+			boolean dbRolesMatchSelectedRoles = false;
+			if (personRoles != null) {
+				personRoles.stream().map(Role::getRole).collect(Collectors.toSet()).equals(selectedRoles);
+			}
 			log.debug("dbRolesMatchSelectedRoles: " + dbRolesMatchSelectedRoles);
-			
-			if(!dbRolesMatchSelectedRoles) {
+
+			if (!dbRolesMatchSelectedRoles) {
 				Set<Role> roles = new HashSet<Role>();
-				person.getRoles().clear();
-				//person.setDiplomas(diplomas);
+				if (personRoles != null)
+					person.getRoles().clear();
 				for (String rolename : selectedRoles) {
 					Role role = commonService.getRoleByRoleName(rolename);
-					if (role != null 
-							&& (personRoles == null || !personRoles.contains(role))) {
+					if (role != null && (personRoles == null || !personRoles.contains(role))) {
 						roles.add(role);
 					}
 				}
@@ -306,43 +318,126 @@ public class PersonManage {
 			}
 		}
 	}
-	
+
 	/**
 	 * Setting languages levels
+	 * 
 	 * @param person
 	 * @param personBean
 	 */
 	private void setPersonLanguages(Person person, PersonBean personBean) {
-		//PersonLevel pl = null;
-		Set<PersonLevel> plSetDB = person.getPersonLevels();
-		
+		// PersonLevel pl = null;
+		Set<PersonLevel> personLevels = person.getPersonLevels();
+		Set<PersonLevel> plSetDB = personLevels;
+
 		Set<PersonLevel> plSet = new HashSet<PersonLevel>();
-		
-		//French Oral
-		Integer frenchOral = personBean.getRatingFrenchOral();
+		PersonLevel pl = null;
+
+		// French Oral
+		Integer frenchOralRating = personBean.getRatingFrenchOral();
 		Field frenchOralField = commonService.getFieldById(Constant.ID_RATING_FRENCH_ORAL);
-		buildPersonLevel(person, plSet, frenchOral, frenchOralField, null);
-		
-		//French Writing
-		Integer frenchWriting = personBean.getRatingFrenchWriting();
+		// Checking if the value in DB is different than the one in the bean
+		if (person.getIdPerson() != 0) {// if 0 then Person doesn't exist in database yet.
+			// Without this check, we throw a "object references an unsaved transient
+			// instance ..."
+			pl = commonService.getPersonLevelByField(person, frenchOralField);
+		}
+		// No record found in DB
+		if ((pl == null && frenchOralRating != null)
+				|| (pl != null && !(new Integer(pl.getNotation()).equals(frenchOralRating)))) {
+			buildPersonLevel(person, plSet, frenchOralRating, frenchOralField, null);
+		}
+
+		// French Writing
+		Integer frenchWritingRating = personBean.getRatingFrenchWriting();
 		Field frenchWritingField = commonService.getFieldById(Constant.ID_RATING_FRENCH_WRITING);
-		buildPersonLevel(person, plSet, frenchWriting, frenchWritingField, null);
-		
-		//Local Languages
-		Integer localLanguage = personBean.getRatingLocalLanguage();
+		// Checking if the value in DB is different than the one in the bean
+		if (person.getIdPerson() != 0) {// if 0 then Person doesn't exist in database yet.
+			// Without this check, we throw a "object references an unsaved transient
+			// instance ..."
+			pl = commonService.getPersonLevelByField(person, frenchWritingField);
+		}
+		// No record found in DB
+		if ((pl == null && frenchWritingRating != null)
+				|| (pl != null && !(new Integer(pl.getNotation()).equals(frenchWritingRating)))) {
+			buildPersonLevel(person, plSet, frenchWritingRating, frenchWritingField, null);
+		}
+
+		// Local Languages
+		Integer localLanguageRating = personBean.getRatingLocalLanguage();
 		Field localLanguageField = commonService.getFieldById(Constant.ID_RATING_LOCAL_LANGUAGES);
 		String localLanguages = (agentBean != null) ? agentBean.getLocalLanguages() : null;
-		buildPersonLevel(person, plSet, localLanguage, localLanguageField, localLanguages);
-		
-		if(!plSet.equals(plSetDB)) {
-			person.getPersonLevels().clear();
+		// Checking if the value in DB is different than the one in the bean
+		if (person.getIdPerson() != 0) {// if 0 then Person doesn't exist in database yet.
+			// Without this check, we throw a "object references an unsaved transient
+			// instance ..."
+			pl = commonService.getPersonLevelByField(person, localLanguageField);
+		}
+		// No record found in DB
+		if ((pl == null && localLanguageRating != null && localLanguages != null && !localLanguages.isEmpty())
+				|| (pl != null && !(new Integer(pl.getNotation())).equals(localLanguageRating))) {
+			buildPersonLevel(person, plSet, localLanguageRating, localLanguageField, localLanguages);
+		}
+
+		/**************** IT Levels ******************/
+		// MS Word
+		Integer msWordRating = personBean.getRatingMSWord();
+		Field msWordField = commonService.getFieldById(Constant.ID_RATING_MS_WORD);
+
+		// Checking if the value in DB is different than the one in the bean
+		if (person.getIdPerson() != 0) {// if 0 then Person doesn't exist in database yet.
+			// Without this check, we throw a "object references an unsaved transient
+			// instance ..."
+			pl = commonService.getPersonLevelByField(person, msWordField);
+		}
+		// No record found in DB
+		if ((pl == null && msWordRating != null)
+				|| (pl != null && !(new Integer(pl.getNotation()).equals(msWordRating)))) {
+			buildPersonLevel(person, plSet, msWordRating, msWordField, null);
+		}
+		// MS Excel
+		Integer msExcelRating = personBean.getRatingMSExcel();
+		Field msExcelField = commonService.getFieldById(Constant.ID_RATING_MS_EXCEL);
+
+		// Checking if the value in DB is different than the one in the bean
+		if (person.getIdPerson() != 0) {// if 0 then Person doesn't exist in database yet.
+			// Without this check, we throw a "object references an unsaved transient
+			// instance ..."
+			pl = commonService.getPersonLevelByField(person, msExcelField);
+		}
+		// No record found in DB
+		if ((pl == null && msExcelRating != null)
+				|| (pl != null && !(new Integer(pl.getNotation()).equals(msExcelRating)))) {
+			buildPersonLevel(person, plSet, msExcelRating, msExcelField, null);
+		}
+
+		// MS Powerpoint
+		Integer msPPRating = personBean.getRatingMSPowerpoint();
+		Field msPPField = commonService.getFieldById(Constant.ID_RATING_MS_POWERPOINT);
+
+		// Checking if the value in DB is different than the one in the bean
+		if (person.getIdPerson() != 0) {// if 0 then Person doesn't exist in database yet.
+			// Without this check, we throw a "object references an unsaved transient
+			// instance ..."
+			pl = commonService.getPersonLevelByField(person, msPPField);
+		}
+		// No record found in DB
+		if ((pl == null && msPPRating != null)
+				|| (pl != null && !(new Integer(pl.getNotation()).equals(msPPRating)))) {
+			buildPersonLevel(person, plSet, msPPRating, msPPField, null);
+		}
+
+		if (!plSet.isEmpty() && !plSet.equals(plSetDB)) {
+			if (personLevels != null)
+				personLevels.clear();
 			person.setPersonLevels(plSet);
 		}
+
 	}
 
-	private void buildPersonLevel(Person person, Set<PersonLevel> plSet, Integer localLanguage,
-			Field field, String observation) {
-		if(field != null) {
+	private void buildPersonLevel(Person person, Set<PersonLevel> plSet, Integer localLanguage, Field field,
+			String observation) {
+		if (field != null) {
 			int languageValue = (localLanguage == null) ? 0 : localLanguage.intValue();
 			PersonLevel pl = new PersonLevel();
 			pl.setField(field);
@@ -351,20 +446,23 @@ public class PersonManage {
 			pl.setNotation(languageValue);
 			pl.setPerson(person);
 			pl.setObservation(observation);
-			
+			pl.setDateLevel(new Date());
+
 			PersonLevelPK plPK = new PersonLevelPK();
 			plPK.setIdPerson(person.getIdPerson());
 			plPK.setIdField(field.getIdField());
 			plPK.setDateLevel(new Date());
 			pl.setId(plPK);
-			
+
 			plSet.add(pl);
 		}
 	}
 
 	/**
-	 * Gets diploma names from personBean and add the matching diploma object to person
-	 * If no Diploma selected, check if the person already has any diploma in database and remove it
+	 * Gets diploma names from personBean and add the matching diploma object to
+	 * person If no Diploma selected, check if the person already has any diploma in
+	 * database and remove it
+	 * 
 	 * @param person
 	 * @param personBean
 	 */
@@ -373,20 +471,25 @@ public class PersonManage {
 		if (selectedDiplomas == null || selectedDiplomas.length == 0) {
 			person.setDiplomas(null);
 		} else {
-			//If only selected diplomas in UI is different than the registered 
-			//ones in database then update the database
+			// If only selected diplomas in UI is different than the registered
+			// ones in database then update the database
 			Set<Diploma> personDiplomas = person.getDiplomas();
-			boolean dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
-					.collect(Collectors.toSet()).equals(selectedDiplomas);
-			
-			if(!dbDiplomasMatchesSelectedDiplomas) {
+			boolean dbDiplomasMatchesSelectedDiplomas = false;
+
+			if (personDiplomas != null) {
+				dbDiplomasMatchesSelectedDiplomas = personDiplomas.stream().map(Diploma::getDiploma)
+						.collect(Collectors.toSet()).equals(selectedDiplomas);
+			} else {
+				dbDiplomasMatchesSelectedDiplomas = (selectedDiplomas != null);
+			}
+
+			if (!dbDiplomasMatchesSelectedDiplomas) {
 				HashSet<Diploma> diplomas = new HashSet<Diploma>();
 				person.getDiplomas().clear();
-				//person.setDiplomas(diplomas);
+				// person.setDiplomas(diplomas);
 				for (String diplomaname : selectedDiplomas) {
 					Diploma diploma = commonService.getDiplomaByDiplomaName(diplomaname);
-					if (diploma != null 
-							&& (personDiplomas == null || !personDiplomas.contains(diploma))) {
+					if (diploma != null && (personDiplomas == null || !personDiplomas.contains(diploma))) {
 						diplomas.add(diploma);
 					}
 				}
@@ -424,7 +527,7 @@ public class PersonManage {
 	public List<PersonBean> getActiveAgents() {
 		return agents;
 	}
-	
+
 	public List<PersonBean> getActiveSystemUsers() {
 		return personService.getActiveSystemUsers(displayAllUsers, true);
 	}
@@ -530,6 +633,22 @@ public class PersonManage {
 
 	public void setConnectedUserIsAdmin(boolean connectedUserIsAdmin) {
 		this.connectedUserIsAdmin = connectedUserIsAdmin;
+	}
+
+	public Status getActiveStatus() {
+		return activeStatus;
+	}
+
+	public void setActiveStatus(Status activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 }

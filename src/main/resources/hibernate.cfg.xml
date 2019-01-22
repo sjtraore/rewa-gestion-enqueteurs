@@ -22,7 +22,6 @@
         <mapping class="com.rewa.hibernate.data.PersonRole"/>
         <mapping class="com.rewa.hibernate.data.PersonLevel"/>
         <mapping class="com.rewa.hibernate.data.Study"/>
-        <mapping class="com.rewa.hibernate.data.Team"/>
     </session-factory>
 
 </hibernate-configuration>
