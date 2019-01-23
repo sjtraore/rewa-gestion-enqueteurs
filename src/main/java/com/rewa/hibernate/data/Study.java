@@ -5,9 +5,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,23 +19,25 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
 
-
 /**
  * The persistent class for the rewa_study database table.
  * 
  */
 @Entity
-@Table(name="rewa_study")
-@NamedQueries({
-	@NamedQuery(name="Study.findAll", query="SELECT r FROM Study r"),
-	@NamedQuery(name="Study.findByStatus", query="SELECT r FROM Study r where r.status = :status")
+@Table(name = "rewa_study")
+@NamedQueries({ 
+	@NamedQuery(name = "Study.findAll", query = "SELECT r FROM Study r"),
+	@NamedQuery(name = "Study.findByIdEagerMode", query = "SELECT r FROM Study r "
+			+ "left join fetch r.enqueteurs "
+			+ "where r.idStudy = :idStudy"),
+	@NamedQuery(name = "Study.findByStatus", query = "SELECT r FROM Study r where r.status = :status") 
 })
 public class Study implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	private int idStudy;
-	
+
 	private String title;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -41,36 +45,54 @@ public class Study implements Serializable {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 
-	//bi-directional many-to-one association to RewaCustomer
+	// bi-directional many-to-one association to RewaCustomer
 	@ManyToOne
-	@JoinColumn(name="idCustomer")
+	@JoinColumn(name = "idCustomer")
 	private Customer customer;
-	
+
 	@ManyToOne
-	@JoinColumn(name="idCreatedBy")
+	@JoinColumn(name = "idCreatedBy")
 	private Person createdBy;
-	
+
 	@ManyToOne
-	@JoinColumn(name="idModifiedBy")
+	@JoinColumn(name = "idModifiedBy")
 	private Person modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDate;
 
-	//bi-directional many-to-one association to RewaStatus
+	// bi-directional many-to-one association to RewaStatus
 	@ManyToOne
-	@JoinColumn(name="idStatus")
+	@JoinColumn(name = "idStatus")
 	private Status status;
-	
+
 	@ManyToOne
-	@JoinColumn(name="idSupervisor")
+	@JoinColumn(name = "idSupervisor")
 	private Person supervisor;
 
-	@ManyToMany(mappedBy = "studiesAttended")
+	@ManyToOne
+	@JoinColumn(name = "idValidator")
+	private Person validator;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date validateDate;
+
+	@ManyToOne
+	@JoinColumn(name = "idCloser")
+	private Person closer;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date closeDate;
+
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(
+			name = "rewa_person_study", 
+			joinColumns = {@JoinColumn(name = "idStudy") }, 
+			inverseJoinColumns = {@JoinColumn(name = "idPerson") })
 	private Set<Person> enqueteurs;
 
 	public Study() {
@@ -184,6 +206,14 @@ public class Study implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Person getSupervisor() {
+		return supervisor;
+	}
+
+	public void setSupervisor(Person supervisor) {
+		this.supervisor = supervisor;
+	}
+
 	public Set<Person> getEnqueteurs() {
 		return enqueteurs;
 	}
@@ -192,25 +222,51 @@ public class Study implements Serializable {
 		this.enqueteurs = enqueteurs;
 	}
 	
-	public Person addEnqueteur(Person enqueteur) {
+	public Person addEnqueteur(Person person) {
 		if (getEnqueteurs() == null) {
 			setEnqueteurs(new HashSet<Person>());
 		}
-		getEnqueteurs().add(enqueteur);
-		return enqueteur;
-	}
+		getEnqueteurs().add(person);
 
-	public Person removePerson(Person person) {
-		getEnqueteurs().remove(person);
 		return person;
 	}
 
-	public Person getSupervisor() {
-		return supervisor;
+	public Person removeEnqueteur(Person person) {
+		getEnqueteurs().remove(person);
+
+		return person;
 	}
 
-	public void setSupervisor(Person supervisor) {
-		this.supervisor = supervisor;
+	public Person getValidator() {
+		return validator;
 	}
+
+	public void setValidator(Person validator) {
+		this.validator = validator;
+	}
+
+	public Date getValidateDate() {
+		return validateDate;
+	}
+
+	public void setValidateDate(Date validateDate) {
+		this.validateDate = validateDate;
+	}
+
+	public Person getCloser() {
+		return closer;
+	}
+
+	public void setCloser(Person closer) {
+		this.closer = closer;
+	}
+
+	public Date getCloseDate() {
+		return closeDate;
+	}
+
+	public void setCloseDate(Date closeDate) {
+		this.closeDate = closeDate;
+	} 
 
 }

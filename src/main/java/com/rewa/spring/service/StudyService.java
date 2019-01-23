@@ -87,16 +87,27 @@ public class StudyService {
 		}
 		return result;
 	}
-
+	
+	//Compatibility
 	public Study getStudyById(int id) {
+		return getStudyById(id, true);
+	}
+
+	public Study getStudyById(int id, boolean lazyMode) {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			Criteria criteria = session.createCriteria(Study.class).add(Restrictions.idEq(id));
-			return (Study) criteria.uniqueResult();
+			Study result = null;
+			if(lazyMode) {
+				Criteria criteria = session.createCriteria(Study.class).add(Restrictions.idEq(id));
+				result = (Study) criteria.uniqueResult();
+			} else {
+				Query query = session.getNamedQuery("Study.findByIdEagerMode").setParameter("idStudy", id);
+				result = (Study) query.uniqueResult();
+			}
+			return result;
 		} catch (Exception e) {
 			log.debug(e, e);
-			e.printStackTrace();
 			return null;
 		}
 	}

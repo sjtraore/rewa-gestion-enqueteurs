@@ -98,11 +98,8 @@ public class Person implements Serializable {
 	@JoinColumn(name = "status")
 	private Status status;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "rewa_person_study", joinColumns = {
-			@JoinColumn(name = "idPerson", referencedColumnName = "idPerson") }, inverseJoinColumns = {
-					@JoinColumn(name = "idStudy", referencedColumnName = "idStudy") })
-	private Set<Study> studiesAttended;
+	@ManyToMany(mappedBy = "enqueteurs")
+	private Set<Study> studies;
 
 	public Person() {
 	}

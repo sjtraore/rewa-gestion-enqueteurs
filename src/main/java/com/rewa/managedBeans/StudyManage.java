@@ -57,12 +57,12 @@ public class StudyManage {
 
 	// Key = fullname, Value = fullname
 	private Map<String, String> customersStringMap;
-	
+
 	// Key = fullname, Value = fullname
 	private Map<String, Integer> selectedAgentsStringMap;
 	private Map<String, Integer> availableAgentsStringMap;
 	private int selectedAgentIdToBeAddedToTeam;
-	
+
 	// Key = fullname, Value = fullname
 	private Map<String, Integer> supervisorsStringMap;
 
@@ -71,19 +71,19 @@ public class StudyManage {
 		status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 		studiesBean = getActiveStudies();
 	}
-	
+
 	public void addAgentToTeam(int enqueteurId) {
 		Person selectedPerson = personService.getPersonById(selectedAgentIdToBeAddedToTeam);
-		if(selectedPerson != null) {
+		if (selectedPerson != null) {
 			PersonBean selectedPersonBean = PersonUtils.getPersonBeanByPerson(selectedPerson, true);
 			studyBean.addEnqueteur(selectedPersonBean);
-			if(selectedAgentsStringMap == null) {
+			if (selectedAgentsStringMap == null) {
 				selectedAgentsStringMap = new HashMap<>();
 			}
 			selectedAgentsStringMap.put(selectedPersonBean.getFullname(), selectedPersonBean.getIdPerson());
-			//Remove selected agents from availables
+			// Remove selected agents from availables
 			availableAgentsStringMap.entrySet().removeAll(selectedAgentsStringMap.entrySet());
-			
+
 			// Add message
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage("Agent " + selectedPersonBean.getFullname() + " ajouté à l'équipe"));
@@ -120,7 +120,7 @@ public class StudyManage {
 	}
 
 	public String register() {
-		int connectedUserId = SessionUtils.getConnectedPerson().getIdPerson();
+		int connectedUserId = getConnectedUser().getIdPerson();
 		if (studyBean.getCreatedDate() == null) {
 			studyBean.setCreatedDate(new Date());
 			studyBean.setCreatorId(connectedUserId);
@@ -162,18 +162,20 @@ public class StudyManage {
 			Person supervisor = personService.getPersonById(studyBean.getSupervisorId());
 			study.setSupervisor(supervisor);
 
-			//Enqueteurs
+			// Validator
+			Person validator = personService.getPersonById(studyBean.getValidator().getIdPerson());
+			study.setValidator(validator);
+			study.setValidateDate(studyBean.getValidateDate());
+
+			// PersonStudy
 			List<PersonBean> enqueteursBean = studyBean.getEnqueteurs();
-			Set<Person> enqueteurs = null;
-			if(enqueteursBean != null) {
-				enqueteurs = new HashSet<Person>();
-				for(PersonBean enqueteurBean : enqueteursBean) {
+			if (enqueteursBean != null) {
+				for (PersonBean enqueteurBean : enqueteursBean) {
 					Person enqueteur = personService.getPersonById(enqueteurBean.getIdPerson());
-					enqueteurs.add(enqueteur);
+					study.addEnqueteur(enqueteur);
 				}
 			}
-			study.setEnqueteurs(enqueteurs);
-			
+
 		}
 		return study;
 	}
@@ -188,13 +190,20 @@ public class StudyManage {
 		if (studies != null && !studies.isEmpty()) {
 			result = new ArrayList<StudyBean>();
 			for (Study study : studies) {
-				result.add(getStudyBeanFromStudy(study));
+				result.add(getStudyBeanFromStudy(study, true));
 			}
 		}
 		return result;
 	}
 
-	private StudyBean getStudyBeanFromStudy(Study study) {
+	/**
+	 * 
+	 * @param study
+	 * @param lazyMode:
+	 *            if false, then we load the object in eager mode
+	 * @return
+	 */
+	private StudyBean getStudyBeanFromStudy(Study study, boolean lazyMode) {
 		StudyBean studyBean = null;
 		if (study != null) {
 			studyBean = new StudyBean();
@@ -211,6 +220,24 @@ public class StudyManage {
 				studyBean.setSupervisor(supervisorBean.getFullname());
 				studyBean.setSupervisorId(supervisorBean.getIdPerson());
 			}
+
+			Person validator = study.getValidator();
+			if (validator != null) {
+				PersonBean validatorBean = PersonUtils.getPersonBeanByPerson(validator, true);
+				studyBean.setValidator(validatorBean);
+			}
+			studyBean.setValidateDate(study.getValidateDate());
+
+			if (!lazyMode) {
+				// enqueteurs
+				Set<Person> enqueteurs = study.getEnqueteurs();
+				if (enqueteurs != null && !enqueteurs.isEmpty()) {
+					for (Person enqueteur : enqueteurs) {
+						PersonBean enqueteurBean = PersonUtils.getPersonBeanByPerson(enqueteur, true);
+						studyBean.addEnqueteur(enqueteurBean);
+					}
+				}
+			}
 		}
 		return studyBean;
 	}
@@ -222,28 +249,44 @@ public class StudyManage {
 		studyService.save(study);
 	}
 
+	public void validateStudy(StudyBean studyBean) {
+		studyBean.setValidateDate(new Date());
+		studyBean.setValidator(PersonUtils.getPersonBeanByPerson(getConnectedUser(), true));
+		this.studyBean = studyBean;
+		register();
+	}
+
+	private Person getConnectedUser() {
+		return SessionUtils.getConnectedPerson();
+	}
+
 	public String forwardToAddStudy(StudyBean studyBean) {
 		studyBean = (studyBean != null) ? studyBean : new StudyBean();
+		if (studyBean.getId() != 0) {
+			// Eager loading
+			study = studyService.getStudyById(studyBean.getId(), false);
+			studyBean = getStudyBeanFromStudy(study, false);
+		}
 		this.studyBean = studyBean;
 		setCustomersMap();
 		setSupervisorsMap();
 		setAvailableAgentsMaps();
 		return Constant.VIEW_ADD_STUDY_PAGE_OUTCOME;
 	}
-	
+
 	public String forwardToViewAgent(PersonBean agentBean) {
-		if(agentBean == null)
+		if (agentBean == null)
 			return null;
 		return Constant.VIEW_USER_PAGE_OUTCOME;
 	}
 
 	private void setAvailableAgentsMaps() {
 		List<PersonBean> allAgents = personService.getAgentsByStatus(status, true);
-		if(allAgents != null) {
-			if(availableAgentsStringMap == null){
+		if (allAgents != null) {
+			if (availableAgentsStringMap == null) {
 				availableAgentsStringMap = new HashMap<>();
 			}
-			for(PersonBean agent : allAgents) {
+			for (PersonBean agent : allAgents) {
 				availableAgentsStringMap.put(agent.getFullname(), agent.getIdPerson());
 			}
 		}
@@ -259,10 +302,12 @@ public class StudyManage {
 	}
 
 	public void closeStudy(StudyBean studyBean) {
-		Study study = studyService.getStudyById(studyBean.getId());
-		Status cosedStatus = commonService.getStatusByStatusId(Constant.INACTIVE_STATUS_ID);
-		study.setStatus(cosedStatus);
-		studyService.save(study);
+		studyBean.setStatus(Constant.INACTIVE_STATUS);
+		studyBean.setCloseDate(new Date());
+		studyBean.setCloser(PersonUtils.getPersonBeanByPerson(getConnectedUser(), true));
+		
+		this.studyBean = studyBean;
+		register();
 	}
 
 	public List<StudyBean> getStudiesBean() {

@@ -281,7 +281,7 @@ public class PersonManage {
 			setPersonDiplomas(person, personBean);
 
 			/**************************** Languages **************************/
-			setPersonLanguages(person, personBean);
+			setPersonLevels(person, personBean);
 
 		}
 		return person;
@@ -325,7 +325,7 @@ public class PersonManage {
 	 * @param person
 	 * @param personBean
 	 */
-	private void setPersonLanguages(Person person, PersonBean personBean) {
+	private void setPersonLevels(Person person, PersonBean personBean) {
 		// PersonLevel pl = null;
 		Set<PersonLevel> personLevels = person.getPersonLevels();
 		Set<PersonLevel> plSetDB = personLevels;

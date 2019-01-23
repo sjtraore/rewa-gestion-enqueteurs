@@ -83,6 +83,16 @@
 					</p:panelGrid>
 				</p:fieldset>
 				<p:fieldset legend="#{msg.team}">
+					<h:outputFormat value="#{msg['study_validated_at']}"
+						rendered="#{not empty studyManage.studyBean.validateDate}">
+						<f:param value="#{studyManage.studyBean.validator.fullname}" />
+						<f:param value="#{studyManage.studyBean.validateDate}" />
+					</h:outputFormat>
+					<h:outputFormat value="#{msg['study_closed_at']}"
+						rendered="#{not empty studyManage.studyBean.closeDate}">
+						<f:param value="#{studyManage.studyBean.closer.fullname}" />
+						<f:param value="#{studyManage.studyBean.closeDate}" />
+					</h:outputFormat>
 					<p:dataTable var="enqueteur"
 						value="#{studyManage.studyBean.enqueteurs}" widgetVar="teamTable"
 						emptyMessage="#{msg.no_agent_found}"
@@ -109,15 +119,27 @@
 								action="#{studyManage.forwardToViewAgent(enqueteur)}"
 								value="#{enqueteur.idPerson}" />
 						</p:column>
-						<p:column headerText="#{msg.fullname}" sortBy="#{enqueteur.fullname}"
-							filterBy="#{enqueteur.fullname}" priority="3">
+						<p:column headerText="#{msg.fullname}"
+							sortBy="#{enqueteur.fullname}" filterBy="#{enqueteur.fullname}"
+							priority="3">
 							<h:outputText value="#{enqueteur.fullname}" />
 						</p:column>
 					</p:dataTable>
 				</p:fieldset>
 				<p:toolbar>
+					<f:facet name="left">
+						<p:commandButton
+							rendered="#{empty studyManage.studyBean.validateDate}"
+							value="#{msg.validate_study}" icon="ui-icon-check"
+							action="#{studyManage.validateStudy(studyManage.studyBean)}"></p:commandButton>
+					
+						<p:commandButton value="#{msg.close_study}" process="@this"
+						rendered="#{empty studyManage.studyBean.closeDate}"
+							update="studyform" action="#{studyManage.closeStudy(studyManage.studyBean)}">
+						</p:commandButton>
+					</f:facet>
 					<f:facet name="right">
-						<p:commandButton value="#{msg.register}" icon="ui-icon-check"
+						<p:commandButton value="#{msg.register}" icon="fa fa-pen-square"
 							action="#{studyManage.register()}" update="studyform"></p:commandButton>
 						<p:commandButton value="#{msg.cancel}" process="@this"
 							update="studyform" action="#{customerManage.cancelRegistration}">

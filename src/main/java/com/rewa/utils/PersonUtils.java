@@ -105,6 +105,9 @@ public class PersonUtils {
 						if (coordinate.getStatus().getIdStatus() == Constant.ACTIVE_STATUS_ID) {
 							CoordinateType coordinateType = coordinate.getType();
 							
+							if(coordinateType == null)
+								continue;
+							
 							switch (coordinateType.getIdCoordinateType()) {
 //							case Constant.COORDINATE_TYPE_ADDRESS:
 //								personBean.setAddress(coordinate.getCoordinate());
