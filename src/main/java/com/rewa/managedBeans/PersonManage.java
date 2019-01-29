@@ -65,6 +65,8 @@ public class PersonManage {
 
 	private boolean connectedUserIsAdmin;
 
+	public String returnPage;
+
 	@PostConstruct
 	public void init() {
 		ratingBase = Constant.RATING_BASE;
@@ -109,6 +111,8 @@ public class PersonManage {
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage("La personne " + this.agentBean.getFullname() + " a été enregistré avec succés"));
 		log.debug("New person registred: " + person.getIdPerson());
+		if (returnPage != null)
+			return returnPage;
 		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
@@ -194,14 +198,15 @@ public class PersonManage {
 
 	public String forwardToAddUser(PersonBean agentBean) {
 		this.agentBean = agentBean;
-		person = personService.getFindInEagerMode(agentBean.getIdPerson());
-		this.agentBean = PersonUtils.getPersonBeanByPersonEager(person);
+		if (agentBean != null) {
+			person = personService.getFindInEagerMode(agentBean.getIdPerson());
+			this.agentBean = PersonUtils.getPersonBeanByPersonEager(person);
+		}
 		return Constant.ADD_USER_PAGE_OUTCOME;
 	}
 
 	public String forwardToViewUser(PersonBean agentBean) {
 		System.out.println("Agent: " + agentBean);
-		this.agentBean = agentBean;
 		return Constant.VIEW_USER_PAGE_OUTCOME;
 	}
 
@@ -214,6 +219,8 @@ public class PersonManage {
 		personService.save(person);
 
 		RewaUtils.addMessage(FacesMessage.SEVERITY_INFO, "Agent désactivé", null);
+		if (returnPage != null)
+			return returnPage;
 		return "";
 	}
 
@@ -239,6 +246,8 @@ public class PersonManage {
 
 			}
 		}
+		if (returnPage != null)
+			return returnPage;
 		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
@@ -300,7 +309,8 @@ public class PersonManage {
 			Set<Role> personRoles = person.getRoles();
 			boolean dbRolesMatchSelectedRoles = false;
 			if (personRoles != null) {
-				personRoles.stream().map(Role::getRole).collect(Collectors.toSet()).equals(selectedRoles);
+				dbRolesMatchSelectedRoles = personRoles.stream().map(Role::getRole).collect(Collectors.toSet())
+						.equals(selectedRoles);
 			}
 			log.debug("dbRolesMatchSelectedRoles: " + dbRolesMatchSelectedRoles);
 
@@ -422,8 +432,7 @@ public class PersonManage {
 			pl = commonService.getPersonLevelByField(person, msPPField);
 		}
 		// No record found in DB
-		if ((pl == null && msPPRating != null)
-				|| (pl != null && !(new Integer(pl.getNotation()).equals(msPPRating)))) {
+		if ((pl == null && msPPRating != null) || (pl != null && !(new Integer(pl.getNotation()).equals(msPPRating)))) {
 			buildPersonLevel(person, plSet, msPPRating, msPPField, null);
 		}
 
@@ -499,6 +508,8 @@ public class PersonManage {
 	}
 
 	public String cancelUerRegistration() {
+		if (returnPage != null)
+			return returnPage;
 		return Constant.USER_HOME_PAGE_OUTCOME;
 	}
 
@@ -649,6 +660,14 @@ public class PersonManage {
 
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+
+	public String getReturnPage() {
+		return returnPage;
+	}
+
+	public void setReturnPage(String returnPage) {
+		this.returnPage = returnPage;
 	}
 
 }

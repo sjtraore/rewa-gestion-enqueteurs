@@ -16,12 +16,15 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
+import org.primefaces.event.RowEditEvent;
 
 import com.rewa.beans.PersonBean;
+import com.rewa.beans.PersonStudyBean;
 import com.rewa.beans.StudyBean;
 import com.rewa.constant.Constant;
 import com.rewa.hibernate.data.Customer;
 import com.rewa.hibernate.data.Person;
+import com.rewa.hibernate.data.PersonStudy;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.hibernate.data.Study;
@@ -54,6 +57,7 @@ public class StudyManage {
 	private StudyBean studyBean;
 	private Study study;
 	private Status status;
+	private Set<PersonStudyBean> personStudiesBean;
 
 	// Key = fullname, Value = fullname
 	private Map<String, String> customersStringMap;
@@ -72,6 +76,46 @@ public class StudyManage {
 		studiesBean = getActiveStudies();
 	}
 
+	public void setPersonStudiesBeanSetFromDB() {
+		Set<PersonStudy> personStudySet = studyService.getPersonStudyListByStudy(study);
+		if (personStudySet != null && !personStudySet.isEmpty()) {
+			for (PersonStudy ps : personStudySet) {
+				PersonStudyBean psBean = new PersonStudyBean();
+				psBean.setIdPersonStudy(ps.getIdPersonStudy());
+				psBean.setPersonBean(PersonUtils.getPersonBeanByPerson(ps.getPerson(), true));
+				psBean.setStudyBean(getStudyBean());
+				psBean.setMarkDiligence(ps.getMarkDiligence());
+				psBean.setMarkPunctuality(ps.getMarkPunctuality());
+
+				personStudiesBean.add(psBean);
+			}
+		}
+	}
+
+	/**
+	 * Setting PersonStudy DB information from the table of enqueteurs after
+	 * notation
+	 */
+	private void setPersonStudySetDBFromPSSetBean() {
+		if (personStudiesBean != null && !personStudiesBean.isEmpty()) {
+			for (PersonStudyBean psb : personStudiesBean) {
+				int idPersonStudy = psb.getIdPersonStudy();
+				PersonStudy ps = null;
+
+				if (idPersonStudy != 0) {
+					// Row exists in DB
+					ps = studyService.getPersonStudyById(idPersonStudy);
+				} else {
+					ps = new PersonStudy(personService.getPersonById(psb.getPersonBean().getIdPerson()), study);
+				}
+				ps.setMarkPunctuality(psb.getMarkPunctuality());
+				ps.setMarkDiligence(psb.getMarkDiligence());
+
+				studyService.savePersonStudy(ps);
+			}
+		}
+	}
+
 	public void addAgentToTeam(int enqueteurId) {
 		Person selectedPerson = personService.getPersonById(selectedAgentIdToBeAddedToTeam);
 		if (selectedPerson != null) {
@@ -88,6 +132,22 @@ public class StudyManage {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage("Agent " + selectedPersonBean.getFullname() + " ajouté à l'équipe"));
 			log.debug("New person added to team: " + selectedPerson.getIdPerson());
+		}
+	}
+
+	public void removeAgentFromTeam(int enqueteurId) {
+		Person selectedPerson = personService.getPersonById(enqueteurId);
+		if (selectedPerson != null) {
+			PersonBean selectedPersonBean = PersonUtils.getPersonBeanByPerson(selectedPerson, true);
+			selectedPersonBean = studyBean.removeEnqueteur(selectedPersonBean);
+			studyBean.removeEnqueteur(selectedPersonBean);
+			// Remove selected agents from availables
+			availableAgentsStringMap.put(selectedPersonBean.getFullname(), selectedPersonBean.getIdPerson());
+
+			// Add message
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage("Agent " + selectedPersonBean.getFullname() + " retiré de l'équipe"));
+			log.debug("Agent removed from team: " + selectedPerson.getIdPerson());
 		}
 	}
 
@@ -129,8 +189,38 @@ public class StudyManage {
 		studyBean.setModifierId(connectedUserId);
 		study = getStudyByStudyBean(studyBean);
 		studyService.save(study);
+		savePersonStudy();
 
 		return Constant.VIEW_STUDIES_PAGE_OUTCOME;
+	}
+
+	private void savePersonStudy() {
+		// Wether list of PersonStudy in DB is the same with the bean
+		boolean dbPersonStudiesMatchSelectedPS = false;
+		Set<PersonStudy> dbPersonStudies = studyService.getPersonStudyListByStudy(study);
+		Set<PersonBean> pbDBList = new HashSet<PersonBean>();
+		if (dbPersonStudies != null && !dbPersonStudies.isEmpty()) {
+			for (PersonStudy ps : dbPersonStudies) {
+				pbDBList.add(PersonUtils.getPersonBeanByPerson(ps.getPerson(), true));
+			}
+		}
+
+		List<PersonBean> enqueteursBean = studyBean.getEnqueteurs();
+		dbPersonStudiesMatchSelectedPS = (enqueteursBean.containsAll(pbDBList) && pbDBList.containsAll(enqueteursBean));
+		if (!dbPersonStudiesMatchSelectedPS) {
+			// Delete existing personStudies
+			for (PersonStudy ps : dbPersonStudies) {
+				studyService.deletePersonStudy(ps);
+			}
+
+			if (enqueteursBean != null) {
+				for (PersonBean enqueteurBean : enqueteursBean) {
+					Person enqueteur = personService.getPersonById(enqueteurBean.getIdPerson());
+					PersonStudy personStudy = new PersonStudy(enqueteur, study);
+					studyService.savePersonStudy(personStudy);
+				}
+			}
+		}
 	}
 
 	private Study getStudyByStudyBean(StudyBean studyBean) {
@@ -142,6 +232,7 @@ public class StudyManage {
 			study.setTitle(studyBean.getTitle());
 			study.setCreateDate(studyBean.getCreatedDate());
 			study.setModifiedDate(studyBean.getModifiedDate());
+			study.setCloseDate(studyBean.getCloseDate());
 
 			Person creator = personService.getPersonById(studyBean.getCreatorId());
 			study.setCreatedBy(creator);
@@ -151,6 +242,12 @@ public class StudyManage {
 
 			Customer customer = customerService.getCustomerByName(studyBean.getCustomer());
 			study.setCustomer(customer);
+			
+			PersonBean closerBean = studyBean.getCloser();
+			if(closerBean != null) {
+				Person closer = personService.getPersonById(closerBean.getIdPerson());
+				study.setCloser(closer);
+			}
 
 			study.setStartDate(studyBean.getStartDate());
 			study.setEndDate(studyBean.getEndDate());
@@ -163,17 +260,11 @@ public class StudyManage {
 			study.setSupervisor(supervisor);
 
 			// Validator
-			Person validator = personService.getPersonById(studyBean.getValidator().getIdPerson());
-			study.setValidator(validator);
-			study.setValidateDate(studyBean.getValidateDate());
-
-			// PersonStudy
-			List<PersonBean> enqueteursBean = studyBean.getEnqueteurs();
-			if (enqueteursBean != null) {
-				for (PersonBean enqueteurBean : enqueteursBean) {
-					Person enqueteur = personService.getPersonById(enqueteurBean.getIdPerson());
-					study.addEnqueteur(enqueteur);
-				}
+			PersonBean validatorBean = studyBean.getValidator();
+			if (validatorBean != null) {
+				Person validator = personService.getPersonById(validatorBean.getIdPerson());
+				study.setValidator(validator);
+				study.setValidateDate(studyBean.getValidateDate());
 			}
 
 		}
@@ -186,7 +277,8 @@ public class StudyManage {
 		if (status.getIdStatus() != Constant.ACTIVE_STATUS_ID) {
 			status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 		}
-		List<Study> studies = studyService.getStudiesByStatus(status);
+		//Set<Study> studies = studyService.getStudiesByStatus(status);
+		Set<Study> studies = studyService.getStudies();
 		if (studies != null && !studies.isEmpty()) {
 			result = new ArrayList<StudyBean>();
 			for (Study study : studies) {
@@ -213,6 +305,7 @@ public class StudyManage {
 			studyBean.setCustomer(study.getCustomer().getName());
 			studyBean.setStartDate(study.getStartDate());
 			studyBean.setEndDate(study.getEndDate());
+			studyBean.setCloseDate(study.getCloseDate());
 
 			Person supervisor = study.getSupervisor();
 			if (supervisor != null) {
@@ -227,13 +320,28 @@ public class StudyManage {
 				studyBean.setValidator(validatorBean);
 			}
 			studyBean.setValidateDate(study.getValidateDate());
+			
+			Person closer = study.getCloser();
+			if(closer != null) {
+				PersonBean closerBean = PersonUtils.getPersonBeanByPerson(closer, true);
+				studyBean.setCloser(closerBean);
+			}
 
 			if (!lazyMode) {
 				// enqueteurs
-				Set<Person> enqueteurs = study.getEnqueteurs();
-				if (enqueteurs != null && !enqueteurs.isEmpty()) {
-					for (Person enqueteur : enqueteurs) {
+				Set<PersonStudy> personStudies = studyService.getPersonStudyListByStudy(study);
+				if (personStudies != null && !personStudies.isEmpty()) {
+					for (PersonStudy personStudy : personStudies) {
+						Person enqueteur = personStudy.getPerson();
 						PersonBean enqueteurBean = PersonUtils.getPersonBeanByPerson(enqueteur, true);
+						personService.setCoordinates(enqueteur, enqueteurBean);
+
+						//We calculate punctuality and diligency average only for closed studies
+						Status closedStatus = commonService.getStatusByStatusId(Constant.INACTIVE_STATUS_ID);
+						Set<PersonStudy> studiesAttendedByThisEnqueteur = studyService
+								.getPersonStudyListByPersonAndStudyStatus(enqueteur, closedStatus);
+						enqueteurBean = PersonUtils.setMarks(studiesAttendedByThisEnqueteur, enqueteurBean);
+						
 						studyBean.addEnqueteur(enqueteurBean);
 					}
 				}
@@ -271,6 +379,9 @@ public class StudyManage {
 		setCustomersMap();
 		setSupervisorsMap();
 		setAvailableAgentsMaps();
+
+		personStudiesBean = new HashSet<>();
+		setPersonStudiesBeanSetFromDB();
 		return Constant.VIEW_ADD_STUDY_PAGE_OUTCOME;
 	}
 
@@ -301,13 +412,24 @@ public class StudyManage {
 		studyService.delete(study);
 	}
 
-	public void closeStudy(StudyBean studyBean) {
+	public void closeStudy() {
 		studyBean.setStatus(Constant.INACTIVE_STATUS);
 		studyBean.setCloseDate(new Date());
 		studyBean.setCloser(PersonUtils.getPersonBeanByPerson(getConnectedUser(), true));
-		
-		this.studyBean = studyBean;
+
+		//this.studyBean = studyBean;
 		register();
+		setPersonStudySetDBFromPSSetBean();
+	}
+
+	public void onRowEdit(RowEditEvent event) {
+		FacesMessage msg = new FacesMessage("Enqueteur noté", ((PersonBean) event.getObject()).getFullname());
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+	}
+
+	public void onRowCancel(RowEditEvent event) {
+		FacesMessage msg = new FacesMessage("Edit Cancelled", ((PersonBean) event.getObject()).getFullname());
+		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}
 
 	public List<StudyBean> getStudiesBean() {
@@ -412,6 +534,14 @@ public class StudyManage {
 
 	public void setSelectedAgentIdToBeAddedToTeam(int selectedAgentIdToBeAddedToTeam) {
 		this.selectedAgentIdToBeAddedToTeam = selectedAgentIdToBeAddedToTeam;
+	}
+
+	public Set<PersonStudyBean> getPersonStudiesBean() {
+		return personStudiesBean;
+	}
+
+	public void setPersonStudiesBean(Set<PersonStudyBean> personStudiesBean) {
+		this.personStudiesBean = personStudiesBean;
 	}
 
 }

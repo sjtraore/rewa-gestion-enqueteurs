@@ -1,5 +1,6 @@
 package com.rewa.beans;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -47,8 +48,11 @@ public class PersonBean {
 	private Integer ratingMSWord;
 	private Integer ratingMSExcel;
 	private Integer ratingMSPowerpoint;
-	private double averageEnq;
-	private double averageCont;
+	private BigDecimal averageEnq;
+	private BigDecimal averageCont;
+	
+	private BigDecimal avgPunctuality;
+	private BigDecimal avgDiligence;
 	
 	private String[] selectedDiplomas = null;
 
@@ -324,22 +328,22 @@ public class PersonBean {
 	}
 
 
-	public double getAverageCont() {
+	public BigDecimal getAverageCont() {
 		return averageCont;
 	}
 
 
-	public void setAverageCont(double averageCont) {
+	public void setAverageCont(BigDecimal averageCont) {
 		this.averageCont = averageCont;
 	}
 
 
-	public double getAverageEnq() {
+	public BigDecimal getAverageEnq() {
 		return averageEnq;
 	}
 
 
-	public void setAverageEnq(double averageEnq) {
+	public void setAverageEnq(BigDecimal averageEnq) {
 		this.averageEnq = averageEnq;
 	}
 
@@ -361,6 +365,50 @@ public class PersonBean {
 
 	public void setSelectedRoles(String[] selectedRoles) {
 		this.selectedRoles = selectedRoles;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + idPerson;
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PersonBean other = (PersonBean) obj;
+		if (idPerson != other.idPerson)
+			return false;
+		return true;
+	}
+
+
+	public BigDecimal getAvgPunctuality() {
+		return avgPunctuality;
+	}
+
+
+	public void setAvgPunctuality(BigDecimal avgPunctuality) {
+		this.avgPunctuality = avgPunctuality;
+	}
+
+
+	public BigDecimal getAvgDiligence() {
+		return avgDiligence;
+	}
+
+
+	public void setAvgDiligence(BigDecimal avgDiligence) {
+		this.avgDiligence = avgDiligence;
 	}
 	
 }

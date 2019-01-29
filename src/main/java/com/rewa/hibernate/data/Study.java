@@ -2,15 +2,12 @@ package com.rewa.hibernate.data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -25,17 +22,16 @@ import org.hibernate.annotations.NamedQuery;
  */
 @Entity
 @Table(name = "rewa_study")
-@NamedQueries({ 
-	@NamedQuery(name = "Study.findAll", query = "SELECT r FROM Study r"),
-	@NamedQuery(name = "Study.findByIdEagerMode", query = "SELECT r FROM Study r "
-			+ "left join fetch r.enqueteurs "
-			+ "where r.idStudy = :idStudy"),
-	@NamedQuery(name = "Study.findByStatus", query = "SELECT r FROM Study r where r.status = :status") 
+@NamedQueries({ @NamedQuery(name = "Study.findAll", query = "SELECT r FROM Study r"),
+		@NamedQuery(name = "Study.findByIdEagerMode", query = "SELECT r FROM Study r "
+				+ "where r.idStudy = :idStudy"),
+		@NamedQuery(name = "Study.findByStatus", query = "SELECT r FROM Study r where r.status = :status") 
 })
 public class Study implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idStudy;
 
 	private String title;
@@ -77,23 +73,16 @@ public class Study implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "idValidator")
 	private Person validator;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date validateDate;
 
 	@ManyToOne
 	@JoinColumn(name = "idCloser")
 	private Person closer;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date closeDate;
-
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(
-			name = "rewa_person_study", 
-			joinColumns = {@JoinColumn(name = "idStudy") }, 
-			inverseJoinColumns = {@JoinColumn(name = "idPerson") })
-	private Set<Person> enqueteurs;
 
 	public Study() {
 	}
@@ -214,29 +203,6 @@ public class Study implements Serializable {
 		this.supervisor = supervisor;
 	}
 
-	public Set<Person> getEnqueteurs() {
-		return enqueteurs;
-	}
-
-	public void setEnqueteurs(Set<Person> enqueteurs) {
-		this.enqueteurs = enqueteurs;
-	}
-	
-	public Person addEnqueteur(Person person) {
-		if (getEnqueteurs() == null) {
-			setEnqueteurs(new HashSet<Person>());
-		}
-		getEnqueteurs().add(person);
-
-		return person;
-	}
-
-	public Person removeEnqueteur(Person person) {
-		getEnqueteurs().remove(person);
-
-		return person;
-	}
-
 	public Person getValidator() {
 		return validator;
 	}
@@ -267,6 +233,6 @@ public class Study implements Serializable {
 
 	public void setCloseDate(Date closeDate) {
 		this.closeDate = closeDate;
-	} 
+	}
 
 }

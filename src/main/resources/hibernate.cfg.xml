@@ -21,6 +21,7 @@
         <mapping class="com.rewa.hibernate.data.PersonDiploma"/>
         <mapping class="com.rewa.hibernate.data.PersonRole"/>
         <mapping class="com.rewa.hibernate.data.PersonLevel"/>
+        <mapping class="com.rewa.hibernate.data.PersonStudy"/>
         <mapping class="com.rewa.hibernate.data.Study"/>
     </session-factory>
 

@@ -41,7 +41,7 @@
 				<p:toolbar>
 					<f:facet name="right">
 						<p:commandButton value="#{msg.register}" icon="ui-icon-check"
-							action="#{customerManage.register(customers)}" update="addcustomerform"></p:commandButton>
+							action="#{customerManage.register()}" update="addcustomerform"></p:commandButton>
 						<p:commandButton value="#{msg.cancel}" process="@this"
 							update="addcustomerform"
 							action="#{customerManage.cancelRegistration}">

@@ -34,12 +34,8 @@ import org.hibernate.annotations.NamedQuery;
 		@NamedQuery(name = "Person.findByStatus", query = "SELECT r FROM Person r where r.status = :status"),
 		@NamedQuery(name = "Person.findByIdLoadingPersonLevels", query = "SELECT r FROM Person r left join fetch r.personLevels where r.idPerson = :idPerson"),
 		@NamedQuery(name = "Person.findInEagerMode", query = "SELECT r FROM Person r "
-				+ "left join fetch r.personLevels "
-				+ "left join fetch r.coordinates "
-				+ "left join fetch r.roles "
-				+ "left join fetch r.diplomas "
-				+ "where r.idPerson = :idPerson")
-})
+				+ "left join fetch r.personLevels " + "left join fetch r.coordinates " + "left join fetch r.roles "
+				+ "left join fetch r.diplomas " + "where r.idPerson = :idPerson") })
 public class Person implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -77,10 +73,10 @@ public class Person implements Serializable {
 					@JoinColumn(name = "idDiploma", referencedColumnName = "idDiploma") })
 	private Set<Diploma> diplomas;
 
-	@OneToMany(mappedBy = "person", cascade = {CascadeType.ALL })
+	@OneToMany(mappedBy = "person", cascade = { CascadeType.ALL })
 	private Set<PersonLevel> personLevels;
 
-	@OneToMany(mappedBy = "owner", cascade = {CascadeType.ALL })
+	@OneToMany(mappedBy = "owner", cascade = { CascadeType.ALL })
 	private Set<Coordinate> coordinates;
 
 	// bi-directional many-to-one association to RewaPerson
@@ -97,9 +93,6 @@ public class Person implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "status")
 	private Status status;
-
-	@ManyToMany(mappedBy = "enqueteurs")
-	private Set<Study> studies;
 
 	public Person() {
 	}

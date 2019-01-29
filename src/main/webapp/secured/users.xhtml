@@ -25,8 +25,8 @@
 					</f:facet>
 					<p:column headerText="#{msg.id}" filterBy="#{agent.idPerson}"
 						filterMatchMode="contains">
-							<h:commandLink action="#{personManage.forwardToViewUser(agent)}"
-								value="#{agent.idPerson}" />
+						<h:commandLink action="#{personManage.forwardToViewUser(agent)}"
+							value="#{agent.idPerson}" />
 					</p:column>
 					<p:column headerText="#{msg.fullname}" sortBy="#{agent.fullname}"
 						filterBy="#{agent.fullname}" priority="3"
@@ -58,19 +58,26 @@
 								icon="ui-icon-alert" />
 							<f:setPropertyActionListener value="#{agent}"
 								target="#{personManage.agentBean}" />
+							<f:setPropertyActionListener target="#{personManage.returnPage}"
+								value="users" />
 						</p:commandButton>
 						<p:commandButton icon="fa fa-edit"
 							action="#{personManage.forwardToAddUser(agent)}"
 							title="#{msg.edit}">
+							<f:setPropertyActionListener target="#{personManage.returnPage}"
+								value="users" />
 						</p:commandButton>
 						<p:commandButton icon="fa fa-remove" style="color:red"
 							actionListener="#{personManage.deletePerson(agent)}"
-							update="systemUserTable" title="#{msg.delete}" rendered="#{personManage.connectedUserIsAdmin}">
+							update="systemUserTable" title="#{msg.delete}"
+							rendered="#{personManage.connectedUserIsAdmin}">
 							<p:confirm header="#{msg.confirmation}"
 								message="#{msg.hard_delete_agent_confirmation}"
 								icon="ui-icon-alert" />
 							<f:setPropertyActionListener value="#{agent}"
 								target="#{personManage.agentBean}" />
+							<f:setPropertyActionListener target="#{personManage.returnPage}"
+								value="users" />
 						</p:commandButton>
 					</p:column>
 				</p:dataTable>

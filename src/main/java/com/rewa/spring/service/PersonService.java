@@ -21,6 +21,7 @@ import com.rewa.hibernate.data.Coordinate;
 import com.rewa.hibernate.data.CoordinateType;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.PersonDiploma;
+import com.rewa.hibernate.data.PersonStudy;
 import com.rewa.hibernate.data.Role;
 import com.rewa.hibernate.data.Status;
 import com.rewa.utils.PersonUtils;;
@@ -34,6 +35,8 @@ public class PersonService {
 	private SessionFactory sessionFactory;
 
 	private CommonService commonService;
+	
+	private StudyService studyService;
 
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
@@ -149,7 +152,9 @@ public class PersonService {
 					if (roles != null && !roles.isEmpty() && roles.contains(enqueteurRole)) {
 						PersonBean personBean = PersonUtils.getPersonBeanByPerson(person, lazyMode);
 						setCoordinates(person, personBean);
-
+						Status closedStudiesStatus = commonService.getStatusByStatusName(Constant.INACTIVE_STATUS);
+						Set<PersonStudy> personStudies = studyService.getPersonStudyListByPersonAndStudyStatus(person, closedStudiesStatus);
+						personBean = PersonUtils.setMarks(personStudies, personBean);
 						result.add(personBean);
 					}
 				}
@@ -332,7 +337,7 @@ public class PersonService {
 		return result;
 	}
 
-	private void setCoordinates(Person person, PersonBean personBean) {
+	public void setCoordinates(Person person, PersonBean personBean) {
 		/********** Coordinates *************/
 		Status activeCoordinateStatus = commonService.getStatusByStatusId(Constant.ACTIVE_STATUS_ID);
 		// Address
@@ -353,6 +358,15 @@ public class PersonService {
 		// facebook id
 		ct = commonService.getCoordinateTypeById(Constant.COORDINATE_TYPE_FACEBOOK_ID);
 		setPersonBeanCoordinate(person, personBean, ct, activeCoordinateStatus);
+	}
+
+	public StudyService getStudyService() {
+		return studyService;
+	}
+	
+	@Autowired
+	public void setStudyService(StudyService studyService) {
+		this.studyService = studyService;
 	}
 
 }

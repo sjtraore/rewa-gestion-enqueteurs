@@ -23,8 +23,11 @@
 								placeholder="#{msg.google_search_agent}" />
 							<p:spacer width="100" height="10" />
 							<p:commandButton icon="ui-icon-plus" title="Ajouter un agent"
-								action="#{personManage.forwardToAddUser(null)}">#{msg.add_agent}</p:commandButton>
-							<p:commandButton action="#{personManage.relaodAgentTable()}" icon="fa fa-refresh" title="#{msg.reload}">#{msg.reload}</p:commandButton>
+								action="#{personManage.forwardToAddUser(null)}">#{msg.add_agent}
+							
+								<f:setPropertyActionListener target="#{personManage.returnPage}"
+									value="agent" />
+							</p:commandButton>
 						</p:outputPanel>
 					</f:facet>
 					<p:column headerText="#{msg.id}" filterBy="#{agent.idPerson}"
@@ -40,10 +43,13 @@
 						filterBy="#{agent.primaryPhone}" filterMatchMode="contains">
 						<h:outputText value="#{agent.primaryPhone}" />
 					</p:column>
-					<p:column headerText="#{msg.average_enq_abbrev}" priority="5">
-						<h:outputText value="#{agent.averageEnq}" />
+					<p:column headerText="#{msg.average_enq_abbrev} #{msg.punctuality}" priority="5">
+						<h:outputText value="#{agent.avgPunctuality}" />
 					</p:column>
-					<p:column headerText="#{msg.average_cont_abbrev}" priority="6">
+					<p:column headerText="#{msg.average_enq_abbrev} #{msg.diligence}" priority="6">
+						<h:outputText value="#{agent.avgDiligence}" />
+					</p:column>
+					<p:column headerText="#{msg.average_cont_abbrev}" priority="7">
 						<h:outputText value="#{agent.averageCont}" />
 					</p:column>
 					<p:column headerText="#{msg.actions}" priority="2">
@@ -59,6 +65,8 @@
 						<p:commandButton icon="fa fa-edit"
 							action="#{personManage.forwardToAddUser(agent)}"
 							title="#{msg.edit}">
+							<f:setPropertyActionListener target="#{personManage.returnPage}"
+								value="agent" />
 						</p:commandButton>
 					</p:column>
 				</p:dataTable>

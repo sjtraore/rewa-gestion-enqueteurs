@@ -40,12 +40,12 @@
 				</p:column>
 				<p:column headerText="#{msg.from}" priority="5">
 					<h:outputText value="#{study.startDate}">
-						<f:convertDateTime pattern="dd/MM/yyyy hh:mm" />
+						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 				</p:column>
 				<p:column headerText="#{msg.to}" priority="6">
 					<h:outputText value="#{study.endDate}">
-						<f:convertDateTime pattern="dd/MM/yyyy hh:mm" />
+						<f:convertDateTime pattern="dd/MM/yyyy" />
 					</h:outputText>
 				</p:column>
 				<p:column headerText="#{msg.supervisor}" priority="6">

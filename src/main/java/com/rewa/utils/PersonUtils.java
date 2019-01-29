@@ -1,5 +1,7 @@
 package com.rewa.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +13,7 @@ import com.rewa.hibernate.data.Diploma;
 import com.rewa.hibernate.data.Field;
 import com.rewa.hibernate.data.Person;
 import com.rewa.hibernate.data.PersonLevel;
+import com.rewa.hibernate.data.PersonStudy;
 import com.rewa.hibernate.data.Role;
 
 public class PersonUtils {
@@ -109,9 +112,6 @@ public class PersonUtils {
 								continue;
 							
 							switch (coordinateType.getIdCoordinateType()) {
-//							case Constant.COORDINATE_TYPE_ADDRESS:
-//								personBean.setAddress(coordinate.getCoordinate());
-//								break;
 							case Constant.COORDINATE_TYPE_PRIMARY_PHONE:
 								personBean.setPrimaryPhone(coordinate.getCoordinate());
 								break;
@@ -130,7 +130,38 @@ public class PersonUtils {
 						}
 					}
 				}
+				
+				//Marks Punctuality and diligency
+				//personBean = setMarks(person, personBean);
 			}
+		}
+		return personBean;
+	}
+
+	/**
+	 * Set marks (punctuality, diligence...)
+	 * @param person
+	 * @param personBean
+	 * This is calculate for closed studies only 
+	 * because open studies don't necessary have marks
+	 */
+	public static PersonBean setMarks(Set<PersonStudy> studies, PersonBean personBean) {
+		if(studies != null && !studies.isEmpty()) {
+			//Calculating average mark of punctuality
+			BigDecimal avgPunctuality = BigDecimal.ZERO, avgDiligence = BigDecimal.ZERO;
+			BigDecimal sumPunctuality = BigDecimal.ZERO, sumDiligence = BigDecimal.ZERO;
+			for(PersonStudy personStudy : studies) {
+				BigDecimal markPunctuality = personStudy.getMarkPunctuality();
+				if(markPunctuality != null)
+					sumPunctuality = sumPunctuality.add(markPunctuality);
+				BigDecimal markDiligence = personStudy.getMarkDiligence();
+				if(markDiligence != null)
+					sumDiligence = sumDiligence.add(markDiligence);
+			}
+			avgPunctuality = sumPunctuality.divide(new BigDecimal(studies.size()), 2, RoundingMode.HALF_UP);
+			avgDiligence = sumDiligence.divide(new BigDecimal(studies.size()), 2, RoundingMode.HALF_UP);
+			personBean.setAvgPunctuality(avgPunctuality);
+			personBean.setAvgDiligence(avgDiligence);
 		}
 		return personBean;
 	}

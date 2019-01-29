@@ -84,11 +84,14 @@
 				</p:fieldset>
 				<p:fieldset legend="#{msg.team}">
 					<h:outputFormat value="#{msg['study_validated_at']}"
+						style="font-weight: bold; font-style: italic; color: green;"
 						rendered="#{not empty studyManage.studyBean.validateDate}">
 						<f:param value="#{studyManage.studyBean.validator.fullname}" />
 						<f:param value="#{studyManage.studyBean.validateDate}" />
 					</h:outputFormat>
+					<br />
 					<h:outputFormat value="#{msg['study_closed_at']}"
+						style="font-weight: bold; font-style: italic; color: red;"
 						rendered="#{not empty studyManage.studyBean.closeDate}">
 						<f:param value="#{studyManage.studyBean.closer.fullname}" />
 						<f:param value="#{studyManage.studyBean.closeDate}" />
@@ -98,6 +101,8 @@
 						emptyMessage="#{msg.no_agent_found}"
 						filteredValue="#{studyManage.studiesBean}" id="teamTable"
 						lazy="true">
+
+						<p:growl id="msgsEnqueteur" showDetail="true" autoUpdate="true"></p:growl>
 						<f:facet name="header">
 							<p:outputPanel>
 								<p:selectOneMenu id="somagentstobeaddedtoteam"
@@ -121,8 +126,25 @@
 						</p:column>
 						<p:column headerText="#{msg.fullname}"
 							sortBy="#{enqueteur.fullname}" filterBy="#{enqueteur.fullname}"
-							priority="3">
+							priority="2">
 							<h:outputText value="#{enqueteur.fullname}" />
+						</p:column>
+						<p:column headerText="#{msg.primary_phone}" priority="4">
+							<h:outputText value="#{enqueteur.primaryPhone}" />
+						</p:column>
+
+						<p:column headerText="#{msg.punctuality}" priority="5">
+							<h:outputText value="#{enqueteur.avgPunctuality}" />
+						</p:column>
+
+						<p:column headerText="#{msg.diligence}" priority="6">
+							<h:outputText value="#{enqueteur.avgDiligence}" />
+						</p:column>
+						<p:column headerText="#{msg.actions}" priority="3">
+							<p:commandButton icon="fa fa-minus"
+								action="#{studyManage.removeAgentFromTeam(enqueteur.idPerson)}"
+								title="#{msg.remove}" update="@form">
+							</p:commandButton>
 						</p:column>
 					</p:dataTable>
 				</p:fieldset>
@@ -132,21 +154,74 @@
 							rendered="#{empty studyManage.studyBean.validateDate}"
 							value="#{msg.validate_study}" icon="ui-icon-check"
 							action="#{studyManage.validateStudy(studyManage.studyBean)}"></p:commandButton>
-					
-						<p:commandButton value="#{msg.close_study}" process="@this"
-						rendered="#{empty studyManage.studyBean.closeDate}"
-							update="studyform" action="#{studyManage.closeStudy(studyManage.studyBean)}">
-						</p:commandButton>
+
+						<p:commandButton value="#{msg.close_study}" disabled="#{empty studyManage.studyBean.validateDate}"
+							onclick="PF('dlgCloseStudy').show();" rendered="#{studyManage.studyBean.status == 'Actif'}" />
 					</f:facet>
 					<f:facet name="right">
 						<p:commandButton value="#{msg.register}" icon="fa fa-pen-square"
-							action="#{studyManage.register()}" update="studyform"></p:commandButton>
+							action="#{studyManage.register()}" update="studyform"  disabled="#{not empty studyManage.studyBean.closeDate}" />
 						<p:commandButton value="#{msg.cancel}" process="@this"
 							update="studyform" action="#{customerManage.cancelRegistration}">
 						</p:commandButton>
 					</f:facet>
 				</p:toolbar>
 			</h:form>
+
+			<p:dialog header="#{msg.close_study_and_evaluate_agents}"
+				widgetVar="dlgCloseStudy" showEffect="explode" hideEffect="explode"
+				height="auto" width="80%">
+				<h:outputText value="This dialog has nice effects." />
+				<h:form>
+					<p:dataTable var="ps" value="#{studyManage.personStudiesBean}"
+						editable="true" editMode="cell" widgetVar="personStudyTable"
+						emptyMessage="#{msg.no_agent_found}" id="persontStudyTable"
+						lazy="true">
+						<p:column headerText="#{msg.id}">
+							<h:commandLink
+								action="#{studyManage.forwardToViewAgent(enqueteur)}"
+								value="#{ps.personBean.idPerson}" />
+						</p:column>
+						<p:column headerText="#{msg.fullname}"
+							sortBy="#{ps.personBean.fullname}" priority="2">
+							<h:outputText value="#{ps.personBean.fullname}" />
+						</p:column>
+						<p:column headerText="#{msg.punctuality}" priority="3">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{ps.markPunctuality}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{ps.markPunctuality}" style="width:100%"
+										label="#{ps.markPunctuality}" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+						<p:column headerText="#{msg.diligence}" priority="4">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{ps.markDiligence}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{ps.markDiligence}" style="width:100%"
+										label="#{ps.markDiligence}" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</p:dataTable>
+					<p:toolbar>
+						<f:facet name="right">
+							<p:commandButton value="#{msg.validate_marks_and_close_study}"
+								icon="ui-icon-check" update=":studyform"
+								action="#{studyManage.closeStudy()}" oncomplete="PF('dlgCloseStudy').hide();" />
+
+							<p:commandButton value="#{msg.cancel}"
+								onclick="PF('dlgCloseStudy').hide();" />
+						</f:facet>
+					</p:toolbar>
+				</h:form>
+			</p:dialog>
+			
 		</ui:define>
 	</ui:composition>
 </h:body>

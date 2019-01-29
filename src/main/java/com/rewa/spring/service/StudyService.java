@@ -1,7 +1,8 @@
 package com.rewa.spring.service;
 
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rewa.hibernate.data.Person;
+import com.rewa.hibernate.data.PersonStudy;
 import com.rewa.hibernate.data.Status;
 import com.rewa.hibernate.data.Study;
 
@@ -33,7 +36,7 @@ public class StudyService {
 	}
 
 	@Transactional
-	public void save(Study study) {
+	public Study save(Study study) {
 		// Acquire session
 		Session session = sessionFactory.getCurrentSession();
 		study.setCreateDate(new Date());
@@ -44,8 +47,9 @@ public class StudyService {
 		} else {
 			session.merge(study);
 		}
+		return study;
 	}
-	
+
 	@Transactional
 	public void delete(Study study) {
 		log.debug("Deleting study: " + study);
@@ -55,11 +59,11 @@ public class StudyService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Study> getStudies() {
+	public Set<Study> getStudies() {
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
-			List<Study> result = session.createCriteria(Study.class).list();
+			Set<Study> result = new HashSet<Study>(session.createCriteria(Study.class).list());
 			return result;
 		} catch (Exception e) {
 			log.debug(e, e);
@@ -75,20 +79,78 @@ public class StudyService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Study> getStudiesByStatus(Status status) {
-		List<Study> result = null;
+	public Set<Study> getStudiesByStatus(Status status) {
+		Set<Study> result = null;
 		try {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			Query query = session.getNamedQuery("Study.findByStatus").setParameter("status", status);
-			result = (List<Study>) query.list();
+			result = new HashSet<Study>(query.list());
 		} catch (Exception e) {
 			log.debug(e, e);
 		}
 		return result;
 	}
-	
-	//Compatibility
+
+	public PersonStudy getPersonStudyById(int idPersonStudy) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Criteria criteria = session.createCriteria(PersonStudy.class)
+					.add(Restrictions.eq("idPersonStudy", idPersonStudy));
+			return (PersonStudy) criteria.uniqueResult();
+		} catch (Exception e) {
+			log.debug(e, e);
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<PersonStudy> getPersonStudyListByPersonAndStudyStatus(Person person, Status studyStatus) {
+		Set<PersonStudy> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.getNamedQuery("PersonStudy.findByPersonAndStudyStatus")
+					.setParameter("person", person)
+					.setParameter("studyStatus", studyStatus);
+			result = new HashSet<PersonStudy>(query.list());
+		} catch (Exception e) {
+			log.debug(e, e);
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<PersonStudy> getPersonStudyListByStudy(Study study) {
+		Set<PersonStudy> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.getNamedQuery("PersonStudy.findByStudy").setParameter("study", study);
+			result = new HashSet<PersonStudy>(query.list());
+		} catch (Exception e) {
+			log.debug(e, e);
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<PersonStudy> getPersonStudyListByPersonAndStudy(Person person, Study study) {
+		Set<PersonStudy> result = null;
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			Query query = session.getNamedQuery("PersonStudy.findByPersonAndStudy").setParameter("study", study)
+					.setParameter("person", person);
+			result = new HashSet<PersonStudy>(query.list());
+		} catch (Exception e) {
+			log.debug(e, e);
+		}
+		return result;
+	}
+
+	// Compatibility
 	public Study getStudyById(int id) {
 		return getStudyById(id, true);
 	}
@@ -98,7 +160,7 @@ public class StudyService {
 			// Acquire session
 			Session session = sessionFactory.getCurrentSession();
 			Study result = null;
-			if(lazyMode) {
+			if (lazyMode) {
 				Criteria criteria = session.createCriteria(Study.class).add(Restrictions.idEq(id));
 				result = (Study) criteria.uniqueResult();
 			} else {
@@ -110,6 +172,29 @@ public class StudyService {
 			log.debug(e, e);
 			return null;
 		}
+	}
+
+	@Transactional
+	public void savePersonStudy(PersonStudy personStudy) {
+		try {
+			// Acquire session
+			Session session = sessionFactory.getCurrentSession();
+			if(personStudy.getIdPersonStudy() != 0) {
+				session.merge(personStudy);
+			} else {
+				session.save(personStudy);
+			}
+		} catch (Exception e) {
+			log.debug(e, e);
+		}
+	}
+
+	@Transactional
+	public void deletePersonStudy(PersonStudy personStudy) {
+		log.debug("Deleting personStudy: " + personStudy);
+		// Acquire session
+		Session session = sessionFactory.getCurrentSession();
+		session.delete(personStudy);
 	}
 
 }
