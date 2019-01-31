@@ -242,9 +242,9 @@ public class StudyManage {
 
 			Customer customer = customerService.getCustomerByName(studyBean.getCustomer());
 			study.setCustomer(customer);
-			
+
 			PersonBean closerBean = studyBean.getCloser();
-			if(closerBean != null) {
+			if (closerBean != null) {
 				Person closer = personService.getPersonById(closerBean.getIdPerson());
 				study.setCloser(closer);
 			}
@@ -277,7 +277,7 @@ public class StudyManage {
 		if (status.getIdStatus() != Constant.ACTIVE_STATUS_ID) {
 			status = commonService.getStatusByStatusName(Constant.ACTIVE_STATUS);
 		}
-		//Set<Study> studies = studyService.getStudiesByStatus(status);
+		// Set<Study> studies = studyService.getStudiesByStatus(status);
 		Set<Study> studies = studyService.getStudies();
 		if (studies != null && !studies.isEmpty()) {
 			result = new ArrayList<StudyBean>();
@@ -301,7 +301,10 @@ public class StudyManage {
 			studyBean = new StudyBean();
 			studyBean.setId(study.getIdStudy());
 			studyBean.setTitle(study.getTitle());
-			studyBean.setStatus(study.getStatus().getStatus());
+			Status status2 = study.getStatus();
+			String statusString = (status2.getStatus().equals(Constant.ACTIVE_STATUS)) ? Constant.OPENED_STATUS_FEMALE
+					: Constant.CLOSED_STATUS_FEMALE;
+			studyBean.setStatus(statusString);
 			studyBean.setCustomer(study.getCustomer().getName());
 			studyBean.setStartDate(study.getStartDate());
 			studyBean.setEndDate(study.getEndDate());
@@ -320,9 +323,9 @@ public class StudyManage {
 				studyBean.setValidator(validatorBean);
 			}
 			studyBean.setValidateDate(study.getValidateDate());
-			
+
 			Person closer = study.getCloser();
-			if(closer != null) {
+			if (closer != null) {
 				PersonBean closerBean = PersonUtils.getPersonBeanByPerson(closer, true);
 				studyBean.setCloser(closerBean);
 			}
@@ -336,12 +339,12 @@ public class StudyManage {
 						PersonBean enqueteurBean = PersonUtils.getPersonBeanByPerson(enqueteur, true);
 						personService.setCoordinates(enqueteur, enqueteurBean);
 
-						//We calculate punctuality and diligency average only for closed studies
+						// We calculate punctuality and diligency average only for closed studies
 						Status closedStatus = commonService.getStatusByStatusId(Constant.INACTIVE_STATUS_ID);
 						Set<PersonStudy> studiesAttendedByThisEnqueteur = studyService
 								.getPersonStudyListByPersonAndStudyStatus(enqueteur, closedStatus);
 						enqueteurBean = PersonUtils.setMarks(studiesAttendedByThisEnqueteur, enqueteurBean);
-						
+
 						studyBean.addEnqueteur(enqueteurBean);
 					}
 				}
@@ -417,7 +420,7 @@ public class StudyManage {
 		studyBean.setCloseDate(new Date());
 		studyBean.setCloser(PersonUtils.getPersonBeanByPerson(getConnectedUser(), true));
 
-		//this.studyBean = studyBean;
+		// this.studyBean = studyBean;
 		register();
 		setPersonStudySetDBFromPSSetBean();
 	}

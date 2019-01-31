@@ -155,12 +155,19 @@
 							value="#{msg.validate_study}" icon="ui-icon-check"
 							action="#{studyManage.validateStudy(studyManage.studyBean)}"></p:commandButton>
 
-						<p:commandButton value="#{msg.close_study}" disabled="#{empty studyManage.studyBean.validateDate}"
-							onclick="PF('dlgCloseStudy').show();" rendered="#{studyManage.studyBean.status == 'Actif'}" />
+						<p:commandButton value="#{msg.close_study}"
+							disabled="#{empty studyManage.studyBean.validateDate}"
+							onclick="PF('dlgCloseStudy').show();"
+							rendered="#{studyManage.studyBean.status == msg.open_fem}" />
+							
+						<p:commandButton value="#{msg.view_evaluations}"
+							rendered="#{studyManage.studyBean.status == msg.closed_fem}"
+							onclick="PF('dlgCloseStudy').show();"/>
 					</f:facet>
 					<f:facet name="right">
 						<p:commandButton value="#{msg.register}" icon="fa fa-pen-square"
-							action="#{studyManage.register()}" update="studyform"  disabled="#{not empty studyManage.studyBean.closeDate}" />
+							action="#{studyManage.register()}" update="studyform"
+							disabled="#{not empty studyManage.studyBean.closeDate}" />
 						<p:commandButton value="#{msg.cancel}" process="@this"
 							update="studyform" action="#{customerManage.cancelRegistration}">
 						</p:commandButton>
@@ -187,33 +194,19 @@
 							<h:outputText value="#{ps.personBean.fullname}" />
 						</p:column>
 						<p:column headerText="#{msg.punctuality}" priority="3">
-							<p:cellEditor>
-								<f:facet name="output">
-									<h:outputText value="#{ps.markPunctuality}" />
-								</f:facet>
-								<f:facet name="input">
-									<p:inputText value="#{ps.markPunctuality}" style="width:100%"
-										label="#{ps.markPunctuality}" />
-								</f:facet>
-							</p:cellEditor>
+							<p:rating value="#{ps.markPunctuality}" stars="5" />
 						</p:column>
 						<p:column headerText="#{msg.diligence}" priority="4">
-							<p:cellEditor>
-								<f:facet name="output">
-									<h:outputText value="#{ps.markDiligence}" />
-								</f:facet>
-								<f:facet name="input">
-									<p:inputText value="#{ps.markDiligence}" style="width:100%"
-										label="#{ps.markDiligence}" />
-								</f:facet>
-							</p:cellEditor>
+							<p:rating value="#{ps.markDiligence}" stars="5" />
 						</p:column>
 					</p:dataTable>
 					<p:toolbar>
 						<f:facet name="right">
 							<p:commandButton value="#{msg.validate_marks_and_close_study}"
 								icon="ui-icon-check" update=":studyform"
-								action="#{studyManage.closeStudy()}" oncomplete="PF('dlgCloseStudy').hide();" />
+								action="#{studyManage.closeStudy()}"
+								oncomplete="PF('dlgCloseStudy').hide();"
+								rendered="#{studyManage.studyBean.status == msg.active}" />
 
 							<p:commandButton value="#{msg.cancel}"
 								onclick="PF('dlgCloseStudy').hide();" />
@@ -221,7 +214,7 @@
 					</p:toolbar>
 				</h:form>
 			</p:dialog>
-			
+
 		</ui:define>
 	</ui:composition>
 </h:body>

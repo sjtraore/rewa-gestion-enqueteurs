@@ -21,6 +21,9 @@ public class Constant {
 	public static final String ACTIVE_STATUS = "Actif";
 	public static final int INACTIVE_STATUS_ID = 2;
 	public static final String INACTIVE_STATUS = "Inactif";
+
+	public static final String CLOSED_STATUS_FEMALE = "Fermée";
+	public static final String OPENED_STATUS_FEMALE = "Ouverte";
 	
 	public static final int COORDINATE_TYPE_PRIMARY_PHONE = 1;
 	public static final int COORDINATE_TYPE_SECONDARY_PHONE = 2;

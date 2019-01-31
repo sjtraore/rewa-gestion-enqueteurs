@@ -1,13 +1,11 @@
 package com.rewa.beans;
 
-import java.math.BigDecimal;
-
 public class PersonStudyBean {
 	private int idPersonStudy;
 	private PersonBean personBean;
 	private StudyBean studyBean;
-	private BigDecimal markPunctuality;
-	private BigDecimal markDiligence;
+	private Integer markPunctuality;
+	private Integer markDiligence;
 	
 	
 	public PersonStudyBean() {
@@ -31,16 +29,16 @@ public class PersonStudyBean {
 	public void setStudyBean(StudyBean studyBean) {
 		this.studyBean = studyBean;
 	}
-	public BigDecimal getMarkPunctuality() {
+	public Integer getMarkPunctuality() {
 		return markPunctuality;
 	}
-	public void setMarkPunctuality(BigDecimal markPunctuality) {
+	public void setMarkPunctuality(Integer markPunctuality) {
 		this.markPunctuality = markPunctuality;
 	}
-	public BigDecimal getMarkDiligence() {
+	public Integer getMarkDiligence() {
 		return markDiligence;
 	}
-	public void setMarkDiligence(BigDecimal markDiligence) {
+	public void setMarkDiligence(Integer markDiligence) {
 		this.markDiligence = markDiligence;
 	}
 }

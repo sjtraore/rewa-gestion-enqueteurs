@@ -148,18 +148,20 @@ public class PersonUtils {
 	public static PersonBean setMarks(Set<PersonStudy> studies, PersonBean personBean) {
 		if(studies != null && !studies.isEmpty()) {
 			//Calculating average mark of punctuality
-			BigDecimal avgPunctuality = BigDecimal.ZERO, avgDiligence = BigDecimal.ZERO;
-			BigDecimal sumPunctuality = BigDecimal.ZERO, sumDiligence = BigDecimal.ZERO;
+			BigDecimal avgPunctuality = BigDecimal.ZERO;
+			BigDecimal avgDiligence = BigDecimal.ZERO;
+			Integer sumPunctuality = 0;
+			Integer sumDiligence = 0;
 			for(PersonStudy personStudy : studies) {
-				BigDecimal markPunctuality = personStudy.getMarkPunctuality();
+				Integer markPunctuality = personStudy.getMarkPunctuality();
 				if(markPunctuality != null)
-					sumPunctuality = sumPunctuality.add(markPunctuality);
-				BigDecimal markDiligence = personStudy.getMarkDiligence();
+					sumPunctuality += markPunctuality;
+				Integer markDiligence = personStudy.getMarkDiligence();
 				if(markDiligence != null)
-					sumDiligence = sumDiligence.add(markDiligence);
+					sumDiligence += markDiligence;
 			}
-			avgPunctuality = sumPunctuality.divide(new BigDecimal(studies.size()), 2, RoundingMode.HALF_UP);
-			avgDiligence = sumDiligence.divide(new BigDecimal(studies.size()), 2, RoundingMode.HALF_UP);
+			avgPunctuality = new BigDecimal(sumPunctuality).divide(new BigDecimal(studies.size()), 2, RoundingMode.HALF_UP);
+			avgDiligence = new BigDecimal(sumDiligence).divide(new BigDecimal(studies.size()), 2, RoundingMode.HALF_UP);
 			personBean.setAvgPunctuality(avgPunctuality);
 			personBean.setAvgDiligence(avgDiligence);
 		}

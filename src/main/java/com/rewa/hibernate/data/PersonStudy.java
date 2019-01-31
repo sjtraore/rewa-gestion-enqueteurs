@@ -1,7 +1,6 @@
 package com.rewa.hibernate.data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,9 +50,9 @@ public class PersonStudy implements Serializable {
 		this.study = study;
 	}
 
-	private BigDecimal markPunctuality;
+	private Integer markPunctuality;
 
-	private BigDecimal markDiligence;
+	private Integer markDiligence;
 
 
 	public Person getPerson() {
@@ -72,19 +71,19 @@ public class PersonStudy implements Serializable {
 		this.study = study;
 	}
 
-	public BigDecimal getMarkPunctuality() {
+	public Integer getMarkPunctuality() {
 		return markPunctuality;
 	}
 
-	public void setMarkPunctuality(BigDecimal markPunctuality) {
+	public void setMarkPunctuality(Integer markPunctuality) {
 		this.markPunctuality = markPunctuality;
 	}
 
-	public BigDecimal getMarkDiligence() {
+	public Integer getMarkDiligence() {
 		return markDiligence;
 	}
 
-	public void setMarkDiligence(BigDecimal markDiligence) {
+	public void setMarkDiligence(Integer markDiligence) {
 		this.markDiligence = markDiligence;
 	}
 

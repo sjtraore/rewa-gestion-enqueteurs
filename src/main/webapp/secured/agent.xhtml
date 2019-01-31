@@ -31,25 +31,28 @@
 						</p:outputPanel>
 					</f:facet>
 					<p:column headerText="#{msg.id}" filterBy="#{agent.idPerson}"
-						filterMatchMode="contains">
+						filterMatchMode="contains" priority="3">
 						<h:commandLink action="#{personManage.forwardToViewUser(agent)}"
 							value="#{agent.idPerson}" />
 					</p:column>
 					<p:column headerText="#{msg.fullname}" sortBy="#{agent.fullname}"
-						filterBy="#{agent.fullname}" priority="3">
-						<h:outputText value="#{agent.fullname}" />
+						filterBy="#{agent.fullname}" priority="1">
+						<h:commandLink action="#{personManage.forwardToViewUser(agent)}"
+							value="#{agent.fullname}" />
 					</p:column>
 					<p:column headerText="#{msg.primary_phone}" priority="4"
 						filterBy="#{agent.primaryPhone}" filterMatchMode="contains">
 						<h:outputText value="#{agent.primaryPhone}" />
 					</p:column>
-					<p:column headerText="#{msg.average_enq_abbrev} #{msg.punctuality}" priority="5">
+					<p:column headerText="#{msg.average_enq_abbrev} #{msg.punctuality}"
+						sortBy="#{agent.avgPunctuality}" priority="5">
 						<h:outputText value="#{agent.avgPunctuality}" />
 					</p:column>
-					<p:column headerText="#{msg.average_enq_abbrev} #{msg.diligence}" priority="6">
+					<p:column headerText="#{msg.average_enq_abbrev} #{msg.diligence}" 
+						sortBy="#{agent.avgDiligence}" priority="6">
 						<h:outputText value="#{agent.avgDiligence}" />
 					</p:column>
-					<p:column headerText="#{msg.average_cont_abbrev}" priority="7">
+					<p:column headerText="#{msg.average_cont_abbrev}" priority="6">
 						<h:outputText value="#{agent.averageCont}" />
 					</p:column>
 					<p:column headerText="#{msg.actions}" priority="2">
